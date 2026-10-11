@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -108,6 +109,16 @@ fun SettingsScreen(
         Updater.isUpdateAvailable(BuildConfig.VERSION_NAME, latestVersionName)
     var query by rememberSaveable { mutableStateOf("") }
 
+    val context = LocalContext.current
+    val hasAndroidAuto = remember {
+        try {
+            context.packageManager.getPackageInfo("com.google.android.projection.gearhead", 0)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     val (darkMode, onDarkModeChange) = rememberEnumPreference(DarkModeKey, DarkMode.AUTO)
     val (dynamicTheme, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, true)
     val (pureBlack, setPureBlack) = rememberPreference(PureBlackKey, false)
@@ -133,6 +144,58 @@ fun SettingsScreen(
                 subtitle = stringResource(R.string.look_and_feel_desc),
             ) {
                 navController.navigate("settings/appearance/look_and_feel")
+            },
+        ),
+        // Playback: Player & audio settings.
+        "Playback" to listOf(
+            SettingRow(
+                icon = R.drawable.play,
+                title = stringResource(R.string.player_and_audio),
+                subtitle = stringResource(R.string.hint_player),
+            ) {
+                navController.navigate("settings/player")
+            },
+        ),
+        // Content: Content, Lyrics and Android Auto.
+        "Content" to buildList {
+            add(
+                SettingRow(
+                    icon = R.drawable.language,
+                    title = stringResource(R.string.content),
+                    subtitle = stringResource(R.string.hint_content),
+                ) {
+                    navController.navigate("settings/content")
+                },
+            )
+            add(
+                SettingRow(
+                    icon = R.drawable.lyrics,
+                    title = stringResource(R.string.lyrics),
+                    subtitle = stringResource(R.string.hint_lyrics_home),
+                ) {
+                    navController.navigate("settings/lyrics")
+                },
+            )
+            if (hasAndroidAuto) {
+                add(
+                    SettingRow(
+                        icon = R.drawable.ic_android_auto,
+                        title = stringResource(R.string.android_auto),
+                        subtitle = stringResource(R.string.hint_android_auto),
+                    ) {
+                        navController.navigate("settings/android_auto")
+                    },
+                )
+            }
+        },
+        // Connections: Integrations.
+        "Connections" to listOf(
+            SettingRow(
+                icon = R.drawable.link,
+                title = stringResource(R.string.integrations),
+                subtitle = stringResource(R.string.hint_integrations),
+            ) {
+                navController.navigate("settings/integrations")
             },
         ),
         // Storage keeps Storage + Privacy as-is.
