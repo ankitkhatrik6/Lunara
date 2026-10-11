@@ -3,8 +3,9 @@
  * Licensed under GPL-3.0 | See NOTICE for contributors
  *
  * Minimalist, Spotify-inspired Onboarding screen:
- * Built from scratch. Pure dark surface, crisp typography, clean feature highlights,
- * and bold Spotify green action pill. No emojis, sparkles, or gradients.
+ * Built from scratch. Crisp typography, clean feature highlights, and a bold
+ * green action pill. No emojis, sparkles, or gradients. Every surface and text
+ * colour is a theme token, so it follows the app's dark/light choice.
  */
 
 package com.lunara.app.ui.screens

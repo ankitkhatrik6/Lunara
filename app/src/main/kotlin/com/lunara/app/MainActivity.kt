@@ -481,6 +481,21 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            // The splash and onboarding compose before LunaraApp (which owns the themed
+            // UI), so they must resolve the theme themselves. Read the same DarkMode
+            // preference the app uses — AUTO follows the system, ON/OFF force it — so the
+            // loading screen and onboarding are dark in dark mode and light in light mode,
+            // and they honour the choice made in Settings.
+            val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+            val isSystemInDarkTheme = isSystemInDarkTheme()
+            val useDarkTheme =
+                remember(darkTheme, isSystemInDarkTheme) {
+                    if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+                }
+            val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = true)
+            val pureBlack =
+                remember(pureBlackEnabled, useDarkTheme) { pureBlackEnabled && useDarkTheme }
+
             // Startup is staged so the splash never animates against a busy UI
             // thread. Composing the app alongside it starved the animation to
             // ~9fps, which read as stuttering because wall-clock tweens jump
@@ -501,10 +516,12 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            LunaraSplash(
-                visible = splashVisible,
-                onIntroFinished = { appComposed = true },
-            )
+            LunaraTheme(darkTheme = useDarkTheme, pureBlack = pureBlack) {
+                LunaraSplash(
+                    visible = splashVisible,
+                    onIntroFinished = { appComposed = true },
+                )
+            }
 
             LaunchedEffect(appComposed) {
                 if (!appComposed) return@LaunchedEffect
@@ -518,7 +535,9 @@ class MainActivity : ComponentActivity() {
             val (onboardingCompleted, setOnboardingCompleted) =
                 rememberPreference(OnboardingCompletedKey, defaultValue = false)
             if (!onboardingCompleted && !splashVisible) {
-                OnboardingScreen(onFinish = { setOnboardingCompleted(true) })
+                LunaraTheme(darkTheme = useDarkTheme, pureBlack = pureBlack) {
+                    OnboardingScreen(onFinish = { setOnboardingCompleted(true) })
+                }
             }
         }
     }

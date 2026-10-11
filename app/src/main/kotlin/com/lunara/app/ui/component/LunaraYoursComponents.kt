@@ -107,7 +107,7 @@ fun LunaraMusicCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isCircular: Boolean = false,
-    @DrawableRes fallbackIcon: Int = R.drawable.music_note,
+    @DrawableRes fallbackIcon: Int = R.drawable.lunara_logo,
 ) {
     val shape = if (isCircular) CircleShape else RoundedCornerShape(6.dp)
     Column(

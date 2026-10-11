@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="lunara_background">#0D0F12</color>
+    <!-- Cold-start window background. Light in the default (day) theme; values-night
+         overrides this to a near-black so the window never flashes the wrong mode
+         before Compose's themed splash takes over. -->
+    <color name="lunara_background">#FFFFFFFF</color>
     <color name="ic_launcher_static_background">#FFFFFF</color>
 
     <!-- Widget colors for light mode -->

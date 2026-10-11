@@ -91,8 +91,6 @@ import com.lunara.app.ui.component.ColorPickerDialog
 import com.lunara.app.models.MediaMetadata
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.lunara.app.constants.DefaultOpenTabKey
-import com.lunara.app.constants.GridItemSize
-import com.lunara.app.constants.GridItemsSizeKey
 import com.lunara.app.constants.MiniPlayerBackgroundStyle
 import com.lunara.app.constants.MiniPlayerBackgroundStyleKey
 import com.lunara.app.constants.MiniPlayerDesignKey
@@ -670,7 +668,6 @@ internal fun ThemePhonePreview(
     val (miniBgStyle) = rememberEnumPreference(MiniPlayerBackgroundStyleKey, MiniPlayerBackgroundStyle.GRADIENT)
     // Reflect the home-layout settings too, so the preview updates when they change.
     val (defaultTab) = rememberEnumPreference(DefaultOpenTabKey, NavigationTab.HOME)
-    val (gridSize) = rememberEnumPreference(GridItemsSizeKey, GridItemSize.SMALL)
     val (slimNav) = rememberPreference(SlimNavBarKey, defaultValue = false)
     val (navStyle) = rememberEnumPreference(NavBarStyleKey, NavBarStyle.PILL)
     LunaraTheme(darkTheme = useDark, pureBlack = pureBlack, themeColor = themeColor) {
@@ -699,37 +696,9 @@ internal fun ThemePhonePreview(
                 }
                 Icon(painterResource(R.drawable.settings), null, tint = cs.onSurface.copy(alpha = 0.75f), modifier = Modifier.size(13.dp))
             }
-            Spacer(Modifier.height(6.dp))
-            // Filter pills — "All" (filled accent) and "Music" (muted), mirroring the
-            // home's top row exactly as in the Look & Feel reference image.
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                listOf(
-                    true to stringResource(R.string.filter_all),
-                    false to "Music",
-                ).forEach { (active, label) ->
-                    Box(
-                        modifier = Modifier
-                            .height(18.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(if (active) cs.primary else cs.surfaceContainerHigh)
-                            .padding(horizontal = 12.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            label,
-                            fontSize = 7.sp,
-                            lineHeight = 8.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (active) cs.onPrimary else cs.onSurface,
-                            maxLines = 1,
-                        )
-                    }
-                }
-            }
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(8.dp))
             // Quick-access grid — the real home's top cards (Liked songs, For You,
-            // Speed Dial, History) in a 2×2. The old greeting card and its hero were
-            // removed from the app, so the preview shows what the app actually opens on.
+            // Speed Dial, History) in a 2×2, exactly as the home opens.
             Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
                 val quickCards = listOf(
                     listOf(
@@ -779,75 +748,90 @@ internal fun ThemePhonePreview(
                 }
             }
             Spacer(Modifier.height(9.dp))
-            // Search pill (icon · placeholder · mic). Always shown in the preview so the
-            // Look & Feel mock matches the app's home whether or not the bar is toggled.
-            val searchTint = if (useDark) Color.White.copy(alpha = 0.7f) else Color(0x8A000000)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(24.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(if (useDark) Color.White.copy(alpha = 0.10f) else Color(0xFFEEEEEE))
-                    .padding(horizontal = 9.dp),
-            ) {
-                Icon(painterResource(R.drawable.search), null, tint = searchTint, modifier = Modifier.size(11.dp))
-                Spacer(Modifier.width(5.dp))
-                Text(stringResource(R.string.home_search_hint), fontSize = 7.sp, color = searchTint, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-            }
-            Spacer(Modifier.height(8.dp))
-            // Mood chips with labels, like the real home — the rail runs past the screen
-            // edge and the last chip gets cut off, exactly like the real chips row.
+            // Mood chips, like the real home — the rail runs past the screen edge and
+            // the last chip gets cut off, exactly like the real chips row.
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState(), enabled = false),
             ) {
-                listOf("Energize", "Feel good", "Relax", "Workout", "Party").forEach { label ->
+                listOf("Relax", "Energise", "Feel good", "Commute").forEach { label ->
                     // Fixed thin height + explicit lineHeight — the inherited text
                     // line-box was inflating these pills no matter the padding.
                     Box(
                         modifier = Modifier
-                            .height(10.dp)
+                            .height(12.dp)
                             .clip(RoundedCornerShape(50))
                             .background(cs.surfaceContainerHigh)
-                            .padding(horizontal = 7.dp),
+                            .padding(horizontal = 8.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text(label, fontSize = 5.sp, lineHeight = 5.5.sp, color = cs.onSurfaceVariant, maxLines = 1)
+                        Text(label, fontSize = 5.5.sp, lineHeight = 6.sp, color = cs.onSurfaceVariant, maxLines = 1)
                     }
                 }
             }
-            Spacer(Modifier.height(9.dp))
-            // "Quick picks" header + a small Play all pill.
+            Spacer(Modifier.height(10.dp))
+            // "Similar to <artist>" section header + arrow, mirroring the real home.
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.quick_picks), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = cs.primary)
-                Box(
-                    modifier = Modifier
-                        .height(10.dp)
-                        .clip(RoundedCornerShape(50))
-                        .border(0.6.dp, cs.primary.copy(alpha = 0.7f), RoundedCornerShape(50))
-                        .padding(horizontal = 8.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(stringResource(R.string.play_all), fontSize = 4.5.sp, lineHeight = 5.sp, fontWeight = FontWeight.Medium, color = cs.primary)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    // Small square artist avatar.
+                    Box(Modifier.size(11.dp).clip(RoundedCornerShape(2.dp)).background(cs.surfaceContainerHighest))
+                    Column {
+                        Text(stringResource(R.string.similar_to), fontSize = 4.5.sp, lineHeight = 5.sp, fontWeight = FontWeight.Bold, color = cs.primary)
+                        Text("Artist", fontSize = 7.sp, lineHeight = 8.sp, fontWeight = FontWeight.Bold, color = cs.onSurface)
+                    }
                 }
+                Icon(painterResource(R.drawable.arrow_forward), null, tint = cs.onSurface.copy(alpha = 0.6f), modifier = Modifier.size(11.dp))
             }
             Spacer(Modifier.height(7.dp))
-            // Quick-picks song rows (art · title · artist · ⋮). Art size reflects grid cell size.
-            val rowArt = listOf(cs.secondaryContainer, cs.tertiaryContainer, cs.primaryContainer)
-            val artSize = if (gridSize == GridItemSize.BIG) 28.dp else 23.dp
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+            // "Similar to" rail — album art tiles with a play button, like the real home.
+            val railArt = listOf(cs.secondaryContainer, cs.surfaceContainerHighest, cs.tertiaryContainer)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState(), enabled = false),
+            ) {
                 repeat(4) { i ->
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        Box(Modifier.size(artSize).clip(RoundedCornerShape(6.dp)).background(rowArt[i % rowArt.size]))
-                        Spacer(Modifier.width(8.dp))
-                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                            Box(Modifier.fillMaxWidth(0.68f).height(5.dp).clip(RoundedCornerShape(3.dp)).background(cs.onSurface.copy(alpha = 0.85f)))
-                            Box(Modifier.fillMaxWidth(0.44f).height(4.dp).clip(RoundedCornerShape(2.dp)).background(cs.onSurfaceVariant.copy(alpha = 0.6f)))
+                    Box(modifier = Modifier.size(58.dp).clip(RoundedCornerShape(6.dp)).background(railArt[i % railArt.size]), contentAlignment = Alignment.Center) {
+                        // Lunara mark faintly on the art, so the tiles stay on-brand.
+                        Image(
+                            painter = painterResource(if (useDark) R.drawable.lunara_logo_white else R.drawable.lunara_logo),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        // Play affordance, bottom-leading like the real home.
+                        Box(
+                            modifier = Modifier.align(Alignment.BottomStart).padding(5.dp).size(13.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.45f)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(painterResource(R.drawable.play), null, tint = Color.White, modifier = Modifier.size(7.dp))
                         }
-                        Spacer(Modifier.width(6.dp))
-                        Column(verticalArrangement = Arrangement.spacedBy(1.5.dp)) {
-                            repeat(3) { Box(Modifier.size(2.5.dp).clip(CircleShape).background(cs.onSurfaceVariant.copy(alpha = 0.6f))) }
+                    }
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            // "Mood and Genres" section header + arrow, mirroring the real home.
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Box(Modifier.width(3.dp).height(11.dp).clip(RoundedCornerShape(2.dp)).background(cs.primary))
+                    Text(stringResource(R.string.mood_and_genres), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = cs.onSurface)
+                }
+                Icon(painterResource(R.drawable.arrow_forward), null, tint = cs.onSurface.copy(alpha = 0.6f), modifier = Modifier.size(11.dp))
+            }
+            Spacer(Modifier.height(7.dp))
+            // Mood and Genres grid — 2×2 of flat tiles, like the real home.
+            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                listOf(listOf("Chill", "Focus"), listOf("Commute", "Gaming")).forEach { rowLabels ->
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                        rowLabels.forEach { label ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(24.dp)
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .background(cs.surfaceContainerHigh),
+                                contentAlignment = Alignment.CenterStart,
+                            ) {
+                                Text(label, color = cs.onSurface, fontSize = 7.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, modifier = Modifier.padding(horizontal = 8.dp))
+                            }
                         }
                     }
                 }

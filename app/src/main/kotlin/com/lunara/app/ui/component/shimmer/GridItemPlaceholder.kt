@@ -7,6 +7,7 @@
 package com.lunara.app.ui.component.shimmer
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
@@ -50,7 +52,10 @@ fun GridItemPlaceHolder(
                 .width(gridHeight)
         },
     ) {
-        Spacer(
+        // The thumbnail block carries a faint Lunara mark so the loading state is
+        // on-brand instead of an empty grey square.
+        Box(
+            contentAlignment = Alignment.Center,
             modifier =
             if (fillMaxWidth) {
                 Modifier.fillMaxWidth()
@@ -59,7 +64,9 @@ fun GridItemPlaceHolder(
             }.aspectRatio(1f)
                 .clip(thumbnailShape)
                 .background(skeletonBlockColor),
-        )
+        ) {
+            SkeletonLogo(size = if (fillMaxWidth) 56.dp else gridHeight * 0.5f)
+        }
 
         Spacer(modifier = Modifier.height(6.dp))
 

@@ -1,5 +1,11 @@
 [
   {
+    "tagName": "v3.14.0",
+    "versionName": "3.14.0",
+    "releaseDate": "2026-10-11T00:00:00Z",
+    "description": "## The loading screen and onboarding follow your theme\\n\\n- **Dark mode is dark from the first frame.** The splash and the first-run onboarding now read your theme, so opening the app in dark mode shows a dark loading screen and dark onboarding instead of a light one — and light mode shows light, exactly as chosen.\\n\\n## Look & Feel\\n\\n- **The preview is the real Lunara home.** It now mirrors the actual home screen — the quick-access cards, the mood chips, the \\\"Similar to\\\" album row and the \\\"Mood and Genres\\\" grid — instead of an old mock.\\n\\n- **The Home tab is gone from Look & Feel.** Its layout settings (default tab, grid cell size, navigation bar style, slim navbar and the home search bar) now live together under Appearance.\\n\\n## Loading states\\n\\n- **Songs load with the Lunara mark.** The loading skeletons and any song without album art now show the Lunara logo instead of a generic music note.\\n"
+  },
+  {
     "tagName": "v3.13.0",
     "versionName": "3.13.0",
     "releaseDate": "2026-10-10T00:00:00Z",

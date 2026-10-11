@@ -64,15 +64,20 @@ import com.lunara.app.LocalPlayerAwareWindowInsets
 import com.lunara.app.R
 import com.lunara.app.constants.CropAlbumArtDefault
 import com.lunara.app.constants.CropAlbumArtKey
+import com.lunara.app.constants.DefaultOpenTabKey
 import com.lunara.app.constants.DensityScale
 import com.lunara.app.constants.DensityScaleKey
 import com.lunara.app.constants.DynamicThemeKey
 import com.lunara.app.constants.EnableHighRefreshRateKey
 import com.lunara.app.constants.EnableLandscapeScalingKey
+import com.lunara.app.constants.GridItemSize
+import com.lunara.app.constants.GridItemsSizeKey
 import com.lunara.app.constants.HidePlayerThumbnailKey
 import com.lunara.app.constants.ListenTogetherInTopBarKey
 import com.lunara.app.constants.MiniPlayerBackgroundStyle
 import com.lunara.app.constants.MiniPlayerBackgroundStyleKey
+import com.lunara.app.constants.NavBarStyle
+import com.lunara.app.constants.NavBarStyleKey
 import com.lunara.app.constants.PlayerBackgroundStyle
 import com.lunara.app.constants.PlayerBackgroundStyleKey
 import com.lunara.app.constants.PlayerButtonsStyle
@@ -80,9 +85,11 @@ import com.lunara.app.constants.PlayerButtonsStyleKey
 import com.lunara.app.constants.SelectedThemeColorKey
 import com.lunara.app.constants.ShowCachedPlaylistKey
 import com.lunara.app.constants.ShowDownloadedPlaylistKey
+import com.lunara.app.constants.ShowHomeSearchBarKey
 import com.lunara.app.constants.ShowLikedPlaylistKey
 import com.lunara.app.constants.ShowTopPlaylistKey
 import com.lunara.app.constants.ShowUploadedPlaylistKey
+import com.lunara.app.constants.SlimNavBarKey
 import com.lunara.app.constants.SwipeSensitivityKey
 import com.lunara.app.constants.SwipeThumbnailKey
 import com.lunara.app.constants.SwipeToRemoveSongKey
@@ -128,8 +135,9 @@ fun AppearanceSettings(
     // Check if user has selected a custom color (not the default/dynamic color)
     val isUsingCustomColor = selectedThemeColorInt != DefaultThemeColor.toArgb()
 
-    // Mini-player design and background, slider style, default tab, grid size and
-    // slim navbar are set in Look & Feel, which has a live preview for them.
+    // Mini-player design and background, slider style are set in Look & Feel, which
+    // has a live preview for them. Home layout (default tab, grid size, nav bar style,
+    // slim navbar, home search bar) also moved out of Look & Feel and lives here.
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) =
         rememberPreference(
             HidePlayerThumbnailKey,
@@ -174,6 +182,18 @@ fun AppearanceSettings(
     val (densityScale, setDensityScale) = rememberPreference(DensityScaleKey, defaultValue = prefDensityScale)
     var showRestartDialog by rememberSaveable { mutableStateOf(false) }
     var showDensityScaleDialog by rememberSaveable { mutableStateOf(false) }
+
+    // ── Home layout (moved here from Look & Feel) ──
+    val (defaultOpenTab, onDefaultOpenTabChange) =
+        rememberEnumPreference(DefaultOpenTabKey, NavigationTab.HOME)
+    var showDefaultOpenTabDialog by rememberSaveable { mutableStateOf(false) }
+    val (gridItemSize, onGridItemSizeChange) =
+        rememberEnumPreference(GridItemsSizeKey, GridItemSize.SMALL)
+    var showGridSizeDialog by rememberSaveable { mutableStateOf(false) }
+    val (navBarStyle, onNavBarStyleChange) = rememberEnumPreference(NavBarStyleKey, NavBarStyle.PILL)
+    var showNavBarStyleDialog by rememberSaveable { mutableStateOf(false) }
+    val (slimNavBar, onSlimNavBarChange) = rememberPreference(SlimNavBarKey, defaultValue = false)
+    val (showHomeSearchBar, onShowHomeSearchBarChange) = rememberPreference(ShowHomeSearchBarKey, defaultValue = true)
 
     val onDensityScaleChange: (Float) -> Unit = { newScale ->
         setDensityScale(newScale)
@@ -359,6 +379,46 @@ fun AppearanceSettings(
                 }
             }
         }
+    }
+
+    // ── Home layout dialogs (moved here from Look & Feel) ──
+    if (showDefaultOpenTabDialog) {
+        EnumDialog(
+            onDismiss = { showDefaultOpenTabDialog = false },
+            onSelect = {
+                onDefaultOpenTabChange(it)
+                showDefaultOpenTabDialog = false
+            },
+            title = stringResource(R.string.default_open_tab),
+            current = defaultOpenTab,
+            values = NavigationTab.entries.toList(),
+            valueText = { it.label() },
+        )
+    }
+
+    if (showNavBarStyleDialog) {
+        EnumDialog(
+            onDismiss = { showNavBarStyleDialog = false },
+            onSelect = { onNavBarStyleChange(it); showNavBarStyleDialog = false },
+            title = stringResource(R.string.nav_bar_style),
+            current = navBarStyle,
+            values = NavBarStyle.entries.toList(),
+            valueText = { it.label() },
+        )
+    }
+
+    if (showGridSizeDialog) {
+        EnumDialog(
+            onDismiss = { showGridSizeDialog = false },
+            onSelect = {
+                onGridItemSizeChange(it)
+                showGridSizeDialog = false
+            },
+            title = stringResource(R.string.grid_cell_size),
+            current = gridItemSize,
+            values = GridItemSize.entries.toList(),
+            valueText = { it.label() },
+        )
     }
 
 
@@ -645,6 +705,77 @@ fun AppearanceSettings(
 
         Spacer(modifier = Modifier.height(27.dp))
 
+        // ── Home layout (moved here from Look & Feel) ──
+        Material3SettingsGroup(
+            title = stringResource(R.string.home),
+            items =
+                listOf(
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.home_outlined),
+                        title = { Text(stringResource(R.string.default_open_tab)) },
+                        description = { Text(defaultOpenTab.label()) },
+                        onClick = { showDefaultOpenTabDialog = true },
+                    ),
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.grid_view),
+                        title = { Text(stringResource(R.string.grid_cell_size)) },
+                        description = { Text(gridItemSize.label()) },
+                        onClick = { showGridSizeDialog = true },
+                    ),
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.nav_bar),
+                        title = { Text(stringResource(R.string.nav_bar_style)) },
+                        description = { Text(navBarStyle.label()) },
+                        onClick = { showNavBarStyleDialog = true },
+                    ),
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.nav_bar),
+                        title = { Text(stringResource(R.string.slim_navbar)) },
+                        trailingContent = {
+                            Switch(
+                                checked = slimNavBar,
+                                onCheckedChange = onSlimNavBarChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter =
+                                            painterResource(
+                                                id = if (slimNavBar) R.drawable.check else R.drawable.close,
+                                            ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                },
+                            )
+                        },
+                        onClick = { onSlimNavBarChange(!slimNavBar) },
+                    ),
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.search),
+                        title = { Text(stringResource(R.string.show_home_search_bar)) },
+                        description = { Text(stringResource(R.string.show_home_search_bar_desc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = showHomeSearchBar,
+                                onCheckedChange = onShowHomeSearchBarChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter =
+                                            painterResource(
+                                                id = if (showHomeSearchBar) R.drawable.check else R.drawable.close,
+                                            ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                },
+                            )
+                        },
+                        onClick = { onShowHomeSearchBarChange(!showHomeSearchBar) },
+                    ),
+                ),
+        )
+
+        Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.misc),
             items =
@@ -873,6 +1004,27 @@ enum class NavigationTab {
     HOME,
     SEARCH,
     LIBRARY,
+}
+
+@Composable
+private fun NavigationTab.label(): String = when (this) {
+    NavigationTab.HOME -> stringResource(R.string.home)
+    NavigationTab.SEARCH -> stringResource(R.string.search)
+    NavigationTab.LIBRARY -> stringResource(R.string.filter_library)
+}
+
+@Composable
+private fun NavBarStyle.label(): String = when (this) {
+    NavBarStyle.PILL -> stringResource(R.string.nav_style_pill)
+    NavBarStyle.GRADIENT -> stringResource(R.string.nav_style_gradient)
+    NavBarStyle.UNDERLINE -> stringResource(R.string.nav_style_underline)
+    NavBarStyle.OUTLINED -> stringResource(R.string.nav_style_outlined)
+}
+
+@Composable
+private fun GridItemSize.label(): String = when (this) {
+    GridItemSize.BIG -> stringResource(R.string.big)
+    GridItemSize.SMALL -> stringResource(R.string.small)
 }
 
 enum class LyricsPosition {

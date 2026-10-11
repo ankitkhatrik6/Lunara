@@ -4,6 +4,7 @@
         <item name="android:statusBarColor">@color/lunara_background</item>
         <item name="android:navigationBarColor">@color/lunara_background</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <!-- Light window background, so the status-bar icons must be dark. -->
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

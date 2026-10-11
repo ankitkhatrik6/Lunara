@@ -71,22 +71,15 @@ import com.lunara.app.LocalPlayerConnection
 import com.lunara.app.R
 import com.lunara.app.constants.AppBarHeight
 import com.lunara.app.constants.DarkModeKey
-import com.lunara.app.constants.DefaultOpenTabKey
 import com.lunara.app.constants.DynamicThemeKey
-import com.lunara.app.constants.GridItemSize
-import com.lunara.app.constants.GridItemsSizeKey
 import com.lunara.app.constants.LyricsTextPositionKey
 import com.lunara.app.constants.MiniPlayerDesignKey
-import com.lunara.app.constants.NavBarStyle
-import com.lunara.app.constants.NavBarStyleKey
 import com.lunara.app.constants.PureBlackKey
 import com.lunara.app.constants.PureBlackMiniPlayerKey
 import com.lunara.app.constants.SelectedThemeColorKey
 import com.lunara.app.constants.SliderStyle
 import com.lunara.app.constants.SliderStyleKey
 import com.lunara.app.constants.SquigglySliderKey
-import com.lunara.app.constants.ShowHomeSearchBarKey
-import com.lunara.app.constants.SlimNavBarKey
 import com.lunara.app.constants.UseNewMiniPlayerDesignKey
 import com.lunara.app.models.MediaMetadata
 import com.lunara.app.ui.component.EnumDialog
@@ -100,13 +93,12 @@ import com.lunara.app.utils.rememberEnumPreference
 import com.lunara.app.utils.rememberPreference
 import kotlinx.coroutines.flow.MutableStateFlow
 
-/** Tabs of the Look & Feel hub. More (Player / Lyrics / Home) land in later increments. */
+/** Tabs of the Look & Feel hub. Theme, Player, Mini-player and Lyrics. */
 private enum class LookFeelTab(val labelRes: Int) {
     THEME(R.string.theme),
     PLAYER(R.string.player),
     MINI(R.string.mini_player),
     LYRICS(R.string.lyrics),
-    HOME(R.string.home),
 }
 
 /**
@@ -161,18 +153,6 @@ fun LookAndFeelScreen(
         rememberEnumPreference(LyricsTextPositionKey, LyricsPosition.CENTER)
     var showLyricsPositionDialog by rememberSaveable { mutableStateOf(false) }
 
-    // ── Home / layout state ──
-    val (defaultOpenTab, onDefaultOpenTabChange) =
-        rememberEnumPreference(DefaultOpenTabKey, NavigationTab.HOME)
-    var showDefaultOpenTabDialog by rememberSaveable { mutableStateOf(false) }
-    val (gridItemSize, onGridItemSizeChange) =
-        rememberEnumPreference(GridItemsSizeKey, GridItemSize.SMALL)
-    var showGridSizeDialog by rememberSaveable { mutableStateOf(false) }
-    val (slimNavBar, onSlimNavBarChange) = rememberPreference(SlimNavBarKey, defaultValue = false)
-    val (navBarStyle, onNavBarStyleChange) = rememberEnumPreference(NavBarStyleKey, NavBarStyle.PILL)
-    var showNavBarStyleDialog by rememberSaveable { mutableStateOf(false) }
-    val (showHomeSearchBar, onShowHomeSearchBarChange) = rememberPreference(ShowHomeSearchBarKey, defaultValue = true)
-
     var tab by rememberSaveable { mutableStateOf(LookFeelTab.THEME) }
 
     // Preview frame scales with the screen (responsive) and leaves room for the tabs + controls.
@@ -223,49 +203,6 @@ fun LookAndFeelScreen(
                                         title = { Text(stringResource(R.string.lyrics_text_position)) },
                                         description = { Text(lyricsPosition.label()) },
                                         onClick = { showLyricsPositionDialog = true },
-                                    ),
-                                ),
-                            )
-                        }
-
-                    LookFeelTab.HOME ->
-                        Box(Modifier.padding(horizontal = 16.dp)) {
-                            Material3SettingsGroup(
-                                items = listOf(
-                                    Material3SettingsItem(
-                                        icon = painterResource(R.drawable.home_outlined),
-                                        title = { Text(stringResource(R.string.default_open_tab)) },
-                                        description = { Text(defaultOpenTab.label()) },
-                                        onClick = { showDefaultOpenTabDialog = true },
-                                    ),
-                                    Material3SettingsItem(
-                                        icon = painterResource(R.drawable.grid_view),
-                                        title = { Text(stringResource(R.string.grid_cell_size)) },
-                                        description = { Text(gridItemSize.label()) },
-                                        onClick = { showGridSizeDialog = true },
-                                    ),
-                                    Material3SettingsItem(
-                                        icon = painterResource(R.drawable.nav_bar),
-                                        title = { Text(stringResource(R.string.nav_bar_style)) },
-                                        description = { Text(navBarStyle.label()) },
-                                        onClick = { showNavBarStyleDialog = true },
-                                    ),
-                                    Material3SettingsItem(
-                                        icon = painterResource(R.drawable.nav_bar),
-                                        title = { Text(stringResource(R.string.slim_navbar)) },
-                                        trailingContent = {
-                                            Switch(checked = slimNavBar, onCheckedChange = onSlimNavBarChange)
-                                        },
-                                        onClick = { onSlimNavBarChange(!slimNavBar) },
-                                    ),
-                                    Material3SettingsItem(
-                                        icon = painterResource(R.drawable.search),
-                                        title = { Text(stringResource(R.string.show_home_search_bar)) },
-                                        description = { Text(stringResource(R.string.show_home_search_bar_desc)) },
-                                        trailingContent = {
-                                            Switch(checked = showHomeSearchBar, onCheckedChange = onShowHomeSearchBarChange)
-                                        },
-                                        onClick = { onShowHomeSearchBarChange(!showHomeSearchBar) },
                                     ),
                                 ),
                             )
@@ -417,45 +354,6 @@ fun LookAndFeelScreen(
             valueText = { it.label() },
         )
     }
-
-    if (showDefaultOpenTabDialog) {
-        EnumDialog(
-            onDismiss = { showDefaultOpenTabDialog = false },
-            onSelect = {
-                onDefaultOpenTabChange(it)
-                showDefaultOpenTabDialog = false
-            },
-            title = stringResource(R.string.default_open_tab),
-            current = defaultOpenTab,
-            values = NavigationTab.entries.toList(),
-            valueText = { it.label() },
-        )
-    }
-
-    if (showNavBarStyleDialog) {
-        EnumDialog(
-            onDismiss = { showNavBarStyleDialog = false },
-            onSelect = { onNavBarStyleChange(it); showNavBarStyleDialog = false },
-            title = stringResource(R.string.nav_bar_style),
-            current = navBarStyle,
-            values = NavBarStyle.entries.toList(),
-            valueText = { it.label() },
-        )
-    }
-
-    if (showGridSizeDialog) {
-        EnumDialog(
-            onDismiss = { showGridSizeDialog = false },
-            onSelect = {
-                onGridItemSizeChange(it)
-                showGridSizeDialog = false
-            },
-            title = stringResource(R.string.grid_cell_size),
-            current = gridItemSize,
-            values = GridItemSize.entries.toList(),
-            valueText = { it.label() },
-        )
-    }
 }
 
 @Composable
@@ -466,32 +364,11 @@ private fun LyricsPosition.label(): String = when (this) {
 }
 
 @Composable
-private fun NavigationTab.label(): String = when (this) {
-    NavigationTab.HOME -> stringResource(R.string.home)
-    NavigationTab.SEARCH -> stringResource(R.string.search)
-    NavigationTab.LIBRARY -> stringResource(R.string.filter_library)
-}
-
-@Composable
 private fun SliderStyle.label(squiggly: Boolean): String = when (this) {
     SliderStyle.DEFAULT -> stringResource(R.string.slider_style_capsule)
     SliderStyle.WAVY ->
         if (squiggly) stringResource(R.string.squiggly) else stringResource(R.string.wavy)
     SliderStyle.SLIM -> stringResource(R.string.slim)
-}
-
-@Composable
-private fun NavBarStyle.label(): String = when (this) {
-    NavBarStyle.PILL -> stringResource(R.string.nav_style_pill)
-    NavBarStyle.GRADIENT -> stringResource(R.string.nav_style_gradient)
-    NavBarStyle.UNDERLINE -> stringResource(R.string.nav_style_underline)
-    NavBarStyle.OUTLINED -> stringResource(R.string.nav_style_outlined)
-}
-
-@Composable
-private fun GridItemSize.label(): String = when (this) {
-    GridItemSize.BIG -> stringResource(R.string.big)
-    GridItemSize.SMALL -> stringResource(R.string.small)
 }
 
 /**
