@@ -173,7 +173,6 @@ import com.lunara.app.constants.SponsorBlockCategoriesKey
 import com.lunara.app.constants.SponsorBlockEnabledKey
 import com.lunara.app.utils.SponsorBlock
 import com.lunara.app.constants.SkipSilenceKey
-import com.lunara.app.constants.StopMusicOnTaskClearKey
 import com.lunara.app.db.MusicDatabase
 import com.lunara.app.db.entities.Event
 import com.lunara.app.db.entities.FormatEntity
@@ -5064,37 +5063,34 @@ class MusicService :
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        if (dataStore.get(StopMusicOnTaskClearKey, false)) {
-            if (!::player.isInitialized) {
-                stopSelf()
-                return
-            }
-            // Remote playback (Cast) is independent of the local ExoPlayer; ending the session
-            // is required or audio keeps playing on the Cast device.
-            runCatching {
-                if (castConnectionHandler?.isCasting?.value == true) {
-                    castConnectionHandler?.disconnect()
-                }
-                player.stop()
-                ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
-                controllerFuture?.let { MediaController.releaseFuture(it) }
-                controllerFuture = null
-                // Media3: coordinates notification/foreground teardown and stopSelf; required when
-                // playback was ongoing (default super.onTaskRemoved keeps the service alive).
-                pauseAllPlayersAndStopSelf()
-            }.onFailure { e ->
-                Timber.tag(TAG).e(e, "Failed to stop playback on task clear")
-                controllerFuture?.let { MediaController.releaseFuture(it) }
-                controllerFuture = null
-                runCatching { pauseAllPlayersAndStopSelf() }.onFailure { stopSelf() }
-            }
+        // The user swiped the app away from Recents (task removed). Always stop playback,
+        // tear down the media notification and stop the service. Previously this only ran
+        // when the "stop music on task clear" preference was enabled (default OFF), so by
+        // default the foreground service kept running — audio kept playing after the app was
+        // cleared and the ongoing notification could not be dismissed. Swiping the task away
+        // should stop playback; that is the behaviour users expect.
+        if (!::player.isInitialized) {
+            stopSelf()
             return
         }
-        super.onTaskRemoved(rootIntent)
-        // User removed the task while paused: drop foreground promotion so the process can idle.
-        // Queue/state remain persisted; opening the app restores playback as usual.
-        if (::player.isInitialized && !player.isPlaying) {
-            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
+        // Remote playback (Cast) is independent of the local ExoPlayer; ending the session
+        // is required or audio keeps playing on the Cast device.
+        runCatching {
+            if (castConnectionHandler?.isCasting?.value == true) {
+                castConnectionHandler?.disconnect()
+            }
+            player.stop()
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+            controllerFuture?.let { MediaController.releaseFuture(it) }
+            controllerFuture = null
+            // Media3: coordinates notification/foreground teardown and stopSelf; required when
+            // playback was ongoing (default super.onTaskRemoved keeps the service alive).
+            pauseAllPlayersAndStopSelf()
+        }.onFailure { e ->
+            Timber.tag(TAG).e(e, "Failed to stop playback on task clear")
+            controllerFuture?.let { MediaController.releaseFuture(it) }
+            controllerFuture = null
+            runCatching { pauseAllPlayersAndStopSelf() }.onFailure { stopSelf() }
         }
     }
 
@@ -5166,7 +5162,14 @@ class MusicService :
             }
         }
 
-        return super.onStartCommand(intent, flags, startId)
+        // Let MediaSessionService handle the intent (media buttons, session actions, etc.),
+        // but never let the OS auto-restart this service once it has been stopped. The base
+        // implementation returns START_STICKY, which made the system recreate the service —
+        // and re-post the media notification — every time it was killed or the task was
+        // cleared. That is exactly what caused the notification to keep "coming back" after
+        // being dismissed. START_NOT_STICKY guarantees a stopped service stays stopped.
+        super.onStartCommand(intent, flags, startId)
+        return START_NOT_STICKY
     }
 
 

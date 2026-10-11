@@ -1,5 +1,11 @@
 [
   {
+    "tagName": "v3.15.0",
+    "versionName": "3.15.0",
+    "releaseDate": "2026-10-11T00:00:00Z",
+    "description": "## Music stops when you close the app\n\n- **Closing the app from Recents now stops playback.** Swiping Lunara away from your recent apps fully stops the music, removes the media notification and shuts the player down — no more audio carrying on after the app is gone.\n\n- **The media notification no longer keeps coming back.** The player service was being restarted by the system every time it was cleared, which re-posted the song notification over and over. It is now stopped for good once the app is closed, so the notification stays gone.\n\n- **Background playback still works as normal.** Pressing Home or Back keeps the music playing with the notification controls; only swiping the app away from Recents stops it.\n\n- **The old \\\"Stop music on task clear\\\" toggle has been removed** from Player settings, since stopping on close is now the default behaviour.\n"
+  },
+  {
     "tagName": "v3.14.0",
     "versionName": "3.14.0",
     "releaseDate": "2026-10-11T00:00:00Z",

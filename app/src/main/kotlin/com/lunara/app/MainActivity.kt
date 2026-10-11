@@ -163,7 +163,6 @@ import com.lunara.app.constants.SelectedThemeColorKey
 import com.lunara.app.constants.SimpMusicMigrationDoneKey
 import com.lunara.app.constants.SlimNavBarHeight
 import com.lunara.app.constants.SlimNavBarKey
-import com.lunara.app.constants.StopMusicOnTaskClearKey
 import com.lunara.app.constants.UpdateNotificationsEnabledKey
 import com.lunara.app.constants.UseNewMiniPlayerDesignKey
 import com.lunara.app.db.MusicDatabase
@@ -370,23 +369,18 @@ class MainActivity : ComponentActivity() {
             listenTogetherManager.disconnect()
         }
         super.onDestroy()
-        // Use effective playing state so Cast (local player paused, remote playing) is included.
-        val stopServiceOnClear =
-            dataStore.get(StopMusicOnTaskClearKey, false) &&
-                playerConnection?.isEffectivelyPlaying?.value == true &&
-                isFinishing
 
-        // Full cleanup - only on actual destroy
+        // Full cleanup - only on actual destroy.
+        // Playback teardown when the task is swiped from Recents is handled by
+        // MusicService.onTaskRemoved(), which always stops playback + the notification, so we
+        // deliberately do NOT stop the service here: onDestroy also runs on plain back-press,
+        // where music is expected to keep playing.
         playerConnection?.dispose()
         playerConnection = null
         playerConnectionSnapshot = null
 
-        // Unbind before stopService: a started+bound service does not stop until all clients unbind.
+        // Unbind so the service can be reclaimed once nothing else references it.
         safeUnbindService("onDestroy()")
-
-        if (stopServiceOnClear) {
-            stopService(Intent(this, MusicService::class.java))
-        }
     }
 
     override fun onNewIntent(intent: Intent) {
