@@ -61,6 +61,9 @@ class DiscordAuth(
             )
 
             Timber.tag(TAG).i("authorize: launching URL (clientId prefix=%s)", BuildConfig.DISCORD_APP_ID.toString().take(8))
+            // Log the full authorize URL so the exact redirect_uri sent to Discord can be
+            // verified from logcat (tag "DiscordSvc") if the consent page misbehaves.
+            Timber.tag(TAG).i("authorize: full authUrl=%s", authUrl)
 
             // DiscordOAuthActivity opens the authorize page in a Chrome Custom Tab and
             // catches the lunaradiscord:// redirect through its manifest intent-filter.
