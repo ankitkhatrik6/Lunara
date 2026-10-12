@@ -41,7 +41,21 @@ class DiscordOAuthActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.tag(TAG).i("OAuthActivity: onCreate with intent=%s", intent?.action)
+        handleIntent(intent)
+    }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        // launchMode="singleTask" delivers the OAuth redirect here if an instance of
+        // this activity already exists, instead of calling onCreate. Handling only
+        // onCreate dropped the authorization code and made sign-in hang until it
+        // timed out, so the redirect is processed in both entry points.
+        Timber.tag(TAG).i("OAuthActivity: onNewIntent with intent=%s", intent?.action)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
         val uri = intent?.data ?: run {
             Timber.tag(TAG).w("OAuthActivity: no URI in intent")
             finish()

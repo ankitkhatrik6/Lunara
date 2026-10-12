@@ -209,15 +209,15 @@ object DiscordRpcManager {
                     completeWith(true)
                 } catch (e: Throwable) {
                     Timber.tag(TAG).e(e, "authorize: gateway connect/identify failed")
-                    _lastError.value = "discord_error_loopback_timeout"
+                    _lastError.value = "discord_error_gateway_failed"
                     _connectionStatus.value = Status.Disconnected
                     _ready = false
                     _authorized = false
                     completeWith(false)
                 }
             } catch (e: DiscordAuthException.UserCancelled) {
-                Timber.tag(TAG).i("authorize: user cancelled")
-                _lastError.value = "discord_error_loopback_timeout"
+                Timber.tag(TAG).i("authorize: user cancelled or callback timed out")
+                _lastError.value = "discord_error_callback_timeout"
                 _connectionStatus.value = Status.Disconnected
                 completeWith(false)
             } catch (e: DiscordAuthException.StateMismatch) {
@@ -227,7 +227,7 @@ object DiscordRpcManager {
                 completeWith(false)
             } catch (e: DiscordAuthException.NetworkFailure) {
                 Timber.tag(TAG).e(e, "authorize: network failure")
-                _lastError.value = "discord_error_loopback_timeout"
+                _lastError.value = "discord_error_gateway_failed"
                 _connectionStatus.value = Status.Disconnected
                 completeWith(false)
             } catch (e: DiscordAuthException.NoBrowser) {

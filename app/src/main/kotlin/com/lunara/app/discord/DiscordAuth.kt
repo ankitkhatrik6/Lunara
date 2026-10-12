@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.util.Base64
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import com.lunara.app.BuildConfig
 import com.lunara.app.discord.DiscordDefaults.DISCORD_OAUTH_AUTHORIZE
@@ -64,10 +63,12 @@ class DiscordAuth(
 
             Timber.tag(TAG).i("authorize: launching URL (clientId prefix=%s)", BuildConfig.DISCORD_APP_ID.toString().take(8))
 
-            val intent = CustomTabsIntent.Builder().build().intent
-            intent.data = authUrl.toUri()
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            // A plain ACTION_VIEW browser intent is used instead of Custom Tabs on
+            // purpose: Custom Tabs frequently swallow the custom-scheme redirect
+            // (lunaradiscord://…) instead of handing it back to this app, which made
+            // authorization hang until it timed out. The system browser reliably
+            // resolves the redirect back into DiscordOAuthActivity.
+            val intent = Intent(Intent.ACTION_VIEW, authUrl.toUri())
 
             try {
                 activity.startActivity(intent)

@@ -185,6 +185,8 @@ fun DiscordSettings(
         val resId = when (key) {
             "discord_error_loopback_unbound" -> R.string.discord_error_loopback_unbound
             "discord_error_loopback_timeout" -> R.string.discord_error_loopback_timeout
+            "discord_error_callback_timeout" -> R.string.discord_error_callback_timeout
+            "discord_error_gateway_failed" -> R.string.discord_error_gateway_failed
             "discord_error_no_browser" -> R.string.discord_error_no_browser
             "discord_error_token_refresh_failed" -> R.string.discord_error_token_refresh_failed
             "discord_error_invalid_scope" -> R.string.discord_error_invalid_scope
