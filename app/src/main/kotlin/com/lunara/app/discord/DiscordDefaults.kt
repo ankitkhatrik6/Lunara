@@ -30,5 +30,13 @@ object DiscordDefaults {
     const val DISCORD_OAUTH_AUTHORIZE = "https://discord.com/oauth2/authorize"
     const val DISCORD_OAUTH_TOKEN = "https://discord.com/api/v10/oauth2/token"
 
-    const val DISCORD_SCOPES = "openid sdk.social_layer_presence"
+    // Standard OAuth2 scopes for gateway-based Discord Rich Presence.
+    // - identify: lets the app know who authorized (basic account identity)
+    // - rpc: lets the app update the user's activity / Rich Presence over the
+    //   gateway using the OAuth bearer token (this is what the app does).
+    // NOTE: do NOT use "sdk.social_layer_presence" here — that is Discord's Social
+    // SDK (game SDK) scope, which shows a bogus app name ("sdk.social_layer_presence"),
+    // requests unrelated friend-list/presence permissions, and breaks the standard
+    // redirect_uri (Discord renders the redirect target as "null").
+    const val DISCORD_SCOPES = "identify rpc"
 }
