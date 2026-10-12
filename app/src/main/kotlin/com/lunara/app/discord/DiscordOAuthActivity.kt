@@ -123,34 +123,41 @@ class DiscordOAuthActivity : Activity() {
         setContentView(webView)
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        // A redirect that arrived from outside (browser fallback) with singleTask.
-        setIntent(intent)
-        handleIntent(intent)
-    }
-
     override fun onDestroy() {
         // If the user backed out before finishing, release the pending login so the
         // caller isn't left waiting for the full timeout.
         cancelPending()
         super.onDestroy()
     }
-
     private fun handleRedirect(url: String): Boolean {
-        if (!url.startsWith(REDIRECT_PREFIX)) return false
+        // Reject bare-scheme redirects that carry no query string. The full
+        // redirect Discord returns is "lunaradiscord://oauth2/callback?code=...&state=...",
+        // so a URL without a query (e.g. "lunaradiscord://oauth2/callback") is not a
+        // real callback and must be ignored instead of producing a misleading
+        // "missing code" error.
+        if (!url.startsWith(REDIRECT_PREFIX + "?")) return false
         Timber.tag(TAG).i("OAuthActivity: redirect matched (%s)", url.take(48))
         completeFromUri(Uri.parse(url))
         return true
     }
 
     private fun handleIntent(intent: Intent?) {
+        // Fallback for a redirect that arrives from outside (e.g. a previously
+        // opened browser tab). This path should no longer be reachable — the
+        // authorize flow is always hosted in the app's own WebView. Kept only as
+        // a safety net to avoid silently ignoring an external return.
         val uri = intent?.data ?: run {
             Timber.tag(TAG).w("OAuthActivity: no URI in intent")
             finish()
             return
         }
         completeFromUri(uri)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
     }
 
     private fun completeFromUri(uri: Uri) {
