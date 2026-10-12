@@ -62,10 +62,10 @@ class DiscordAuth(
 
             Timber.tag(TAG).i("authorize: launching URL (clientId prefix=%s)", BuildConfig.DISCORD_APP_ID.toString().take(8))
 
-            // The authorize page is hosted in DiscordOAuthActivity's own WebView, which
-            // intercepts the redirect itself. Handing the flow to an external browser
-            // was unreliable — some browsers never return the custom-scheme redirect,
-            // which surfaced as "sign-in didn't return to the app".
+            // DiscordOAuthActivity opens the authorize page in a Chrome Custom Tab and
+            // catches the lunaradiscord:// redirect through its manifest intent-filter.
+            // This is reliable across devices; an in-app WebView previously failed to
+            // intercept the custom-scheme redirect, surfacing as "didn't return".
             val intent = Intent(activity, DiscordOAuthActivity::class.java).apply {
                 putExtra(DiscordOAuthActivity.EXTRA_AUTH_URL, authUrl)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

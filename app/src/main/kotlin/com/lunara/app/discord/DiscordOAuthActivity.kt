@@ -1,14 +1,14 @@
 package com.lunara.app.discord
 
-import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.view.Gravity
+import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.browser.customtabs.CustomTabsIntent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeout
@@ -17,16 +17,22 @@ import timber.log.Timber
 data class AuthCodeResult(val code: String, val state: String)
 
 /**
- * Hosts the Discord OAuth2 flow in an in-app WebView.
+ * Hosts the Discord OAuth2 authorization-code + PKCE flow.
  *
- * The authorize page is loaded here and the redirect to [REDIRECT_PREFIX] is
- * intercepted directly, so the flow never leaves the app. Relying on an external
- * browser to hand the custom-scheme redirect back was unreliable: some browsers
- * swallow it, and with the browser in the foreground the app process could be
- * killed, losing the pending login — both surfaced as "sign-in didn't return".
+ * The authorize page is opened in a Chrome Custom Tab (a real browser that shares
+ * cookies and opens popups correctly). Discord then redirects to the custom
+ * scheme [REDIRECT_PREFIX]; the browser cannot handle that scheme, so it fires an
+ * Android VIEW intent that this activity catches through its manifest intent-filter
+ * (the activity is [android.R.attr.launchMode singleTask], so a redirect while the
+ * launcher is still alive arrives via [onNewIntent]).
  *
- * The manifest intent-filter for [REDIRECT_PREFIX] is kept as a fallback for a
- * redirect that still arrives from outside (e.g. a previously opened browser tab).
+ * This is the standard, reliable pattern. An in-app WebView was previously used but
+ * it did not reliably intercept custom-scheme redirects on all devices, which
+ * surfaced as "sign-in didn't return to the app".
+ *
+ * The launching activity deliberately stays alive (it is not finished after opening
+ * the browser) so the process is not killed while the user is in the browser, and
+ * so the redirect intent is delivered back to the same instance.
  */
 class DiscordOAuthActivity : Activity() {
 
@@ -34,11 +40,7 @@ class DiscordOAuthActivity : Activity() {
         private const val TAG = "DiscordSvc"
         const val EXTRA_AUTH_URL = "extra_auth_url"
         const val REDIRECT_PREFIX = "lunaradiscord://oauth2/callback"
-
-        // WebViewClient.ERROR_UNKNOWN_URL_SCHEME — the code a WebView reports when it
-        // is asked to load a scheme it cannot handle (our custom redirect). Kept as a
-        // literal so it does not depend on the API-level constant being inlined.
-        private const val ERROR_UNKNOWN_URL_SCHEME = -10
+        private const val SCHEME = "lunaradiscord"
 
         @Volatile
         private var deferred: CompletableDeferred<AuthCodeResult>? = null
@@ -63,101 +65,87 @@ class DiscordOAuthActivity : Activity() {
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    // True once the authorize URL has been handed to a browser. Used to detect a
+    // "user came back without completing" and to avoid re-opening the browser.
+    private var browserLaunched = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val authUrl = intent?.getStringExtra(EXTRA_AUTH_URL)
         if (authUrl.isNullOrBlank()) {
-            // Launched from outside via the redirect intent-filter; finish it here.
+            // Launched by the redirect intent-filter: the browser sent us back.
             handleIntent(intent)
             return
         }
 
-        Timber.tag(TAG).i("OAuthActivity: hosting authorize flow in WebView")
+        // Launch mode: show a small placeholder and open the authorize page in a
+        // Custom Tab. The redirect is delivered back to this instance via
+        // onNewIntent(). We intentionally do NOT finish here so the process stays
+        // alive while the user is in the browser.
+        browserLaunched = true
+        setContentView(
+            FrameLayout(this).apply {
+                addView(
+                    TextView(this@DiscordOAuthActivity).apply {
+                        text = "Opening Discord authorization\u2026"
+                        textSize = 16f
+                        gravity = Gravity.CENTER
+                    },
+                )
+            },
+        )
 
-        val webView = WebView(this).apply {
-            settings.javaScriptEnabled = true
-            settings.domStorageEnabled = true
-            @SuppressLint("SetJavaScriptEnabled")
-            settings.javaScriptCanOpenWindowsAutomatically = true
-            settings.setSupportMultipleWindows(true)
-            webViewClient = object : WebViewClient() {
-                // Deprecated overload: still called for some redirect paths (e.g. JS
-                // navigations), where the WebResourceRequest version is skipped.
-                @Deprecated("Matches legacy redirect callbacks")
-                override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                    if (url != null && handleRedirect(url)) return true
-                    return super.shouldOverrideUrlLoading(view, url)
-                }
-
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest?,
-                ): Boolean {
-                    val url = request?.url?.toString()
-                    if (url != null && handleRedirect(url)) return true
-                    return super.shouldOverrideUrlLoading(view, request)
-                }
-
-                // A custom scheme the WebView cannot load (lunaradiscord://) surfaces
-                // here as ERROR_UNKNOWN_URL_SCHEME. This is the most reliable place to
-                // catch the redirect on many devices, so the URL is recovered from it.
-                override fun onReceivedError(
-                    view: WebView?,
-                    request: WebResourceRequest?,
-                    error: WebResourceError?,
-                ) {
-                    val url = request?.url?.toString()
-                    if (request?.isForMainFrame == true && url != null &&
-                        error?.errorCode == ERROR_UNKNOWN_URL_SCHEME
-                    ) {
-                        Timber.tag(TAG).i("OAuthActivity: redirect caught via onReceivedError")
-                        if (handleRedirect(url)) return
-                    }
-                    super.onReceivedError(view, request, error)
-                }
-            }
-            loadUrl(authUrl)
+        if (savedInstanceState == null) {
+            launchCustomTabs(authUrl)
         }
-        setContentView(webView)
     }
 
-    override fun onDestroy() {
-        // If the user backed out before finishing, release the pending login so the
-        // caller isn't left waiting for the full timeout.
-        cancelPending()
-        super.onDestroy()
-    }
-    private fun handleRedirect(url: String): Boolean {
-        // Reject bare-scheme redirects that carry no query string. The full
-        // redirect Discord returns is "lunaradiscord://oauth2/callback?code=...&state=...",
-        // so a URL without a query (e.g. "lunaradiscord://oauth2/callback") is not a
-        // real callback and must be ignored instead of producing a misleading
-        // "missing code" error.
-        if (!url.startsWith(REDIRECT_PREFIX + "?")) return false
-        Timber.tag(TAG).i("OAuthActivity: redirect matched (%s)", url.take(48))
-        completeFromUri(Uri.parse(url))
-        return true
-    }
-
-    private fun handleIntent(intent: Intent?) {
-        // Fallback for a redirect that arrives from outside (e.g. a previously
-        // opened browser tab). This path should no longer be reachable — the
-        // authorize flow is always hosted in the app's own WebView. Kept only as
-        // a safety net to avoid silently ignoring an external return.
-        val uri = intent?.data ?: run {
-            Timber.tag(TAG).w("OAuthActivity: no URI in intent")
+    private fun launchCustomTabs(authUrl: String) {
+        try {
+            val customTabsIntent = CustomTabsIntent.Builder().build()
+            customTabsIntent.launchUrl(this, Uri.parse(authUrl))
+        } catch (e: ActivityNotFoundException) {
+            Timber.tag(TAG).e(e, "OAuthActivity: no browser available to open authorize URL")
+            deferred?.completeExceptionally(DiscordAuthException.NoBrowser())
             finish()
-            return
         }
-        completeFromUri(uri)
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
         handleIntent(intent)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        // Reaching here means the browser was shown and we returned to the
+        // foreground without a redirect having completed us (a successful redirect
+        // finishes us inside onNewIntent before onRestart runs). So the user backed
+        // out of the browser: cancel the pending login so the caller is not stuck.
+        if (browserLaunched) {
+            Timber.tag(TAG).i("OAuthActivity: returned from browser without redirect; cancelling")
+            cancelPending()
+            finish()
+        }
+    }
+
+    override fun onDestroy() {
+        // Release any still-pending login so the caller isn't left waiting for the
+        // full timeout.
+        cancelPending()
+        super.onDestroy()
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val uri = intent?.data
+        if (uri == null || uri.scheme != SCHEME) {
+            Timber.tag(TAG).w("OAuthActivity: intent had no usable redirect URI")
+            finish()
+            return
+        }
+        completeFromUri(uri)
     }
 
     private fun completeFromUri(uri: Uri) {
@@ -168,16 +156,16 @@ class DiscordOAuthActivity : Activity() {
         if (error != null) {
             Timber.tag(TAG).w("OAuthActivity: error=%s", error)
             deferred?.completeExceptionally(
-                DiscordAuthException.UserCancelled("Authorization denied: $error")
+                DiscordAuthException.UserCancelled("Authorization denied: $error"),
             )
             finish()
             return
         }
 
         if (code == null) {
-            Timber.tag(TAG).w("OAuthActivity: missing code")
+            Timber.tag(TAG).w("OAuthActivity: missing code in redirect")
             deferred?.completeExceptionally(
-                DiscordAuthException.InvalidGrant("Missing authorization code")
+                DiscordAuthException.InvalidGrant("Missing authorization code"),
             )
             finish()
             return
@@ -188,4 +176,3 @@ class DiscordOAuthActivity : Activity() {
         finish()
     }
 }
-
