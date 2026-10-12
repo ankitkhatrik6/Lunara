@@ -25,9 +25,7 @@ import com.lunara.innertube.YouTube
 import com.lunara.innertube.models.ArtistConjunctions
 import com.lunara.innertube.models.YouTubeLocale
 import com.lunara.kugou.KuGou
-import com.lunara.lastfm.LastFM
 import com.lunara.app.BuildConfig
-import com.lunara.app.utils.ListenBrainz
 import com.lunara.app.constants.*
 import com.lunara.app.di.ApplicationScope
 import com.lunara.app.extensions.toEnum
@@ -205,12 +203,6 @@ class App :
             KuGou.useTraditionalChinese = true
         }
 
-        // Initialize LastFM with API keys from BuildConfig (GitHub Secrets)
-        LastFM.initialize(
-            apiKey = BuildConfig.LASTFM_API_KEY.takeIf { it.isNotEmpty() } ?: "",
-            secret = BuildConfig.LASTFM_SECRET.takeIf { it.isNotEmpty() } ?: "",
-        )
-
         if (settings[ProxyEnabledKey] == true) {
             val username = settings[ProxyUsernameKey].orEmpty()
             val password = settings[ProxyPasswordKey].orEmpty()
@@ -314,30 +306,6 @@ class App :
                 .collect { cookie ->
                     // Lunara is the no-login fork: never restore or retain an account cookie.
                     YouTube.cookie = null
-                }
-        }
-
-        applicationScope.launch(Dispatchers.IO) {
-            dataStore.data
-                .map { it[LastFMSessionKey] }
-                .distinctUntilChanged()
-                .collect { session ->
-                    try {
-                        LastFM.sessionKey = session
-                    } catch (e: Exception) {
-                        Timber.e("Error while loading last.fm session key. %s", e.message)
-                    }
-                }
-        }
-
-        applicationScope.launch(Dispatchers.IO) {
-            dataStore.data
-                .map { prefs ->
-                    // No token, or switched off, means nothing is sent at all.
-                    if (prefs[EnableListenBrainzKey] == true) prefs[ListenBrainzTokenKey] else null
-                }.distinctUntilChanged()
-                .collect { token ->
-                    ListenBrainz.token = token
                 }
         }
 

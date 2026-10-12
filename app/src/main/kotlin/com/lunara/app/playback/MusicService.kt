@@ -99,7 +99,6 @@ import com.google.common.util.concurrent.MoreExecutors
 import com.lunara.innertube.YouTube
 import com.lunara.innertube.models.SongItem
 import com.lunara.innertube.models.WatchEndpoint
-import com.lunara.lastfm.LastFM
 import com.lunara.app.MainActivity
 import com.lunara.app.R
 import com.lunara.app.constants.AndroidAutoTargetPlaylistKey
@@ -134,7 +133,6 @@ import com.lunara.app.discord.DiscordRpcManager
 import com.lunara.app.discord.DiscordActivityBuilder
 import com.lunara.app.discord.DiscordTemplateRenderer
 import com.lunara.app.discord.PresenceStatus
-import com.lunara.app.constants.EnableLastFMScrobblingKey
 import com.lunara.app.constants.EnableSongCacheKey
 import com.lunara.app.constants.HideExplicitKey
 import com.lunara.app.constants.HideVideoSongsKey
@@ -144,7 +142,6 @@ import com.lunara.app.constants.PodcastSpeedsKey
 import com.lunara.app.constants.VarispeedKey
 import com.lunara.app.constants.SaveDataOnMobileKey
 import com.lunara.app.constants.HistoryDuration
-import com.lunara.app.constants.LastFMUseNowPlaying
 import com.lunara.app.constants.MediaSessionConstants
 import com.lunara.app.constants.MediaSessionConstants.CommandAddToTargetPlaylist
 import com.lunara.app.constants.MediaSessionConstants.CommandToggleLike
@@ -160,9 +157,6 @@ import com.lunara.app.constants.PreventDuplicateTracksInQueueKey
 import com.lunara.app.constants.RememberShuffleAndRepeatKey
 import com.lunara.app.constants.RepeatModeKey
 import com.lunara.app.constants.ResumeOnBluetoothConnectKey
-import com.lunara.app.constants.ScrobbleDelayPercentKey
-import com.lunara.app.constants.ScrobbleDelaySecondsKey
-import com.lunara.app.constants.ScrobbleMinSongDurationKey
 import com.lunara.app.constants.ShuffleModeKey
 import com.lunara.app.constants.ShufflePlaylistFirstKey
 import com.lunara.app.constants.SimilarContent
@@ -203,8 +197,6 @@ import com.lunara.app.lyrics.LyricsHelper
 import com.lunara.app.models.PersistPlayerState
 import com.lunara.app.models.PersistQueue
 import com.lunara.app.models.toMediaMetadata
-import com.lunara.app.playback.alarm.MusicAlarmScheduler
-import com.lunara.app.playback.alarm.MusicAlarmStore
 import com.lunara.app.playback.audio.SilenceDetectorAudioProcessor
 import com.lunara.app.playback.queues.EmptyQueue
 import com.lunara.app.playback.queues.ListQueue
@@ -219,7 +211,6 @@ import com.lunara.app.constants.LoudnessLevel
 import com.lunara.app.constants.LoudnessLevelKey
 import com.lunara.app.utils.CoilBitmapLoader
 import com.lunara.app.utils.NetworkConnectivityObserver
-import com.lunara.app.utils.ScrobbleManager
 import com.lunara.app.utils.SyncUtils
 import com.lunara.app.utils.getArtistSeparator
 import com.lunara.app.utils.joinToArtistString
@@ -488,8 +479,6 @@ class MusicService :
 
     @Volatile
     private var latestMediaNotification: Notification? = null
-
-    private var scrobbleManager: ScrobbleManager? = null
 
     val automixItems = MutableStateFlow<List<MediaItem>>(emptyList())
 
@@ -1291,53 +1280,6 @@ class MusicService :
                 }
             }
         }
-
-        dataStore.data
-            .map { it[EnableLastFMScrobblingKey] ?: false }
-            .debounce(300)
-            .distinctUntilChanged()
-            .collect(scope) { enabled ->
-                if (enabled && scrobbleManager == null) {
-                    val delayPercent = dataStore.get(ScrobbleDelayPercentKey, LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT)
-                    val minSongDuration =
-                        dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
-                    val delaySeconds = dataStore.get(ScrobbleDelaySecondsKey, LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS)
-                    scrobbleManager =
-                        ScrobbleManager(
-                            scope,
-                            minSongDuration = minSongDuration,
-                            scrobbleDelayPercent = delayPercent,
-                            scrobbleDelaySeconds = delaySeconds,
-                        )
-                    scrobbleManager?.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
-                } else if (!enabled && scrobbleManager != null) {
-                    scrobbleManager?.destroy()
-                    scrobbleManager = null
-                }
-            }
-
-        dataStore.data
-            .map { it[LastFMUseNowPlaying] ?: false }
-            .distinctUntilChanged()
-            .collectLatest(scope) {
-                scrobbleManager?.useNowPlaying = it
-            }
-
-        dataStore.data
-            .map { prefs ->
-                Triple(
-                    prefs[ScrobbleDelayPercentKey] ?: LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT,
-                    prefs[ScrobbleMinSongDurationKey] ?: LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION,
-                    prefs[ScrobbleDelaySecondsKey] ?: LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS,
-                )
-            }.distinctUntilChanged()
-            .collect(scope) { (delayPercent, minSongDuration, delaySeconds) ->
-                scrobbleManager?.let {
-                    it.scrobbleDelayPercent = delayPercent
-                    it.minSongDuration = minSongDuration
-                    it.scrobbleDelaySeconds = delaySeconds
-                }
-            }
 
         combine(
             dataStore.data.map { prefs ->
@@ -3015,11 +2957,6 @@ class MusicService :
 
         setupAudioNormalization()
 
-        scrobbleManager?.onSongStop()
-        if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
-            scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
-        }
-
         // Skip if this change was triggered by Cast sync (to prevent loops)
         if (castConnectionHandler?.isCasting?.value == true &&
             castConnectionHandler?.isSyncingFromCast != true &&
@@ -3189,10 +3126,6 @@ class MusicService :
             }
             scheduleCrossfade()
         }
-
-        if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-            scrobbleManager?.onSongStop()
-        }
     }
 
     override fun onPlayWhenReadyChanged(
@@ -3282,10 +3215,6 @@ class MusicService :
             )
         ) {
             syncDiscordState()
-        }
-
-        if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            scrobbleManager?.onPlayerStateChanged(player.isPlaying, player.currentMetadata, duration = player.duration)
         }
     }
 
@@ -5129,10 +5058,6 @@ class MusicService :
         }
 
         when (intent?.action) {
-            ACTION_ALARM_TRIGGER -> {
-                handleAlarmTrigger(intent)
-            }
-
             MusicWidgetReceiver.ACTION_PLAY_PAUSE -> {
                 if (player.isPlaying) player.pause() else player.play()
                 updateWidgetUI(player.isPlaying)
@@ -5279,95 +5204,6 @@ class MusicService :
         }
     }
 
-    private fun handleAlarmTrigger(intent: Intent) {
-        scope.launch(Dispatchers.IO) {
-            try {
-                MusicAlarmScheduler.scheduleFromPreferences(this@MusicService)
-            } catch (t: Throwable) {
-                Timber.tag(TAG).e(t, "Failed to reschedule alarms after trigger")
-            }
-        }
-        val playlistId = intent.getStringExtra(EXTRA_ALARM_PLAYLIST_ID).orEmpty()
-        val alarmId = intent.getStringExtra(EXTRA_ALARM_ID).orEmpty()
-        if (playlistId.isBlank()) {
-            if (alarmId.isNotBlank()) {
-                scope.launch(Dispatchers.IO) {
-                    try {
-                        val alarms = MusicAlarmStore.load(this@MusicService)
-                        val updated =
-                            alarms.map { alarm ->
-                                if (alarm.id == alarmId) alarm.copy(enabled = false, nextTriggerAt = -1L) else alarm
-                            }
-                        MusicAlarmScheduler.scheduleAll(this@MusicService, updated)
-                    } catch (t: Throwable) {
-                        Timber.tag(TAG).e(t, "Failed to disable alarm with invalid playlist")
-                    }
-                }
-            }
-            return
-        }
-        val randomSong = intent.getBooleanExtra(EXTRA_ALARM_RANDOM_SONG, false)
-        scope.launch {
-            try {
-                val playlistSongs =
-                    withContext(Dispatchers.IO) {
-                        database.playlistSongs(playlistId).first()
-                    }
-                if (playlistSongs.isEmpty()) {
-                    if (alarmId.isNotBlank()) {
-                        withContext(Dispatchers.IO) {
-                            val alarms = MusicAlarmStore.load(this@MusicService)
-                            val updated =
-                                alarms.map { alarm ->
-                                    if (alarm.id == alarmId) alarm.copy(enabled = false, nextTriggerAt = -1L) else alarm
-                                }
-                            MusicAlarmScheduler.scheduleAll(this@MusicService, updated)
-                        }
-                    }
-                    return@launch
-                }
-                val items = playlistSongs.map { it.song.toMediaItem() }
-                val playlistName =
-                    withContext(Dispatchers.IO) {
-                        database
-                            .playlist(playlistId)
-                            .first()
-                            ?.playlist
-                            ?.name
-                    }
-                withContext(Dispatchers.IO) {
-                    MusicAlarmScheduler.scheduleFromPreferences(this@MusicService)
-                }
-
-                val alarmItems =
-                    if (randomSong) {
-                        val firstIndex = Random.nextInt(items.size)
-                        buildList(items.size) {
-                            add(items[firstIndex])
-                            items.forEachIndexed { index, item ->
-                                if (index != firstIndex) add(item)
-                            }
-                        }
-                    } else {
-                        items
-                    }
-
-                player.stop()
-                player.clearMediaItems()
-                playQueue(
-                    ListQueue(
-                        title = playlistName,
-                        items = alarmItems,
-                        startIndex = 0,
-                        position = 0L,
-                    ),
-                    playWhenReady = true,
-                )
-            } catch (t: Throwable) {
-                Timber.tag(TAG).e(t, "Failed to start alarm playback")
-            }
-        }
-    }
 
     private fun handleForegroundServiceStartNotAllowed(error: Throwable?) {
         if (error != null) {
@@ -5743,11 +5579,6 @@ class MusicService :
             openedForLinkAt = 0L
             return markedAt != 0L && SystemClock.elapsedRealtime() - markedAt < 10_000L
         }
-
-        const val ACTION_ALARM_TRIGGER = "com.lunara.app.action.ALARM_TRIGGER"
-        const val EXTRA_ALARM_ID = "extra_alarm_id"
-        const val EXTRA_ALARM_PLAYLIST_ID = "extra_alarm_playlist_id"
-        const val EXTRA_ALARM_RANDOM_SONG = "extra_alarm_random_song"
 
         const val ROOT = "root"
         const val SONG = "song"

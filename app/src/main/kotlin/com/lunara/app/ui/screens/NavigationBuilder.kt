@@ -85,12 +85,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.lunara.app.ui.screens.settings.integrations.ListenBrainzSettings
 import com.lunara.app.ui.screens.settings.PlayerDesignScreen
 import com.lunara.app.ui.screens.settings.UpdaterScreen
 import com.lunara.app.ui.screens.settings.integrations.DiscordSettings
 import com.lunara.app.ui.screens.settings.integrations.IntegrationScreen
-import com.lunara.app.ui.screens.settings.integrations.LastFMSettings
 
 import com.lunara.app.ui.screens.wrapped.WrappedScreen
 import com.lunara.app.utils.rememberEnumPreference
@@ -436,13 +434,6 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/integrations/discord") {
         DiscordSettings(navController)
-    }
-
-    composable("settings/integrations/lastfm") {
-        LastFMSettings(navController)
-    }
-    composable("settings/integrations/listenbrainz") {
-        ListenBrainzSettings(navController)
     }
 
     composable("settings/updater") {

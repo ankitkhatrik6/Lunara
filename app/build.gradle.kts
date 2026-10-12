@@ -145,8 +145,8 @@ android {
         applicationId = applicationIdOverride ?: baseApplicationId
         minSdk = 26
         targetSdk = 36
-        versionCode = 23
-        versionName = "3.15.1"
+        versionCode = 24
+        versionName = "3.16.0"
         resValue("string", "app_name", appNameOverride ?: "Lunara")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -159,12 +159,6 @@ android {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
         }
 
-        // LastFM API keys from GitHub Secrets
-        val lastFmKey = localProperties.getProperty("LASTFM_API_KEY") ?: System.getenv("LASTFM_API_KEY") ?: ""
-        val lastFmSecret = localProperties.getProperty("LASTFM_SECRET") ?: System.getenv("LASTFM_SECRET") ?: ""
-
-        buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmKey\"")
-        buildConfigField("String", "LASTFM_SECRET", "\"$lastFmSecret\"")
         buildConfigField("String", "ARCHITECTURE", "\"universal\"")
         buildConfigField("Long", "DISCORD_APP_ID", "1447278780795064401L")
     }
@@ -481,7 +475,6 @@ dependencies {
     implementation(project(":innertube"))
     implementation(project(":kugou"))
     implementation(project(":lrclib"))
-    implementation(project(":lastfm"))
     implementation(project(":betterlyrics"))
     implementation(project(":shazamkit"))
     implementation(project(":paxsenix"))

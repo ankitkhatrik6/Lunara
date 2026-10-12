@@ -90,13 +90,6 @@ val SeekAmountSecondsKey = intPreferencesKey("seekAmountSeconds")
 val PauseOnMute = booleanPreferencesKey("pauseOnMute")
 val ResumeOnBluetoothConnectKey = booleanPreferencesKey("resumeOnBluetoothConnect")
 val KeepScreenOn = booleanPreferencesKey("keepScreenOn")
-val AlarmEnabledKey = booleanPreferencesKey("alarmEnabled")
-val AlarmHourKey = intPreferencesKey("alarmHour")
-val AlarmMinuteKey = intPreferencesKey("alarmMinute")
-val AlarmPlaylistIdKey = stringPreferencesKey("alarmPlaylistId")
-val AlarmRandomSongKey = booleanPreferencesKey("alarmRandomSong")
-val AlarmNextTriggerAtKey = longPreferencesKey("alarmNextTriggerAt")
-val AlarmEntriesKey = stringPreferencesKey("alarmEntries")
 
 enum class SliderStyle {
     DEFAULT,
@@ -252,21 +245,6 @@ val ListenTogetherUserIdKey = stringPreferencesKey("listenTogetherUserId")
 val ListenTogetherIsHostKey = booleanPreferencesKey("listenTogetherIsHost")
 val ListenTogetherSessionTimestampKey = longPreferencesKey("listenTogetherSessionTimestamp")
 
-val LastFMSessionKey = stringPreferencesKey("lastfmSession")
-val LastFMUsernameKey = stringPreferencesKey("lastfmUsername")
-val EnableLastFMScrobblingKey = booleanPreferencesKey("lastfmScrobblingEnable")
-val LastFMUseNowPlaying = booleanPreferencesKey("lastfmUseNowPlaying")
-
-val LastFMUseSendLikes = booleanPreferencesKey("lastfmUseSendLikes")
-
-// ListenBrainz: the open history, kept by whoever is listening.
-val ListenBrainzTokenKey = stringPreferencesKey("listenBrainzToken")
-val ListenBrainzUsernameKey = stringPreferencesKey("listenBrainzUsername")
-val EnableListenBrainzKey = booleanPreferencesKey("listenBrainzEnabled")
-
-val ScrobbleDelayPercentKey = floatPreferencesKey("scrobbleDelayPercent")
-val ScrobbleMinSongDurationKey = intPreferencesKey("scrobbleMinSongDuration")
-val ScrobbleDelaySecondsKey = intPreferencesKey("scrobbleDelaySeconds")
 
 val ChipSortTypeKey = stringPreferencesKey("chipSortType")
 val SongSortTypeKey = stringPreferencesKey("songSortType")
