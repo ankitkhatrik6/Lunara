@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.util.Base64
-import androidx.core.net.toUri
 import com.lunara.app.BuildConfig
 import com.lunara.app.discord.DiscordDefaults.DISCORD_OAUTH_AUTHORIZE
 import com.lunara.app.discord.DiscordDefaults.DISCORD_OAUTH_TOKEN
@@ -63,17 +62,19 @@ class DiscordAuth(
 
             Timber.tag(TAG).i("authorize: launching URL (clientId prefix=%s)", BuildConfig.DISCORD_APP_ID.toString().take(8))
 
-            // A plain ACTION_VIEW browser intent is used instead of Custom Tabs on
-            // purpose: Custom Tabs frequently swallow the custom-scheme redirect
-            // (lunaradiscord://…) instead of handing it back to this app, which made
-            // authorization hang until it timed out. The system browser reliably
-            // resolves the redirect back into DiscordOAuthActivity.
-            val intent = Intent(Intent.ACTION_VIEW, authUrl.toUri())
+            // The authorize page is hosted in DiscordOAuthActivity's own WebView, which
+            // intercepts the redirect itself. Handing the flow to an external browser
+            // was unreliable — some browsers never return the custom-scheme redirect,
+            // which surfaced as "sign-in didn't return to the app".
+            val intent = Intent(activity, DiscordOAuthActivity::class.java).apply {
+                putExtra(DiscordOAuthActivity.EXTRA_AUTH_URL, authUrl)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
 
             try {
                 activity.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
-                Timber.tag(TAG).w(e, "authorize: no browser available to launch URL")
+                Timber.tag(TAG).w(e, "authorize: could not launch OAuth activity")
                 throw DiscordAuthException.NoBrowser()
             }
 

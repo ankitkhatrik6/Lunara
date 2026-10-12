@@ -1,8 +1,13 @@
 package com.lunara.app.discord
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeout
@@ -10,10 +15,24 @@ import timber.log.Timber
 
 data class AuthCodeResult(val code: String, val state: String)
 
+/**
+ * Hosts the Discord OAuth2 flow in an in-app WebView.
+ *
+ * The authorize page is loaded here and the redirect to [REDIRECT_PREFIX] is
+ * intercepted directly, so the flow never leaves the app. Relying on an external
+ * browser to hand the custom-scheme redirect back was unreliable: some browsers
+ * swallow it, and with the browser in the foreground the app process could be
+ * killed, losing the pending login — both surfaced as "sign-in didn't return".
+ *
+ * The manifest intent-filter for [REDIRECT_PREFIX] is kept as a fallback for a
+ * redirect that still arrives from outside (e.g. a previously opened browser tab).
+ */
 class DiscordOAuthActivity : Activity() {
 
     companion object {
         private const val TAG = "DiscordSvc"
+        const val EXTRA_AUTH_URL = "extra_auth_url"
+        const val REDIRECT_PREFIX = "lunaradiscord://oauth2/callback"
 
         @Volatile
         private var deferred: CompletableDeferred<AuthCodeResult>? = null
@@ -38,21 +57,53 @@ class DiscordOAuthActivity : Activity() {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.tag(TAG).i("OAuthActivity: onCreate with intent=%s", intent?.action)
-        handleIntent(intent)
+
+        val authUrl = intent?.getStringExtra(EXTRA_AUTH_URL)
+        if (authUrl.isNullOrBlank()) {
+            // Launched from outside via the redirect intent-filter; finish it here.
+            handleIntent(intent)
+            return
+        }
+
+        Timber.tag(TAG).i("OAuthActivity: hosting authorize flow in WebView")
+
+        val webView = WebView(this).apply {
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                ): Boolean {
+                    val url = request?.url?.toString() ?: return false
+                    if (url.startsWith(REDIRECT_PREFIX)) {
+                        Timber.tag(TAG).i("OAuthActivity: intercepting redirect in WebView")
+                        completeFromUri(Uri.parse(url))
+                        return true
+                    }
+                    return false
+                }
+            }
+            loadUrl(authUrl)
+        }
+        setContentView(webView)
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        // launchMode="singleTask" delivers the OAuth redirect here if an instance of
-        // this activity already exists, instead of calling onCreate. Handling only
-        // onCreate dropped the authorization code and made sign-in hang until it
-        // timed out, so the redirect is processed in both entry points.
-        Timber.tag(TAG).i("OAuthActivity: onNewIntent with intent=%s", intent?.action)
+        // A redirect that arrived from outside (browser fallback) with singleTask.
         setIntent(intent)
         handleIntent(intent)
+    }
+
+    override fun onDestroy() {
+        // If the user backed out before finishing, release the pending login so the
+        // caller isn't left waiting for the full timeout.
+        cancelPending()
+        super.onDestroy()
     }
 
     private fun handleIntent(intent: Intent?) {
@@ -61,7 +112,10 @@ class DiscordOAuthActivity : Activity() {
             finish()
             return
         }
+        completeFromUri(uri)
+    }
 
+    private fun completeFromUri(uri: Uri) {
         val code = uri.getQueryParameter("code")
         val state = uri.getQueryParameter("state")
         val error = uri.getQueryParameter("error")
