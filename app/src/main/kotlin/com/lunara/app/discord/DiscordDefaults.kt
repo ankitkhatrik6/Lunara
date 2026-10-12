@@ -30,13 +30,23 @@ object DiscordDefaults {
     const val DISCORD_OAUTH_AUTHORIZE = "https://discord.com/oauth2/authorize"
     const val DISCORD_OAUTH_TOKEN = "https://discord.com/api/v10/oauth2/token"
 
-    // Standard OAuth2 scopes for gateway-based Discord Rich Presence.
-    // - identify: lets the app know who authorized (basic account identity)
-    // - rpc: lets the app update the user's activity / Rich Presence over the
-    //   gateway using the OAuth bearer token (this is what the app does).
-    // NOTE: do NOT use "sdk.social_layer_presence" here — that is Discord's Social
-    // SDK (game SDK) scope, which shows a bogus app name ("sdk.social_layer_presence"),
-    // requests unrelated friend-list/presence permissions, and breaks the standard
-    // redirect_uri (Discord renders the redirect target as "null").
+    // OAuth2 scopes for the Discord Rich Presence integration.
+    //
+    // - identify: lets the app learn who authorized (basic account identity, used to
+    //   greet the user in settings). This is the only scope needed to *display* who is
+    //   connected.
+    // - rpc: the scope historically tied to Discord's Rich Presence. It authorizes the
+    //   bearer token to drive an activity. NOTE: Discord's *officially supported* RPC
+    //   transport is IPC against a locally-running desktop client, and the only
+    //   officially supported mobile path is the Discord Social SDK. This app instead
+    //   speaks the gateway WebSocket directly with the user bearer token; whether that
+    //   is accepted depends on Discord's server policy (it can be closed with code
+    //   4001/4004/4014). See DiscordRpcManager / DiscordReconnectStrategy.
+    //
+    // Do NOT request "sdk.social_layer_presence" together with a custom redirect_uri:
+    // that is the Discord Social SDK scope. On the standard consent screen it renders a
+    // bogus app name ("sdk.social_layer_presence"), asks for unrelated friend/presence
+    // permissions, and breaks the redirect target (Discord shows "null"). It is only
+    // correct when actually integrating the Social SDK with its own client credentials.
     const val DISCORD_SCOPES = "identify rpc"
 }

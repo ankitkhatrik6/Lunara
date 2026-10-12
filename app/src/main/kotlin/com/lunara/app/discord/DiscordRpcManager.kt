@@ -216,8 +216,18 @@ object DiscordRpcManager {
                     completeWith(false)
                 }
             } catch (e: DiscordAuthException.UserCancelled) {
-                Timber.tag(TAG).i("authorize: user cancelled or callback timed out")
+                Timber.tag(TAG).i("authorize: user cancelled")
                 _lastError.value = "discord_error_callback_timeout"
+                _connectionStatus.value = Status.Disconnected
+                completeWith(false)
+            } catch (e: DiscordAuthException.Timeout) {
+                Timber.tag(TAG).w(e, "authorize: timed out waiting for the redirect callback")
+                _lastError.value = "discord_error_callback_timeout"
+                _connectionStatus.value = Status.Disconnected
+                completeWith(false)
+            } catch (e: DiscordAuthException.RateLimited) {
+                Timber.tag(TAG).w(e, "authorize: rate limited by Discord")
+                _lastError.value = "discord_error_gateway_failed"
                 _connectionStatus.value = Status.Disconnected
                 completeWith(false)
             } catch (e: DiscordAuthException.StateMismatch) {

@@ -16,7 +16,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.parameters
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 import org.json.JSONObject
 import timber.log.Timber
@@ -37,7 +36,9 @@ data class PkcePair(val verifier: String, val challenge: String)
 
 sealed class DiscordAuthException(message: String, cause: Throwable? = null) : Exception(message, cause) {
     class UserCancelled(message: String = "User cancelled authorization") : DiscordAuthException(message)
+    class Timeout(message: String = "Authorization timed out") : DiscordAuthException(message)
     class NetworkFailure(cause: Throwable) : DiscordAuthException("Network failure: ${cause.message}", cause)
+    class RateLimited(message: String = "Discord is rate limiting requests; try again shortly") : DiscordAuthException(message)
     class InvalidGrant(message: String = "Invalid or expired grant") : DiscordAuthException(message)
     class StateMismatch : DiscordAuthException("OAuth state mismatch")
     class NoBrowser(message: String = "No browser available") : DiscordAuthException(message)
@@ -60,10 +61,14 @@ class DiscordAuth(
                 challenge = pkce.challenge,
             )
 
-            Timber.tag(TAG).i("authorize: launching URL (clientId prefix=%s)", BuildConfig.DISCORD_APP_ID.toString().take(8))
-            // Log the full authorize URL so the exact redirect_uri sent to Discord can be
-            // verified from logcat (tag "DiscordSvc") if the consent page misbehaves.
-            Timber.tag(TAG).i("authorize: full authUrl=%s", authUrl)
+            Timber.tag(TAG).i(
+                "authorize: launching consent screen (clientId prefix=%s, redirect=%s, scopes=%s)",
+                BuildConfig.DISCORD_APP_ID.toString().take(8),
+                REDIRECT_URI,
+                DISCORD_SCOPES,
+            )
+            // NOTE: the full authorize URL is intentionally NOT logged — it carries the
+            // OAuth `state` and the PKCE `code_challenge`, both of which are secrets.
 
             // DiscordOAuthActivity opens the authorize page in a Chrome Custom Tab and
             // catches the lunaradiscord:// redirect through its manifest intent-filter.
@@ -78,23 +83,29 @@ class DiscordAuth(
                 activity.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
                 Timber.tag(TAG).w(e, "authorize: could not launch OAuth activity")
+                cancel()
                 throw DiscordAuthException.NoBrowser()
             }
 
             val callback = try {
                 DiscordOAuthActivity.awaitCode(timeoutMs = 120_000L)
             } catch (e: TimeoutCancellationException) {
-                throw DiscordAuthException.UserCancelled()
-            } catch (e: CancellationException) {
-                Timber.tag(TAG).i("authorize: cancelled")
-                throw DiscordAuthException.UserCancelled()
+                // Distinct from an explicit user cancellation: the consent screen never
+                // returned within the budget. Report it as its own actionable error.
+                cancel()
+                throw DiscordAuthException.Timeout()
+            } catch (e: DiscordAuthException.UserCancelled) {
+                // Already a meaningful user-cancellation (denied, backed out, superseded).
+                throw e
             }
+            // Any other CancellationException means the *calling* coroutine was cancelled
+            // (e.g. scope teardown). Preserve it rather than masking it as a user cancel.
 
             if (callback.state != state) {
                 Timber.tag(TAG).w(
-                    "authorize: state mismatch (expected=%s, got=%s)",
-                    state.take(8),
-                    callback.state.take(8),
+                    "authorize: state mismatch (expectedLen=%d, gotLen=%d)",
+                    state.length,
+                    callback.state.length,
                 )
                 throw DiscordAuthException.StateMismatch()
             }
@@ -160,7 +171,11 @@ class DiscordAuth(
 
         if (status.value in 200..299) {
             val json = JSONObject(body)
-            val accessToken = json.getString("access_token")
+            val accessToken = json.optString("access_token", "")
+            if (accessToken.isEmpty()) {
+                Timber.tag(TAG).w("token exchange: 2xx response missing access_token (grantType=%s)", grantType)
+                throw DiscordAuthException.InvalidGrant("Token response missing access_token")
+            }
             val refreshToken = json.optString("refresh_token", "")
             val expiresIn = json.optLong("expires_in", 0L)
             val scope = json.optString("scope", DISCORD_SCOPES)
@@ -180,18 +195,38 @@ class DiscordAuth(
 
         val errorCode = runCatching { JSONObject(body).optString("error", "") }
             .getOrDefault("")
-        if (status == HttpStatusCode.BadRequest && errorCode == "invalid_grant") {
-            Timber.tag(TAG).w("token exchange: invalid_grant on %s", grantType)
-            throw DiscordAuthException.InvalidGrant()
-        }
+        // Log only the machine-readable error code — never the raw body, which can echo
+        // request parameters. Build user-facing messages from the code, not the body.
         Timber.tag(TAG).w(
-            "token exchange: HTTP %d (grantType=%s, error=%s, body=%s)",
+            "token exchange: HTTP %d (grantType=%s, error=%s)",
             status.value,
             grantType,
-            errorCode,
-            body.take(200),
+            errorCode.ifEmpty { "unknown" },
         )
-        throw DiscordAuthException.NetworkFailure(IOException("HTTP ${status.value}: $body"))
+
+        when {
+            status == HttpStatusCode.TooManyRequests ->
+                throw DiscordAuthException.RateLimited()
+
+            status == HttpStatusCode.BadRequest -> when (errorCode) {
+                "invalid_grant" -> throw DiscordAuthException.InvalidGrant()
+                "invalid_client", "unauthorized_client" ->
+                    throw DiscordAuthException.InvalidGrant("Client not authorized for this grant")
+                "invalid_request", "unsupported_grant_type" ->
+                    throw DiscordAuthException.InvalidGrant("Malformed token request: $errorCode")
+                else ->
+                    throw DiscordAuthException.InvalidGrant("Token request rejected: ${errorCode.ifEmpty { "invalid_request" }}")
+            }
+
+            status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden ->
+                throw DiscordAuthException.InvalidGrant("Token endpoint rejected credentials (HTTP ${status.value})")
+
+            status.value in 500..599 ->
+                throw DiscordAuthException.NetworkFailure(IOException("Discord server error HTTP ${status.value}"))
+
+            else ->
+                throw DiscordAuthException.NetworkFailure(IOException("Unexpected HTTP ${status.value}"))
+        }
     }
 
     private fun buildAuthorizeUrl(
