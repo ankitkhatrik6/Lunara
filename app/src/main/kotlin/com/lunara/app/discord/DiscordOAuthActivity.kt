@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -33,6 +34,11 @@ class DiscordOAuthActivity : Activity() {
         private const val TAG = "DiscordSvc"
         const val EXTRA_AUTH_URL = "extra_auth_url"
         const val REDIRECT_PREFIX = "lunaradiscord://oauth2/callback"
+
+        // WebViewClient.ERROR_UNKNOWN_URL_SCHEME — the code a WebView reports when it
+        // is asked to load a scheme it cannot handle (our custom redirect). Kept as a
+        // literal so it does not depend on the API-level constant being inlined.
+        private const val ERROR_UNKNOWN_URL_SCHEME = -10
 
         @Volatile
         private var deferred: CompletableDeferred<AuthCodeResult>? = null
@@ -73,18 +79,43 @@ class DiscordOAuthActivity : Activity() {
         val webView = WebView(this).apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
+            @SuppressLint("SetJavaScriptEnabled")
+            settings.javaScriptCanOpenWindowsAutomatically = true
+            settings.setSupportMultipleWindows(true)
             webViewClient = object : WebViewClient() {
+                // Deprecated overload: still called for some redirect paths (e.g. JS
+                // navigations), where the WebResourceRequest version is skipped.
+                @Deprecated("Matches legacy redirect callbacks")
+                override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                    if (url != null && handleRedirect(url)) return true
+                    return super.shouldOverrideUrlLoading(view, url)
+                }
+
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
                     request: WebResourceRequest?,
                 ): Boolean {
-                    val url = request?.url?.toString() ?: return false
-                    if (url.startsWith(REDIRECT_PREFIX)) {
-                        Timber.tag(TAG).i("OAuthActivity: intercepting redirect in WebView")
-                        completeFromUri(Uri.parse(url))
-                        return true
+                    val url = request?.url?.toString()
+                    if (url != null && handleRedirect(url)) return true
+                    return super.shouldOverrideUrlLoading(view, request)
+                }
+
+                // A custom scheme the WebView cannot load (lunaradiscord://) surfaces
+                // here as ERROR_UNKNOWN_URL_SCHEME. This is the most reliable place to
+                // catch the redirect on many devices, so the URL is recovered from it.
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?,
+                ) {
+                    val url = request?.url?.toString()
+                    if (request?.isForMainFrame == true && url != null &&
+                        error?.errorCode == ERROR_UNKNOWN_URL_SCHEME
+                    ) {
+                        Timber.tag(TAG).i("OAuthActivity: redirect caught via onReceivedError")
+                        if (handleRedirect(url)) return
                     }
-                    return false
+                    super.onReceivedError(view, request, error)
                 }
             }
             loadUrl(authUrl)
@@ -104,6 +135,13 @@ class DiscordOAuthActivity : Activity() {
         // caller isn't left waiting for the full timeout.
         cancelPending()
         super.onDestroy()
+    }
+
+    private fun handleRedirect(url: String): Boolean {
+        if (!url.startsWith(REDIRECT_PREFIX)) return false
+        Timber.tag(TAG).i("OAuthActivity: redirect matched (%s)", url.take(48))
+        completeFromUri(Uri.parse(url))
+        return true
     }
 
     private fun handleIntent(intent: Intent?) {
