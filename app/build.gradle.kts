@@ -145,8 +145,8 @@ android {
         applicationId = applicationIdOverride ?: baseApplicationId
         minSdk = 26
         targetSdk = 36
-        versionCode = 24
-        versionName = "3.16.0"
+        versionCode = 25
+        versionName = "3.16.1"
         resValue("string", "app_name", appNameOverride ?: "Lunara")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -160,7 +160,7 @@ android {
         }
 
         buildConfigField("String", "ARCHITECTURE", "\"universal\"")
-        buildConfigField("Long", "DISCORD_APP_ID", "1447278780795064401L")
+        buildConfigField("Long", "DISCORD_APP_ID", "1559089909032034356L")
     }
 
     flavorDimensions += listOf("variant")
