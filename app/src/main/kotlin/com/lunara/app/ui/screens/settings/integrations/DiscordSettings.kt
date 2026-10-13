@@ -280,6 +280,12 @@ fun DiscordSettings(
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.discord_setup_steps),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.height(8.dp))
                         TextButton(
                             onClick = { infoDismissed = true },
                             modifier = Modifier.align(Alignment.End),

@@ -968,7 +968,7 @@
     <string name="column_label">Column %d</string>
 
     <string name="discord_connect_description">Sign in with Discord to share what you\'re listening to</string>
-    <string name="discord_information_warning">Lunara uses Discord\'s public OAuth2 and Gateway APIs to share what you\'re listening to. Authorization happens through a local browser session that closes itself after capturing the code — nothing is sent to third-party servers. Your token is stored on this device in encrypted preferences and is never shared. Lunara connects directly to wss://gateway.discord.gg to publish your activity, and only requests the minimum scope required (sdk.social_layer_presence).</string>
+    <string name="discord_information_warning">Lunara uses Discord\'s public OAuth2 and Gateway APIs to share what you\'re listening to. Authorization happens through a local browser session that closes itself after capturing the code — nothing is sent to third-party servers. Your token is stored on this device in encrypted preferences and is never shared. Lunara connects directly to wss://gateway.discord.gg to publish your activity and only requests the minimum scopes (identify, rpc). Note: Discord restricts the rpc scope to approved apps, so publishing may not work for every account.</string>
     <string name="discord_status_connecting">Connecting to Discord…</string>
     <string name="discord_status_reconnecting">Reconnecting to Discord…</string>
     <string name="discord_status_connected">Connected</string>
@@ -976,15 +976,16 @@
     <string name="discord_status_authorized">Authorized</string>
     <string name="discord_status_not_initialized">Not initialized</string>
     <string name="discord_error_loopback_timeout">Discord didn\'t respond in time. Please try again.</string>
-    <string name="discord_error_callback_timeout">Discord sign-in didn\'t return to the app. Make sure \'lunaradiscord://oauth2/callback\' is added as a redirect in your Discord app, then try again.</string>
+    <string name="discord_error_callback_timeout">Discord sign-in didn\'t return to the app. In the Discord Developer Portal, open your app → OAuth2 and add \'lunaradiscord://oauth2/callback\' under Redirects, then tap Save Changes and try again.</string>
     <string name="discord_error_gateway_failed">Signed in, but couldn\'t connect to Discord. Check your internet connection and try again.</string>
     <string name="discord_error_loopback_unbound">Couldn\'t open a local callback port. Please free one and try again.</string>
     <string name="discord_error_no_browser">No browser was found to complete Discord authorization.</string>
     <string name="discord_error_token_refresh_failed">Discord session expired. Please reconnect.</string>
     <string name="discord_error_invalid_scope">Discord rejected the connection. Please reconnect and grant the required permission.</string>
     <string name="discord_error_banner_title">Discord error</string>
+    <string name="discord_setup_steps">Setup (one time, in the Discord Developer Portal):\n1. Open your app → OAuth2 → Redirects and add: lunaradiscord://oauth2/callback\n2. Tap Save Changes.\nIf sign-in still doesn\'t return, the rpc scope is limited to approved apps and testers — ask the app owner to add you as a tester.</string>
     <string name="discord_rpc_preview">Rich Presence preview</string>
-    <string name="discord_integration">Discord Integration</string>
+    <string name="discord_integration">Discord Rich Presence</string>
     <string name="enable_discord_rpc">Enable Rich Presence</string>
     <string name="discord_advanced_mode">Advanced mode</string>
     <string name="discord_advanced_mode_description">Customize every field of your Rich Presence with placeholders</string>
@@ -1315,7 +1316,7 @@
     <string name="social_github">GitHub</string>
     <string name="social_instagram">Instagram</string>
     <string name="settings_group_connections">Connections</string>
-    <string name="hint_integrations">Discord Rich Presence, Last.fm scrobbling</string>
+    <string name="hint_integrations">Discord Rich Presence</string>
     <string name="hint_together_settings">Listen Together sync and room settings</string>
     <string name="guest">Guest</string>
     <string name="manage_account">Manage your account</string>
