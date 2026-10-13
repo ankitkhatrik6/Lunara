@@ -1,5 +1,11 @@
 [
   {
+    "tagName": "v3.16.11",
+    "versionName": "3.16.11",
+    "releaseDate": "2026-10-13T00:00:00Z",
+    "description": "## Discord fixes\\n\\n- **Discord sign-in is rebuilt to work correctly.** The app now uses only the officially supported parts of Discord: it signs you in with the \\\"identify\\\" permission and shows your linked account. It no longer tries to drive Discord\\u2019s servers directly, which Discord does not allow and which could make sign-in fail.\\n\\n- **Clearer messages when something goes wrong.** If you decline the permission, if Discord rejects a request, or if the redirect isn\\u2019t set up in the Discord Developer Portal, you now get a specific, helpful message instead of a generic \\\"Discord error\\\".\\n\\n- **If sign-in doesn\\u2019t return to the app,** add \\\"lunaradiscord://oauth2/callback\\\" under your app\\u2019s OAuth2 \\u2192 Redirects in the Discord Developer Portal and save. The in-app setup note walks you through it.\\n"
+  },
+  {
     "tagName": "v3.15.0",
     "versionName": "3.15.0",
     "releaseDate": "2026-10-11T00:00:00Z",

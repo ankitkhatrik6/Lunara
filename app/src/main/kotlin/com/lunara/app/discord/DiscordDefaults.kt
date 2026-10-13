@@ -30,23 +30,20 @@ object DiscordDefaults {
     const val DISCORD_OAUTH_AUTHORIZE = "https://discord.com/oauth2/authorize"
     const val DISCORD_OAUTH_TOKEN = "https://discord.com/api/v10/oauth2/token"
 
-    // OAuth2 scopes for the Discord Rich Presence integration.
+    // OAuth2 scope for the Discord integration.
     //
-    // - identify: lets the app learn who authorized (basic account identity, used to
-    //   greet the user in settings). This is the only scope needed to *display* who is
-    //   connected.
-    // - rpc: the scope historically tied to Discord's Rich Presence. It authorizes the
-    //   bearer token to drive an activity. NOTE: Discord's *officially supported* RPC
-    //   transport is IPC against a locally-running desktop client, and the only
-    //   officially supported mobile path is the Discord Social SDK. This app instead
-    //   speaks the gateway WebSocket directly with the user bearer token; whether that
-    //   is accepted depends on Discord's server policy (it can be closed with code
-    //   4001/4004/4014). See DiscordRpcManager / DiscordReconnectStrategy.
+    // Only "identify" is requested. It is the single unrestricted scope this build
+    // actually uses: it lets the app learn who signed in (GET /users/@me) so the
+    // linked account can be shown. It works for every user with no Discord approval.
     //
-    // Do NOT request "sdk.social_layer_presence" together with a custom redirect_uri:
-    // that is the Discord Social SDK scope. On the standard consent screen it renders a
-    // bogus app name ("sdk.social_layer_presence"), asks for unrelated friend/presence
-    // permissions, and breaks the redirect target (Discord shows "null"). It is only
-    // correct when actually integrating the Social SDK with its own client credentials.
-    const val DISCORD_SCOPES = "identify rpc"
+    // We deliberately do NOT request "rpc" (or "rpc.activities.write"): those are
+    // local-RPC scopes that require Discord approval and are locked to the app owner
+    // and a small tester list for unapproved apps. Requesting them makes sign-in fail
+    // with invalid_scope for everyone else, and the normal Gateway must never be
+    // driven with a user OAuth token.
+    //
+    // Rich Presence on mobile is published through the Discord Social SDK (a native
+    // library), which this build does not ship. See DiscordRpcManager, which explains
+    // this to the user instead of publishing over an unsupported transport.
+    const val DISCORD_SCOPES = "identify"
 }

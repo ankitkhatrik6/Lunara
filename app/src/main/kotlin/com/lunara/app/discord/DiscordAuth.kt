@@ -42,6 +42,13 @@ sealed class DiscordAuthException(message: String, cause: Throwable? = null) : E
     class InvalidGrant(message: String = "Invalid or expired grant") : DiscordAuthException(message)
     class StateMismatch : DiscordAuthException("OAuth state mismatch")
     class NoBrowser(message: String = "No browser available") : DiscordAuthException(message)
+
+    // The authorize request was rejected because a requested scope is not available
+    // to this application (e.g. the approval-gated "rpc" scope on an unapproved app).
+    class InvalidScope(message: String = "Discord rejected a requested permission") : DiscordAuthException(message)
+
+    // The user explicitly denied the authorization request on the consent screen.
+    class AccessDenied(message: String = "You declined Discord authorization") : DiscordAuthException(message)
 }
 
 class DiscordAuth(

@@ -982,6 +982,7 @@
     <string name="discord_error_no_browser">No browser was found to complete Discord authorization.</string>
     <string name="discord_error_token_refresh_failed">Discord session expired. Please reconnect.</string>
     <string name="discord_error_invalid_scope">Discord rejected the connection. Please reconnect and grant the required permission.</string>
+    <string name="discord_error_access_denied">You declined Discord authorization. Tap Connect again and approve access to link your account.</string>
     <string name="discord_error_banner_title">Discord error</string>
     <string name="discord_setup_steps">Setup (one time, in the Discord Developer Portal):\n1. Open your app → OAuth2 → Redirects and add: lunaradiscord://oauth2/callback\n2. Tap Save Changes.\nIf sign-in still doesn\'t return, the rpc scope is limited to approved apps and testers — ask the app owner to add you as a tester.</string>
     <string name="discord_rpc_preview">Rich Presence preview</string>

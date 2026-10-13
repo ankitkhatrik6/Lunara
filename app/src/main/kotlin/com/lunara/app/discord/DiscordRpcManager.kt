@@ -117,20 +117,11 @@ object DiscordRpcManager {
 
     private val auth: DiscordAuth = DiscordAuth()
 
-    private var gateway: DiscordGateway = createGateway(scope)
-
-    private fun createGateway(scope: CoroutineScope): DiscordGateway =
-        DiscordGateway(
-            appId = appId,
-            tokenProvider = { "Bearer ${accessToken ?: ""}" },
-            externalScope = scope,
-        )
-
-    private fun startEventCollection() {
-        scope.launch {
-            gateway.events.collect { event -> handleGatewayEvent(event) }
-        }
-    }
+    // Discord Rich Presence on Android is published through the Discord Social SDK,
+    // a native library this build does not ship. Discord's normal Gateway must NOT be
+    // driven with a user OAuth token, so this manager performs OAuth sign-in (identify)
+    // and shows the linked account, but opens no presence transport. setActivity/clear
+    // are intentional no-ops that only record state for de-duplication.
 
     fun init(context: Context) {
         DiscordTokenStore.init(context.applicationContext)
@@ -141,11 +132,9 @@ object DiscordRpcManager {
         if (!scope.isActive) {
             Timber.tag(TAG).i("init: recreating scope after previous destroy")
             scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-            gateway = createGateway(scope)
         }
         initialized = true
         _connectionStatus.value = Status.Disconnected
-        startEventCollection()
         Timber.tag(TAG).i("init: token store initialized, scheduling auto-rehydrate")
 
         scope.launch {
@@ -199,22 +188,33 @@ object DiscordRpcManager {
                 accessToken = result.accessToken
                 _accessTokenFlow.value = result.accessToken
                 _authorized = true
+                _connectionStatus.value = Status.Connected
 
-                try {
-                    reconnectMutex.withLock {
-                        runCatching { gateway.close(4000, "re-authorizing") }
-                        gateway.connect()
-                        gateway.identify("Bearer ${result.accessToken}")
-                    }
-                    completeWith(true)
-                } catch (e: Throwable) {
-                    Timber.tag(TAG).e(e, "authorize: gateway connect/identify failed")
-                    _lastError.value = "discord_error_gateway_failed"
-                    _connectionStatus.value = Status.Disconnected
-                    _ready = false
-                    _authorized = false
-                    completeWith(false)
+                // Fetch the linked account so the settings screen can show who signed
+                // in. This uses the officially supported GET /users/@me with the
+                // identify scope. Rich Presence itself is published via the Discord
+                // Social SDK, which this build does not include, so no presence
+                // transport is opened here.
+                val user = fetchCurrentUser(result.accessToken)
+                if (user != null) {
+                    _currentUser.value = user
+                    Timber.tag(TAG).i("authorize: signed in as %s", user.username)
+                } else {
+                    Timber.tag(TAG).w("authorize: signed in but could not fetch profile")
                 }
+                completeWith(true)
+            } catch (e: DiscordAuthException.AccessDenied) {
+                Timber.tag(TAG).i("authorize: user denied authorization")
+                _lastError.value = "discord_error_access_denied"
+                _connectionStatus.value = Status.Disconnected
+                completeWith(false)
+            } catch (e: DiscordAuthException.InvalidScope) {
+                // A requested scope (e.g. the approval-gated rpc scope) is not available
+                // to this application. Surface it as its own actionable error.
+                Timber.tag(TAG).w(e, "authorize: invalid/unauthorized scope")
+                _lastError.value = "discord_error_invalid_scope"
+                _connectionStatus.value = Status.Disconnected
+                completeWith(false)
             } catch (e: DiscordAuthException.UserCancelled) {
                 Timber.tag(TAG).i("authorize: user cancelled")
                 _lastError.value = "discord_error_callback_timeout"
@@ -305,165 +305,34 @@ object DiscordRpcManager {
         }
     }
 
+    // Rich Presence is published on Android through the Discord Social SDK, a native
+    // library this build does not include. Discord's normal Gateway must not be driven
+    // with a user OAuth token, and there is no other officially supported way to set a
+    // user's activity from a third-party Android app. So publishing is a no-op here: we
+    // record the current song/playback state for de-duplication (so callers don't spin)
+    // and log that a supported transport is required. We never fake success.
     fun setActivity(
         activity: DiscordActivity,
         songId: String? = null,
         isPlaying: Boolean = true,
         status: PresenceStatus = PresenceStatus.Online,
     ) {
-        if (!_ready) {
-            Timber.tag(TAG).w("setActivity: skipping — not ready (name=%s)", activity.name)
-            return
-        }
-
-        val stateChanged = songId != currentSongId || isPlaying != currentIsPlaying ||
-            (activity.largeImage != null && activity.largeImage != lastActivity?.largeImage) ||
-            (activity.smallImage != null && activity.smallImage != lastActivity?.smallImage)
-
-        val now = System.currentTimeMillis()
-        if (!stateChanged &&
-            lastActivitySentAtMs > 0L && (now - lastActivitySentAtMs) < 2_000L
-        ) {
-            Timber.tag(TAG).v("setActivity: debounced (<2s since last, stateChanged=%s)", stateChanged)
-            return
-        }
-        lastActivitySentAtMs = now
-
         currentSongId = songId
         currentIsPlaying = isPlaying
-        currentActivityId.incrementAndGet()
-        currentActivityHadImages = !activity.largeImage.isNullOrEmpty() || !activity.smallImage.isNullOrEmpty()
-
-        val buttons = buildList {
-            if (!activity.button1Label.isNullOrEmpty() && !activity.button1Url.isNullOrEmpty()) {
-                add(activity.button1Label to activity.button1Url)
-            }
-            if (!activity.button2Label.isNullOrEmpty() && !activity.button2Url.isNullOrEmpty()) {
-                add(activity.button2Label to activity.button2Url)
-            }
-        }
-        val payloadNoImages = DiscordPresence.buildActivity(
-            name = activity.name.orEmpty(),
-            type = activityTypeToEnum(activity.activityType),
-            details = activity.details,
-            state = activity.state,
-            startMs = activity.startTimestamp.takeIf { it > 0L },
-            endMs = activity.endTimestamp?.takeIf { it > 0L },
-            buttons = buttons,
-        )
-
-        lastActivity = payloadNoImages
-
-        try {
-            val presenceJson = DiscordPresence.buildPresenceUpdate(
-                status = status,
-                activities = listOf(payloadNoImages),
-            )
-            Timber.tag(TAG).i("setActivity: sending (type=%d, name=%s, details=%s, state=%s, songId=%s, isPlaying=%s, buttons=%d)",
-                activity.activityType, activity.name, activity.details, activity.state, songId, isPlaying, buttons.size)
-            gateway.presenceUpdate(presenceJson)
-        } catch (e: IllegalStateException) {
-            Timber.tag(TAG).w(e, "setActivity: gateway not open")
-        } catch (e: Throwable) {
-            Timber.tag(TAG).e(e, "setActivity: send failed")
-        }
-
-        imageResolutionJob?.cancel()
-
-        val currentToken = accessToken ?: return
-        val largeImageUrl = activity.largeImage
-        val smallImageUrl = activity.smallImage
-        if (largeImageUrl.isNullOrEmpty() && smallImageUrl.isNullOrEmpty()) return
-
+        lastActivitySentAtMs = System.currentTimeMillis()
         Timber.tag(TAG).d(
-            "setActivity: resolving images — large=%s, small=%s",
-            largeImageUrl?.take(80),
-            smallImageUrl?.take(80),
+            "setActivity: no supported presence transport in this build (name=%s, songId=%s, isPlaying=%s); not publishing",
+            activity.name, songId, isPlaying,
         )
-
-        val activityIdAtLaunch = currentActivityId.get()
-        val songIdAtLaunch = songId
-
-        imageResolutionJob = scope.launch {
-            val tokenHeader = "Bearer $currentToken"
-            val largeResolved = if (!largeImageUrl.isNullOrEmpty()) {
-                DiscordExternalAssets.resolve(largeImageUrl, appId, tokenHeader)
-            } else null
-            val smallResolved = if (!smallImageUrl.isNullOrEmpty()) {
-                DiscordExternalAssets.resolve(smallImageUrl, appId, tokenHeader)
-            } else null
-
-            if (largeResolved == null && smallResolved == null) {
-                Timber.tag(TAG).i("setActivity: image resolution returned null, keeping text-only presence")
-                return@launch
-            }
-
-            if (activityIdAtLaunch != currentActivityId.get()) {
-                Timber.tag(TAG).i(
-                    "setActivity: stale image resolution (launched activityId=%d, current=%d), skipping re-send",
-                    activityIdAtLaunch, currentActivityId.get(),
-                )
-                return@launch
-            }
-
-            val payloadWithImages = DiscordPresence.buildActivity(
-                name = activity.name.orEmpty(),
-                type = activityTypeToEnum(activity.activityType),
-                details = activity.details,
-                state = activity.state,
-                largeImage = largeResolved,
-                largeText = activity.largeText,
-                smallImage = smallResolved,
-                smallText = activity.smallText,
-                startMs = activity.startTimestamp.takeIf { it > 0L },
-                endMs = activity.endTimestamp?.takeIf { it > 0L },
-                buttons = buttons,
-            )
-
-            lastActivity = payloadWithImages
-
-            try {
-                val presenceJson = DiscordPresence.buildPresenceUpdate(
-                    status = status,
-                    activities = listOf(payloadWithImages),
-                )
-                Timber.tag(TAG).i("setActivity: re-sending with images for songId=%s", songIdAtLaunch)
-                gateway.presenceUpdate(presenceJson)
-            } catch (e: IllegalStateException) {
-                Timber.tag(TAG).w(e, "setActivity: image re-send gateway not open")
-            } catch (e: Throwable) {
-                Timber.tag(TAG).e(e, "setActivity: image re-send failed")
-            }
-        }
     }
 
     fun clear() {
-        if (!_ready) {
-            Timber.tag(TAG).w("clear: skipping — not ready")
-            return
-        }
-        if (lastActivity == null && currentSongId == null) {
-            Timber.tag(TAG).d("clear: already cleared, skipping")
-            return
-        }
-        lastActivity = null
         currentSongId = null
         currentIsPlaying = false
+        lastActivity = null
         currentActivityHadImages = false
         currentActivityId.incrementAndGet()
-        imageResolutionJob?.cancel()
-        try {
-            gateway.presenceUpdate(
-                DiscordPresence.buildPresenceUpdate(
-                    status = PresenceStatus.Online,
-                    activities = emptyList(),
-                ),
-            )
-        } catch (e: IllegalStateException) {
-            Timber.tag(TAG).w(e, "clear: gateway not open")
-        } catch (e: Throwable) {
-            Timber.tag(TAG).e(e, "clear: send failed")
-        }
+        Timber.tag(TAG).d("clear: no supported presence transport in this build; nothing to clear")
     }
 
     fun reconnectWithToken(token: String) {
@@ -523,11 +392,17 @@ object DiscordRpcManager {
                         }
                     }
 
-                    runCatching { gateway.close(4000, "reconnecting") }
-                    gateway.connect()
-                    gateway.identify("Bearer ${accessToken ?: token}")
+                    // No presence transport (see setActivity). Rehydration only
+                    // validates/refreshes the token so the linked account still shows.
+                    _authorized = true
+                    _connectionStatus.value = Status.Connected
+                    val user = fetchCurrentUser(accessToken ?: token)
+                    if (user != null) {
+                        _currentUser.value = user
+                    }
+                    Timber.tag(TAG).i("reconnectWithToken: token revalidated (user=%s)", user?.username)
                 } catch (e: Throwable) {
-                    Timber.tag(TAG).e(e, "reconnectWithToken: connect/identify failed")
+                    Timber.tag(TAG).e(e, "reconnectWithToken: revalidation failed")
                     _lastError.value = "discord_error_loopback_timeout"
                     _connectionStatus.value = Status.Disconnected
                 }
@@ -535,46 +410,9 @@ object DiscordRpcManager {
         }
     }
 
-    private suspend fun refreshAndReconnect() {
-        val refreshToken = DiscordTokenStore.getRefreshToken()
-        if (refreshToken.isNullOrEmpty()) {
-            Timber.tag(TAG).w("refreshAndReconnect: no refresh token available, logging out")
-            _lastError.value = "discord_error_token_refresh_failed"
-            logout()
-            return
-        }
-
-        val refreshed = try {
-            auth.refresh(refreshToken)
-        } catch (e: DiscordAuthException.InvalidGrant) {
-            Timber.tag(TAG).w(e, "refreshAndReconnect: refresh token rejected, logging out")
-            _lastError.value = "discord_error_token_refresh_failed"
-            logout()
-            return
-        } catch (e: Throwable) {
-            Timber.tag(TAG).e(e, "refreshAndReconnect: token refresh failed")
-            _lastError.value = "discord_error_token_refresh_failed"
-            return
-        }
-
-        Timber.tag(TAG).i(
-            "refreshAndReconnect: refresh succeeded (token length=%d, expiresIn=%d), reconnecting",
-            refreshed.accessToken.length,
-            refreshed.expiresInSec,
-        )
-        DiscordTokenStore.storeFull(
-            refreshed.accessToken,
-            refreshed.refreshToken,
-            refreshed.expiresInSec,
-        )
-        reconnectWithToken(refreshed.accessToken)
-    }
-
     fun disconnect() {
-        Timber.tag(TAG).i("disconnect: closing gateway, clearing ready/authorized")
+        Timber.tag(TAG).i("disconnect: clearing authorized state")
         currentActivityId.incrementAndGet()
-        imageResolutionJob?.cancel()
-        runCatching { gateway.close(1000, "user disconnect") }
         _connectionStatus.value = Status.Disconnected
         _ready = false
         _authorized = false
@@ -586,9 +424,6 @@ object DiscordRpcManager {
     fun destroy() {
         Timber.tag(TAG).i("destroy: cancelling scope and tearing down (initialized=%s)", initialized)
         currentActivityId.incrementAndGet()
-        imageResolutionJob?.cancel()
-        runCatching { gateway.close(1000, "destroy") }
-        runCatching { gateway.closeHttp() }
         scope.cancel()
         _ready = false
         _authorized = false
@@ -613,74 +448,6 @@ object DiscordRpcManager {
         currentActivityHadImages = false
     }
 
-    private suspend fun handleGatewayEvent(event: GatewayEvent) {
-        when (event) {
-            is GatewayEvent.Ready -> {
-                Timber.tag(TAG).i("gateway: READY (sessionId prefix=%s)", event.sessionId.take(8))
-                _ready = true
-                _authorized = true
-                _connectionStatus.value = Status.Connected
-                _lastError.value = null
-                val token = accessToken ?: return
-                scope.launch {
-                    val user = fetchCurrentUser(token)
-                    _currentUser.value = user
-                    if (user != null) {
-                        Timber.tag(TAG).i("gateway READY: fetched user %s", user.username)
-                    }
-                }
-            }
-            is GatewayEvent.Resumed -> {
-                Timber.tag(TAG).i("gateway: RESUMED")
-                _ready = true
-                _authorized = true
-                _connectionStatus.value = Status.Connected
-                _lastError.value = null
-            }
-            is GatewayEvent.Disconnected -> {
-                Timber.tag(TAG).i("gateway: Disconnected (code=%d, remote=%s, reason=%s)",
-                    event.code, event.remote, event.reason)
-                _ready = false
-                _authorized = false
-                _connectionStatus.value = Status.Disconnected
-                currentSongId = null
-                currentIsPlaying = false
-                imageResolutionJob?.cancel()
-                imageResolutionJob = null
-                if (event.code in setOf(4001, 4004) && event.reason.contains("max reconnect", ignoreCase = true)) {
-                    _lastError.value = when (event.code) {
-                        4004 -> "discord_error_token_refresh_failed"
-                        4001 -> "discord_error_invalid_scope"
-                        else -> _lastError.value
-                    }
-                }
-            }
-            is GatewayEvent.InvalidSession -> {
-                Timber.tag(TAG).w("gateway: InvalidSession (resumable=%s), closing WS to trigger reconnect", event.resumable)
-                imageResolutionJob?.cancel()
-                imageResolutionJob = null
-            }
-            is GatewayEvent.RefreshToken -> {
-                Timber.tag(TAG).w("gateway: RefreshToken requested, refreshing and reconnecting")
-                scope.launch { refreshAndReconnect() }
-            }
-            is GatewayEvent.Hello -> Unit
-            is GatewayEvent.HeartbeatAck -> Unit
-            is GatewayEvent.TextDispatch -> {
-                Timber.tag(TAG).v("gateway: TextDispatch op=%d t=%s", event.op, event.t)
-            }
-        }
-    }
-
-    private fun activityTypeToEnum(code: Int): ActivityType = when (code) {
-        0 -> ActivityType.Playing
-        1 -> ActivityType.Streaming
-        2 -> ActivityType.Listening
-        3 -> ActivityType.Watching
-        4 -> ActivityType.Custom
-        5 -> ActivityType.Competing
-        else -> ActivityType.Listening
-    }
 }
 
 private object BuildConfigProvider {

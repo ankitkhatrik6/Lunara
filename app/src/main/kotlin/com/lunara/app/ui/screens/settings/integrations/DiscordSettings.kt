@@ -190,6 +190,7 @@ fun DiscordSettings(
             "discord_error_no_browser" -> R.string.discord_error_no_browser
             "discord_error_token_refresh_failed" -> R.string.discord_error_token_refresh_failed
             "discord_error_invalid_scope" -> R.string.discord_error_invalid_scope
+            "discord_error_access_denied" -> R.string.discord_error_access_denied
             else -> R.string.discord_error_banner_title
         }
         stringResource(resId)

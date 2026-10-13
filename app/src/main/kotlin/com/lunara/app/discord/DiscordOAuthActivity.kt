@@ -238,7 +238,14 @@ class DiscordOAuthActivity : Activity() {
 
         if (error != null) {
             Timber.tag(TAG).w("OAuthActivity: authorization error=%s", error)
-            failWith(DiscordAuthException.UserCancelled("Authorization denied: $error"))
+            // Map Discord's OAuth error codes to distinct, actionable failures.
+            val failure = when (error) {
+                "access_denied" -> DiscordAuthException.AccessDenied()
+                "invalid_scope", "unauthorized_client" ->
+                    DiscordAuthException.InvalidScope("Discord rejected a requested permission ($error)")
+                else -> DiscordAuthException.UserCancelled("Authorization failed: $error")
+            }
+            failWith(failure)
             finish()
             return
         }
