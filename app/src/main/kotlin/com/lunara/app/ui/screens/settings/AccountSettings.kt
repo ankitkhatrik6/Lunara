@@ -426,18 +426,6 @@ fun AccountSettings(
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
         ) {
-            PreferenceEntry(
-                title = { Text(stringResource(R.string.together)) },
-                icon = { Icon(painterResource(R.drawable.group_outlined), null) },
-                onClick = {
-                    onClose()
-                    navController.navigate("listen_together_from_topbar")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            )
-
             Spacer(Modifier.height(4.dp))
 
             // Integrations lives in settings and is set up once; checking for a

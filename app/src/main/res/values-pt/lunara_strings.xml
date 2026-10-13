@@ -221,7 +221,6 @@
     <string name="audio_offload_description">Use o caminho de descarregamento de áudio para reprodução de áudio. Desativar essa opção pode aumentar o consumo de energia, mas pode ser útil se você tiver problemas com a reprodução de áudio ou pós-processamento</string>
     <string name="google_cast_description">Ativar a transmissão de áudio para o Chromecast e outros dispositivos compatíveis com transmissão</string>
     <string name="lyrics_romanize_macedonian">Romanizar letras em macedónio</string>
-    <string name="integrations">Integrações</string>
     <string name="username">Utilizador</string>
     <string name="password">Palavra-passe</string>
     <string name="lastfm_integration">Integração com Last.fm</string>

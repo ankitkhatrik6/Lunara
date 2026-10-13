@@ -164,7 +164,6 @@
     <string name="audio_offload">Ενεργοποίηση εκφόρτωσης</string>
     <string name="audio_offload_description">Χρησιμοποιήστε τη διαδρομή εκφόρτωσης ήχου για αναπαραγωγή ήχου. Η απενεργοποίηση αυτής της λειτουργίας μπορεί να αυξήσει την κατανάλωση ενέργειας, αλλά μπορεί να είναι χρήσιμη εάν αντιμετωπίζετε προβλήματα με την αναπαραγωγή ήχου ή την μετα-επεξεργασία</string>
     <string name="lyrics_romanize_macedonian">Λατινοποίηση Σλαβομακεδονικών στίχων</string>
-    <string name="integrations">Ενσωματώσεις</string>
     <string name="username">Όνομα χρήστη</string>
     <string name="password">Κωδικός πρόσβασης</string>
     <string name="lastfm_integration">Ενσωμάτωση Last.fm</string>

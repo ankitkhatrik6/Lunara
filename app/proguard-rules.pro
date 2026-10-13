@@ -187,20 +187,10 @@
 -keepclassmembers class io.ktor.** { *; }
 -dontwarn io.ktor.**
 
-## Listen Together Protobuf
--keep class com.lunara.app.listentogether.proto.** { *; }
--keepclassmembers class com.lunara.app.listentogether.proto.** { *; }
-
 ## Shazam Models
 -keep class com.lunara.shazamkit.models.** { *; }
 -keepclassmembers class com.lunara.shazamkit.models.** {
     *;
-}
-
-## Discord RPC JNI
--keep class com.lunara.app.discord.DiscordRpcManager { *; }
--keepclassmembers class com.lunara.app.discord.DiscordRpcManager {
-    native <methods>;
 }
 
 ## Kotlinx Serialization

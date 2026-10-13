@@ -165,7 +165,6 @@
     <string name="settings_section_ui">Vmesnik</string>
     <string name="settings_section_privacy">Zasebnost in varnost</string>
     <string name="update_channel_desc">Obvestila o novih različicah</string>
-    <string name="integrations">Integracije</string>
     <string name="username">Uporabniško ime</string>
     <string name="password">Geslo</string>
     <string name="lastfm_integration">Integracija z Last.fm</string>

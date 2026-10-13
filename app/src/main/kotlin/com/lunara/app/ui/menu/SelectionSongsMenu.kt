@@ -86,8 +86,6 @@ fun SelectionSongMenu(
     val playerConnection = LocalPlayerConnection.current ?: return
     val syncUtils = LocalSyncUtils.current
     val deletedNSongsTemplate = stringResource(R.string.deleted_n_songs)
-    val listenTogetherManager = com.lunara.app.LocalListenTogetherManager.current
-    val isGuest = listenTogetherManager?.isInRoom == true && listenTogetherManager.isHost == false
 
     val allInLibrary by remember {
         mutableStateOf(
@@ -309,56 +307,12 @@ fun SelectionSongMenu(
             NewActionGrid(
                 actions =
                     listOfNotNull(
-                        if (!isGuest) {
-                            NewAction(
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.play),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(28.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                },
-                                text = stringResource(R.string.play),
-                                onClick = {
-                                    onDismiss()
-                                    playerConnection.playQueue(
-                                        ListQueue(
-                                            title = "Selection",
-                                            items = songSelection.map { it.toMediaItem() },
-                                        ),
-                                    )
-                                    clearAction()
-                                },
-                            )
-                        } else {
+                        
                             null
-                        },
-                        if (!isGuest) {
-                            NewAction(
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.shuffle),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(28.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                },
-                                text = stringResource(R.string.shuffle),
-                                onClick = {
-                                    onDismiss()
-                                    playerConnection.playQueue(
-                                        ListQueue(
-                                            title = "Selection",
-                                            items = songSelection.shuffled().map { it.toMediaItem() },
-                                        ),
-                                    )
-                                    clearAction()
-                                },
-                            )
-                        } else {
+                        ,
+                        
                             null
-                        },
+                        ,
                         NewAction(
                             icon = {
                                 Icon(
@@ -381,7 +335,7 @@ fun SelectionSongMenu(
             Material3MenuGroup(
                 items =
                     buildList {
-                        if (!isGuest) {
+                        
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.play_next)) },
@@ -438,7 +392,7 @@ fun SelectionSongMenu(
                                     },
                                 ),
                             )
-                        }
+                        
                         add(
                             Material3MenuItemData(
                                 title = { Text(text = stringResource(R.string.add_to_playlist)) },
@@ -674,8 +628,6 @@ fun SelectionMediaMetadataMenu(
     val downloadUtil = LocalDownloadUtil.current
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current ?: return
-    val listenTogetherManager = com.lunara.app.LocalListenTogetherManager.current
-    val isGuest = listenTogetherManager?.isInRoom == true && listenTogetherManager.isHost == false
 
     val allLiked by remember(songSelection) {
         mutableStateOf(songSelection.isNotEmpty() && songSelection.all { it.liked })
@@ -780,7 +732,7 @@ fun SelectionMediaMetadataMenu(
             Material3MenuGroup(
                 items =
                     buildList {
-                        if (currentItems.isNotEmpty() && !isGuest) {
+                        if (currentItems.isNotEmpty()) {
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.delete)) },
@@ -806,7 +758,7 @@ fun SelectionMediaMetadataMenu(
                                 ),
                             )
                         }
-                        if (!isGuest) {
+                        
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.play)) },
@@ -849,7 +801,7 @@ fun SelectionMediaMetadataMenu(
                                     },
                                 ),
                             )
-                            if (!isGuest) {
+                            
                                 add(
                                     Material3MenuItemData(
                                         title = { Text(text = stringResource(R.string.add_to_queue)) },
@@ -866,8 +818,8 @@ fun SelectionMediaMetadataMenu(
                                         },
                                     ),
                                 )
-                            }
-                        }
+                            
+                        
                         add(
                             Material3MenuItemData(
                                 title = { Text(text = stringResource(R.string.add_to_playlist)) },

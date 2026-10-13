@@ -87,8 +87,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.lunara.app.ui.screens.settings.PlayerDesignScreen
 import com.lunara.app.ui.screens.settings.UpdaterScreen
-import com.lunara.app.ui.screens.settings.integrations.DiscordSettings
-import com.lunara.app.ui.screens.settings.integrations.IntegrationScreen
 
 import com.lunara.app.ui.screens.wrapped.WrappedScreen
 import com.lunara.app.utils.rememberEnumPreference
@@ -426,14 +424,6 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/backup_restore") {
         BackupAndRestore(navController)
-    }
-
-    composable("settings/integrations") {
-        IntegrationScreen(navController)
-    }
-
-    composable("settings/integrations/discord") {
-        DiscordSettings(navController)
     }
 
     composable("settings/updater") {

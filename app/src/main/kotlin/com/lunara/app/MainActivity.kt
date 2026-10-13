@@ -148,19 +148,15 @@ import com.lunara.app.constants.EnableLandscapeScalingKey
 import androidx.datastore.preferences.core.edit
 import com.lunara.app.constants.LastSeenVersionKey
 import com.lunara.app.constants.UpdateDeclinedVersionKey
-import com.lunara.app.constants.LyricsProviderOrderKey
 import com.lunara.app.constants.MiniPlayerBottomSpacing
 import com.lunara.app.constants.MiniPlayerHeight
 import com.lunara.app.constants.NavigationBarAnimationSpec
 import com.lunara.app.constants.NavigationBarHeight
 import com.lunara.app.constants.PauseListenHistoryKey
 import com.lunara.app.constants.PauseSearchHistoryKey
-import com.lunara.app.constants.PreferredLyricsProvider
-import com.lunara.app.constants.PreferredLyricsProviderKey
 import com.lunara.app.constants.PureBlackKey
 import com.lunara.app.constants.SYSTEM_DEFAULT
 import com.lunara.app.constants.SelectedThemeColorKey
-import com.lunara.app.constants.SimpMusicMigrationDoneKey
 import com.lunara.app.constants.SlimNavBarHeight
 import com.lunara.app.constants.SlimNavBarKey
 import com.lunara.app.constants.UpdateNotificationsEnabledKey
@@ -260,9 +256,6 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var syncUtils: SyncUtils
 
-    @Inject
-    lateinit var listenTogetherManager: com.lunara.app.listentogether.ListenTogetherManager
-
     private lateinit var navController: NavHostController
     private var pendingIntent: Intent? = null
 
@@ -288,13 +281,10 @@ class MainActivity : ComponentActivity() {
                 if (service is MusicBinder) {
                     playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
                     playerConnectionSnapshot = playerConnection
-                    listenTogetherManager.setPlayerConnection(playerConnection)
                 }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
-                // Disconnect Listen Together manager
-                listenTogetherManager.setPlayerConnection(null)
                 playerConnection?.dispose()
                 // DO NOT null out playerConnection here - keep it for when service reconnects
                 // DO NOT update playerConnectionSnapshot - this is the key to preventing recomposition
@@ -309,7 +299,6 @@ class MainActivity : ComponentActivity() {
             Timber.tag("MainActivity").w(e, "Service was not bound when attempting to unbind in $source")
         } finally {
             isServiceBound = false
-            listenTogetherManager.setPlayerConnection(null)
             playerConnection?.dispose()
             // DO NOT null out playerConnection here - keep it for reconnection
             // DO NOT update playerConnectionSnapshot - this prevents UI recomposition
@@ -355,19 +344,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onStop() {
-        // Keep the service binding, PlayerConnection and Listen Together wiring alive while
-        // the Activity is backgrounded. The MusicService is a foreground service and keeps
-        // running, so the host must keep reporting playback state to the LT server; detaching
-        // the player listener here used to break LT for any host that wasn't staring at the
-        // app the whole session. Full teardown happens in onDestroy() via safeUnbindService().
-        super.onStop()
-    }
-
     override fun onDestroy() {
-        if (isFinishing) {
-            listenTogetherManager.disconnect()
-        }
         super.onDestroy()
 
         // Full cleanup - only on actual destroy.
@@ -409,9 +386,6 @@ class MainActivity : ComponentActivity() {
         window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Initialize Listen Together manager
-        listenTogetherManager.initialize()
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             val locale =
                 dataStore[AppLanguageKey]
@@ -437,37 +411,7 @@ class MainActivity : ComponentActivity() {
                 }
         }
 
-        // Defer migration and version tracking to avoid blocking first frame
-        lifecycleScope.launch(Dispatchers.IO) {
-            val preferences = dataStore.data.first()
-            val currentVersion = BuildConfig.VERSION_NAME
-
-            // SimpMusic Removal Migration
-            if (preferences[SimpMusicMigrationDoneKey] != true) {
-                safeDataStoreEdit { settings ->
-                    val currentOrder = settings[LyricsProviderOrderKey] ?: ""
-                    if (currentOrder.contains("SimpMusic")) {
-                        val orderList =
-                            currentOrder
-                                .split(",")
-                                .map { it.trim() }
-                                .filter { it.isNotBlank() && it != "SimpMusic" }
-                                .toMutableList()
-                        if (orderList.isEmpty()) {
-                            settings[LyricsProviderOrderKey] = ""
-                        } else {
-                            settings[LyricsProviderOrderKey] = orderList.joinToString(",")
-                        }
-                    }
-                    if (settings[PreferredLyricsProviderKey] == "SIMPMUSIC") {
-                        settings[PreferredLyricsProviderKey] = PreferredLyricsProvider.LRCLIB.name
-                    }
-                    settings[SimpMusicMigrationDoneKey] = true
-                    settings[LastSeenVersionKey] = currentVersion
-                }
-            }
-        }
-
+        // Defer version tracking to avoid blocking first frame
         lifecycleScope.launch(Dispatchers.IO) {
             safeDataStoreEdit { settings ->
                 settings[LastSeenVersionKey] = BuildConfig.VERSION_NAME
@@ -1127,7 +1071,6 @@ class MainActivity : ComponentActivity() {
                     LocalDownloadUtil provides downloadUtil,
                     LocalShimmerTheme provides ShimmerTheme,
                     LocalSyncUtils provides syncUtils,
-                    LocalListenTogetherManager provides listenTogetherManager,
                     LocalChangelogState provides showChangelog,
                 ) {
                     if (showChangelog.value) {
@@ -1786,6 +1729,5 @@ val LocalPlayerBottomSheetState = staticCompositionLocalOf<BottomSheetState?> { 
 val LocalPlayerAwareWindowInsets = compositionLocalOf<WindowInsets> { error("No WindowInsets provided") }
 val LocalDownloadUtil = staticCompositionLocalOf<DownloadUtil> { error("No DownloadUtil provided") }
 val LocalSyncUtils = staticCompositionLocalOf<SyncUtils> { error("No SyncUtils provided") }
-val LocalListenTogetherManager = staticCompositionLocalOf<com.lunara.app.listentogether.ListenTogetherManager?> { null }
 val LocalChangelogState = staticCompositionLocalOf<MutableState<Boolean>> { error("No LocalChangelogState provided") }
 val LocalIsPlayerExpanded = compositionLocalOf { false }

@@ -367,7 +367,6 @@
     <string name="google_cast_description">Chromecast edo Cast duten beste gailu batzuetara audioa bidali</string>
     <string name="lyrics_romanize_macedonian">Mazedoniarrez dauden hitzak erromanizatu</string>
     <string name="lyrics_romanize_as_main">Erakutsi hitzak errmoanizatuta lehenetsiz</string>
-    <string name="integrations">Integrazioak</string>
     <string name="username">Erabiltzailea</string>
     <string name="password">Pasahitza</string>
     <string name="lastfm_integration">Last.fm</string>

@@ -188,16 +188,6 @@ fun SettingsScreen(
                 )
             }
         },
-        // Connections: Integrations.
-        "Connections" to listOf(
-            SettingRow(
-                icon = R.drawable.link,
-                title = stringResource(R.string.integrations),
-                subtitle = stringResource(R.string.hint_integrations),
-            ) {
-                navController.navigate("settings/integrations")
-            },
-        ),
         // Storage keeps Storage + Privacy as-is.
         "Storage and Privacy" to listOf(
             SettingRow(

@@ -199,7 +199,6 @@
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Slå på det å kasta audio til Chromecast og andre Cast-kunnige einingar</string>
     <string name="lyrics_romanize_macedonian">Romaniser makedonske songtekster</string>
-    <string name="integrations">Hopflettingar</string>
     <string name="username">Nøytarnamn</string>
     <string name="password">Passord</string>
     <string name="lastfm_integration">Hopfletting med Last.fm</string>

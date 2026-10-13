@@ -49,7 +49,6 @@ import androidx.media3.exoplayer.offline.DownloadService
 import com.lunara.innertube.YouTube
 import com.lunara.app.LocalDatabase
 import com.lunara.app.LocalDownloadUtil
-import com.lunara.app.LocalListenTogetherManager
 import com.lunara.app.LocalPlayerConnection
 import com.lunara.app.R
 import com.lunara.app.db.entities.Playlist
@@ -90,8 +89,6 @@ fun PlaylistMenu(
     val database = LocalDatabase.current
     val downloadUtil = LocalDownloadUtil.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val listenTogetherManager = LocalListenTogetherManager.current
-    val isGuest = listenTogetherManager?.isInRoom == true && !listenTogetherManager.isHost
     val dbPlaylist by database.playlist(playlist.id).collectAsStateWithLifecycle(initialValue = playlist)
     var songs by remember {
         mutableStateOf(emptyList<Song>())
@@ -321,54 +318,9 @@ fun PlaylistMenu(
             NewActionGrid(
                 actions =
                     listOfNotNull(
-                        if (!isGuest) {
-                            NewAction(
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.play),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(28.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                },
-                                text = stringResource(R.string.play),
-                                onClick = {
-                                    onDismiss()
-                                    if (songs.isNotEmpty()) {
-                                        playerConnection.playQueue(
-                                            ListQueue(
-                                                title = playlist.playlist.name,
-                                                items = songs.map(Song::toMediaItem),
-                                            ),
-                                        )
-                                    }
-                                },
-                            )
-                            NewAction(
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.shuffle),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(28.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                },
-                                text = stringResource(R.string.shuffle),
-                                onClick = {
-                                    onDismiss()
-                                    if (songs.isNotEmpty()) {
-                                        playerConnection.playQueue(
-                                            ListQueue(
-                                                title = playlist.playlist.name,
-                                                items = songs.shuffled().map(Song::toMediaItem),
-                                            ),
-                                        )
-                                    }
-                                },
-                            )
-                        } else {
+                        
                             null
-                        },
+                        ,
                         NewAction(
                             icon = {
                                 Icon(
@@ -395,7 +347,7 @@ fun PlaylistMenu(
                         ),
                     ),
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp),
-                columns = if (isGuest) 2 else 3,
+                columns = 3,
             )
         }
 
@@ -403,7 +355,7 @@ fun PlaylistMenu(
             Material3MenuGroup(
                 items =
                     buildList {
-                        if (!isGuest) {
+                        
                             playlist.playlist.browseId?.let { browseId ->
                                 add(
                                     Material3MenuItemData(
@@ -430,8 +382,8 @@ fun PlaylistMenu(
                                     ),
                                 )
                             }
-                        }
-                        if (!isGuest) {
+                        
+                        
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.play_next)) },
@@ -450,8 +402,8 @@ fun PlaylistMenu(
                                     },
                                 ),
                             )
-                        }
-                        if (!isGuest) {
+                        
+                        
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.add_to_queue)) },
@@ -468,7 +420,7 @@ fun PlaylistMenu(
                                     },
                                 ),
                             )
-                        }
+                        
                     },
             )
         }
@@ -479,7 +431,7 @@ fun PlaylistMenu(
             Material3MenuGroup(
                 items =
                     buildList {
-                        if (editable && autoPlaylist != true && !isGuest) {
+                        if (editable && autoPlaylist != true) {
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.edit)) },
@@ -614,7 +566,7 @@ fun PlaylistMenu(
                                 onClick = { showExportDialog = true },
                             ),
                         )
-                        if (autoPlaylist != true && !isGuest) {
+                        if (autoPlaylist != true) {
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.delete)) },

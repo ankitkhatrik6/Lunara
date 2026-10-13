@@ -1,5 +1,10 @@
 [
   {
+    "versionName": "3.16.12",
+    "releaseDate": "2026-10-13T00:00:00Z",
+    "description": "## Cleanup\n\n- **Discord removed.** The Discord sign-in and Rich Presence integration is gone from the app, along with its Settings entry.\n- **Listen Together removed.** The whole listen-together feature (rooms, track suggestions, guest controls, top-bar toggle) is gone.\n- **Migration leftovers, roadmap and issue templates removed.** The one-time SimpMusic migration, ROADMAP.md, MIGRATION.md and the GitHub issue templates are gone.\n"
+  },
+  {
     "tagName": "v3.16.11",
     "versionName": "3.16.11",
     "releaseDate": "2026-10-13T00:00:00Z",

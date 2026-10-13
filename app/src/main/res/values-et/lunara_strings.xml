@@ -115,7 +115,6 @@
     <string name="update_notifications">Lülita uuenduste teavitused sisse</string>
     <string name="update_available_title">Uus versioon on saadaval</string>
     <string name="update_channel_name">Rakenduse uuendused</string>
-    <string name="integrations">Lõimingud</string>
     <string name="username">Kasutajanimi</string>
     <string name="password">Salasõna</string>
     <string name="lastfm_integration">Last.fm-i lõiming</string>
