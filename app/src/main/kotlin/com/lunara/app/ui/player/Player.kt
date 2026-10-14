@@ -1020,7 +1020,7 @@ fun BottomSheetPlayer(
                                 Box(
                                     modifier =
                                         Modifier
-                                            .size(56.dp)
+                                            .size(40.dp)
                                             .clip(RoundedCornerShape(ThumbnailCornerRadius))
                                             .background(MaterialTheme.colorScheme.surfaceVariant),
                                     contentAlignment = Alignment.Center,
@@ -1030,7 +1030,7 @@ fun BottomSheetPlayer(
                                         contentDescription = null,
                                         modifier =
                                             Modifier
-                                                .size(32.dp)
+                                                .size(24.dp)
                                     )
                                 }
                             } else {
@@ -1040,7 +1040,7 @@ fun BottomSheetPlayer(
                                     contentScale = if (cropAlbumArt) ContentScale.Crop else ContentScale.Fit,
                                     modifier =
                                         Modifier
-                                            .size(56.dp)
+                                            .size(40.dp)
                                             .clip(RoundedCornerShape(ThumbnailCornerRadius)),
                                 )
                             }
@@ -1057,6 +1057,7 @@ fun BottomSheetPlayer(
                         targetState = mediaMetadata.title,
                         transitionSpec = { fadeIn() togetherWith fadeOut() },
                         label = "",
+                        modifier = Modifier.fillMaxWidth(),
                     ) { title ->
                         Text(
                             text = title,
@@ -1064,9 +1065,11 @@ fun BottomSheetPlayer(
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center,
                             color = TextBackgroundColor,
                             modifier =
                                 Modifier
+                                    .fillMaxWidth()
                                     .basicMarquee(iterations = 1, initialDelayMillis = 3000, velocity = 30.dp)
                                     .combinedClickable(
                                         enabled = true,
@@ -1113,11 +1116,11 @@ fun BottomSheetPlayer(
                                 }
 
                             Box(
+                                contentAlignment = Alignment.Center,
                                 modifier =
                                     Modifier
                                         .fillMaxWidth()
-                                        .basicMarquee(iterations = 1, initialDelayMillis = 3000, velocity = 30.dp)
-                                        .padding(end = 12.dp),
+                                        .basicMarquee(iterations = 1, initialDelayMillis = 3000, velocity = 30.dp),
                             ) {
                                 var layoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
                                 var clickOffset by remember { mutableStateOf<Offset?>(null) }
@@ -1126,9 +1129,11 @@ fun BottomSheetPlayer(
                                     style = MaterialTheme.typography.titleMedium.copy(color = TextBackgroundColor.copy(alpha = 0.7f)),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
+                                    textAlign = TextAlign.Center,
                                     onTextLayout = { layoutResult = it },
                                     modifier =
                                         Modifier
+                                            .fillMaxWidth()
                                             .pointerInput(Unit) {
                                                 awaitPointerEventScope {
                                                     while (true) {
@@ -2565,6 +2570,7 @@ private fun PlayerQuickActions(
     iconButtonColor: Color,
 ) {
     val menuState = LocalMenuState.current
+    val bottomSheetPageState = LocalBottomSheetPageState.current
     val context = LocalContext.current
     val download by LocalDownloadUtil.current
         .getDownload(mediaMetadata.id)
@@ -2572,12 +2578,12 @@ private fun PlayerQuickActions(
     val isDownloaded = download?.state == Download.STATE_COMPLETED
     val isDownloading = download?.state == Download.STATE_DOWNLOADING || download?.state == Download.STATE_QUEUED
 
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(
             contentAlignment = Alignment.Center,
             modifier =
                 Modifier
-                    .size(40.dp)
+                    .size(34.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(textButtonColor)
                     .clickable {
@@ -2595,6 +2601,7 @@ private fun PlayerQuickActions(
                 painter = painterResource(R.drawable.add),
                 contentDescription = stringResource(R.string.add_to_playlist),
                 colorFilter = ColorFilter.tint(iconButtonColor),
+                modifier = Modifier.size(20.dp),
             )
         }
 
@@ -2602,7 +2609,7 @@ private fun PlayerQuickActions(
             contentAlignment = Alignment.Center,
             modifier =
                 Modifier
-                    .size(40.dp)
+                    .size(34.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(textButtonColor)
                     .clickable {
@@ -2629,7 +2636,7 @@ private fun PlayerQuickActions(
         ) {
             if (isDownloading) {
                 LunaraLoader(
-                    modifier = Modifier.size(22.dp),
+                    modifier = Modifier.size(18.dp),
                     strokeWidth = 2.dp,
                 )
             } else {
@@ -2641,8 +2648,36 @@ private fun PlayerQuickActions(
                         if (isDownloaded) R.string.remove_download else R.string.action_download,
                     ),
                     colorFilter = ColorFilter.tint(iconButtonColor),
+                    modifier = Modifier.size(20.dp),
                 )
             }
+        }
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier =
+                Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(textButtonColor)
+                    .clickable {
+                        bottomSheetPageState.show {
+                            com.lunara.app.ui.menu.ShareStorySheet(
+                                coverArtUrl = mediaMetadata.thumbnailUrl,
+                                title = mediaMetadata.title,
+                                artist = mediaMetadata.artists.joinToString { it.name },
+                                link = com.lunara.app.utils.ShareLinks.song(mediaMetadata.id),
+                                kindLabel = "Song",
+                            )
+                        }
+                    },
+        ) {
+            Image(
+                painter = painterResource(R.drawable.share),
+                contentDescription = stringResource(R.string.share),
+                colorFilter = ColorFilter.tint(iconButtonColor),
+                modifier = Modifier.size(20.dp),
+            )
         }
     }
 }

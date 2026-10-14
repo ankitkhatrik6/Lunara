@@ -45,7 +45,7 @@ object ShareLinks {
     /**
      * The target [uri] names, or null when it is not one of our share links. Accepts both the web
      * address (`https://lunara.ankitak.com.np/song/ID`) and the in-app scheme the site hands off to
-     * (`Lunara://song/ID`), because a browser redirects to the scheme form before the app sees it.
+     * (`lunara://song/ID`), because a browser redirects to the scheme form before the app sees it.
      */
     fun parse(uri: Uri): Target? {
         val host = uri.host?.lowercase()

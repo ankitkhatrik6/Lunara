@@ -120,7 +120,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="Lunara" />
+                <data android:scheme="lunara" />
                 <data android:host="playlist" />
             </intent-filter>
 
@@ -151,7 +151,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="Lunara" />
+                <data android:scheme="lunara" />
                 <data android:host="song" />
             </intent-filter>
 
@@ -161,7 +161,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="Lunara" />
+                <data android:scheme="lunara" />
                 <data android:host="album" />
             </intent-filter>
 
@@ -171,7 +171,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="Lunara" />
+                <data android:scheme="lunara" />
                 <data android:host="artist" />
             </intent-filter>
 
@@ -182,7 +182,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="Lunara" />
+                <data android:scheme="lunara" />
                 <data android:host="playlist" />
             </intent-filter>
 
@@ -193,7 +193,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="Lunara" />
+                <data android:scheme="lunara" />
                 <data android:host="listen" />
             </intent-filter>
 

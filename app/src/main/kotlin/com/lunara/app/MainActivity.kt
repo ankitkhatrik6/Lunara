@@ -1614,7 +1614,7 @@ class MainActivity : ComponentActivity() {
         }
 
         // A link this app shared itself: lunara.ankitak.com.np/song|album|playlist|artist/<id>,
-        // or the Lunara://<type>/<id> scheme the site redirects to. These open the matching
+        // or the lunara://<type>/<id> scheme the site redirects to. These open the matching
         // screen, and a song starts playing the way a YouTube watch link does.
         when (val target = ShareLinks.parse(uri)) {
             is ShareLinks.Target.Song -> {

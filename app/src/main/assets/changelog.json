@@ -1,8 +1,8 @@
 [
   {
-    "tagName": "v3.17.1",
-    "versionName": "3.17.1",
+    "tagName": "v3.17.2",
+    "versionName": "3.17.2",
     "releaseDate": "2026-10-14T00:00:00Z",
-    "description": "## What's new\n\n- **Sharper, cleaner share pictures.** The story card now draws the artwork big and sharp, with the title, artist, the Lunara icon and a “Listen on Lunara” sign-off — no QR code, no link text cluttering the picture. The link still travels with the image when you send it.\n- **Share key on the player.** A share button now sits at the top right of Now Playing, next to every other share menu.\n- **Links open straight in Lunara.** Shared links are verified App Links on lunara.ankitak.com.np — no more “Open with” chooser once the site is live.\n"
+    "description": "## What's new\n\n- **Share button in the player.** A share key now sits right beside the add-to-playlist and download keys, so you can share the current song without hunting through menus.\n- **Cleaner now-playing header.** The title and artist are centered and the inline album art is a compact thumbnail instead of a large block.\n- **Shared links open the app, not the website.** The custom scheme is now lowercase (the standard Android form) and the fallback page shows a clear 'Open in Lunara' button instead of silently doing nothing.\n"
   }
 ]

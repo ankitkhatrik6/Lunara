@@ -381,24 +381,35 @@
     document.getElementById('yr').textContent = new Date().getFullYear();
 
     // A shared link (lunara.ankitak.com.np/song/<id>, /album/<id>, ...) is meant to open the
-    // app. Android App Links hand verified links straight to Lunara; this is the belt-and-braces
-    // path for browsers that have not verified yet: build the Lunara:// scheme URL and try it.
-    // If the app is not installed the scheme does nothing and the landing page simply stays, so
-    // the visitor reads about Lunara instead of staring at an error.
+    // app. Android App Links hand verified links straight to Lunara; this is the fallback for
+    // browsers that have not verified yet (fresh install). A hidden iframe no longer works —
+    // Chrome blocks custom-scheme navigations that are not triggered by a real tap — so we show
+    // an explicit "Open in Lunara" button. Tapping it is a user gesture, which lets the browser
+    // hand the lunara:// link to the app. If the app is not installed the tap simply does nothing
+    // and the visitor keeps reading about Lunara.
     (function () {
       var m = location.pathname.match(/^\/(song|album|playlist|artist)\/([^/?#]+)/);
       if (!m) return;
       var type = m[1];
       var id = decodeURIComponent(m[2]);
-      var schemeUrl = 'Lunara://' + type + '/' + id;
-      // Attempt the hand-off without navigating away: an iframe keeps this page as the fallback.
-      try {
-        var iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = schemeUrl;
-        document.body.appendChild(iframe);
-        setTimeout(function () { iframe.remove(); }, 1500);
-      } catch (e) { /* ignore — page stays as the fallback */ }
+      var schemeUrl = 'lunara://' + type + '/' + id;
+
+      var banner = document.createElement('div');
+      banner.style.cssText =
+        'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:9999;' +
+        'display:flex;gap:10px;align-items:center;padding:10px 16px;border-radius:999px;' +
+        'background:#111;color:#fff;font:600 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;' +
+        'box-shadow:0 8px 24px rgba(0,0,0,.35)';
+      var label = document.createElement('span');
+      label.textContent = 'Open in Lunara';
+      var open = document.createElement('a');
+      open.href = schemeUrl;
+      open.textContent = 'Launch';
+      open.style.cssText =
+        'background:#fff;color:#111;text-decoration:none;padding:8px 16px;border-radius:999px';
+      banner.appendChild(label);
+      banner.appendChild(open);
+      document.body.appendChild(banner);
     })();
   </script>
 </body>
