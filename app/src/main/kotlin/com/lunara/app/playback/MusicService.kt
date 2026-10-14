@@ -621,15 +621,6 @@ class MusicService :
         isRunning = true
         shutdownDeferred = kotlinx.coroutines.CompletableDeferred<Unit>()
 
-        // Keep the media notification from being posted (or re-posted) while the player is
-        // merely idle — i.e. has a media item prepared but is not actually playing. Without
-        // this, dismissing the notification while a track is loaded-but-paused made the OS
-        // immediately bring it back, so it "kept coming" no matter how many times it was
-        // cleared. AFTER_STOP_OR_PAUSE shows the notification once playback has genuinely
-        // started and keeps it until the player is stopped, which is the behaviour users
-        // expect. This is the documented fix for the reappearing-notification problem.
-        setShowNotificationForIdlePlayer(MediaSessionService.SHOW_NOTIFICATION_FOR_IDLE_PLAYER_AFTER_STOP_OR_PAUSE)
-
         setListener(
             object : MediaSessionService.Listener {
                 override fun onForegroundServiceStartNotAllowedException() {
