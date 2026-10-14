@@ -14,14 +14,11 @@ import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
-import android.text.Layout
-import android.text.StaticLayout
 import android.text.TextPaint
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withClip
-import androidx.core.graphics.withTranslation
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -227,19 +224,41 @@ object ShareStoryImage {
         firstBaseline: Float,
         maxLines: Int,
     ): Float {
-        val maxWidth = (WIDTH * 0.86f).roundToInt()
-        val layout =
-            StaticLayout
-                .Builder
-                .obtain(text, 0, text.length, paint, maxWidth)
-                .setAlignment(Layout.Alignment.ALIGN_CENTER)
-                .setMaxLines(maxLines)
-                .setEllipsize(android.text.TextUtils.TruncateAt.END)
-                .build()
-        canvas.withTranslation((WIDTH - layout.width) / 2f, firstBaseline) {
-            layout.draw(this)
+        // Wrap by words to the card's usable width, then draw each line with a single centred
+        // drawText at the card's centre. StaticLayout was tried here and shifted the block to the
+        // left: its textAlign handling plus a translation offset double-counted the centring.
+        val center = WIDTH / 2f
+        val maxWidth = WIDTH * 0.86f
+        val lines = wrapWords(text, paint, maxWidth).take(maxLines)
+        var y = firstBaseline
+        val lineStep = paint.textSize * 1.18f
+        for (line in lines) {
+            canvas.drawText(line, center, y, paint)
+            y += lineStep
         }
-        return firstBaseline + layout.height
+        return y
+    }
+
+    /** [text] broken into lines that each fit [maxWidth], at this paint's size. */
+    private fun wrapWords(
+        text: String,
+        paint: TextPaint,
+        maxWidth: Float,
+    ): List<String> {
+        val words = text.split(' ')
+        val lines = mutableListOf<String>()
+        val current = StringBuilder()
+        for (word in words) {
+            val candidate = if (current.isEmpty()) word else "$current $word"
+            if (current.isEmpty() || paint.measureText(candidate) <= maxWidth) {
+                current.clear().append(candidate)
+            } else {
+                lines.add(current.toString())
+                current.clear().append(word)
+            }
+        }
+        if (current.isNotEmpty()) lines.add(current.toString())
+        return lines
     }
 
     /**

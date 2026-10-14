@@ -59,6 +59,14 @@ private val markdownInlineRegex = Regex(
         "|(https?://[\\w-]+(\\.[\\w-]+)+[\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])",
 )
 
+// The changelog only shows releases newer than this. Everything up to and including 3.17.2 is
+// history; the screen is about what changed recently, not a dump of every past version.
+private const val CHANGELOG_FLOOR_TAG = "v3.17.2"
+
+/** Whether a release with [tag] is new enough to appear in the changelog. */
+private fun isShown(tag: String): Boolean =
+    Updater.compareVersions(tag, CHANGELOG_FLOOR_TAG) > 0
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ChangelogScreen(
@@ -73,7 +81,9 @@ fun ChangelogScreen(
 
     LaunchedEffect(Unit) {
         // What shipped in this build, which is known without asking anybody.
-        val bundled = BundledChangelog.read(context)
+        // Only versions newer than the floor are kept — the changelog is for what changed
+        // recently, not a full history dump.
+        val bundled = BundledChangelog.read(context).filter { isShown(it.tagName) }
         releases = bundled
         isLoading = bundled.isEmpty()
 
@@ -85,6 +95,7 @@ fun ChangelogScreen(
                 // Betas stay out of the list for anybody on stable updates.
                 (!release.isPrerelease || betaUpdates) &&
                     Updater.compareVersions(BuildConfig.VERSION_NAME, release.tagName) >= 0 &&
+                    isShown(release.tagName) &&
                     bundled.none { it.tagName == release.tagName }
             }
             releases = (bundled + extra).sortedWith { a, b ->

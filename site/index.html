@@ -381,29 +381,41 @@
     document.getElementById('yr').textContent = new Date().getFullYear();
 
     // A shared link (lunara.ankitak.com.np/song/<id>, /album/<id>, ...) is meant to open the
-    // app. Android App Links hand verified links straight to Lunara; this is the fallback for
-    // browsers that have not verified yet (fresh install). A hidden iframe no longer works —
-    // Chrome blocks custom-scheme navigations that are not triggered by a real tap — so we show
-    // an explicit "Open in Lunara" button. Tapping it is a user gesture, which lets the browser
-    // hand the lunara:// link to the app. If the app is not installed the tap simply does nothing
-    // and the visitor keeps reading about Lunara.
+    // app. Android App Links hand verified links straight to Lunara. This is the fallback for
+    // browsers that reach the page: we build an Android "intent://" URI, which the browser turns
+    // into the familiar "Open with Lunara / Chrome" chooser when the app is installed, and straight
+    // into the app when it is the only handler. If the app is NOT installed, S.browser_fallback_url
+    // sends the visitor right back here instead of an error, so the page simply stays. This is the
+    // same hand-off Spotify uses, and it needs no tap to fire.
     (function () {
       var m = location.pathname.match(/^\/(song|album|playlist|artist)\/([^/?#]+)/);
       if (!m) return;
       var type = m[1];
       var id = decodeURIComponent(m[2]);
-      var schemeUrl = 'lunara://' + type + '/' + id;
+      var pkg = 'com.lunara.app';
+      var fallback = location.href.split('#')[0];
 
+      // intent://<host>/<path>#Intent;scheme=<scheme>;package=<pkg>;S.browser_fallback_url=<url>;end
+      var intentUri =
+        'intent://' + type + '/' + id +
+        '#Intent;scheme=lunara;package=' + pkg +
+        ';S.browser_fallback_url=' + encodeURIComponent(fallback) +
+        ';end';
+
+      // Fire the chooser/open without navigating the tab away if the app handles it.
+      try { window.location.href = intentUri; } catch (e) { /* page stays as the fallback */ }
+
+      // And still offer a visible button, for the case the automatic attempt was blocked.
       var banner = document.createElement('div');
       banner.style.cssText =
-        'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:9999;' +
+        'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9999;' +
         'display:flex;gap:10px;align-items:center;padding:10px 16px;border-radius:999px;' +
         'background:#111;color:#fff;font:600 15px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;' +
         'box-shadow:0 8px 24px rgba(0,0,0,.35)';
       var label = document.createElement('span');
       label.textContent = 'Open in Lunara';
       var open = document.createElement('a');
-      open.href = schemeUrl;
+      open.href = intentUri;
       open.textContent = 'Launch';
       open.style.cssText =
         'background:#fff;color:#111;text-decoration:none;padding:8px 16px;border-radius:999px';
