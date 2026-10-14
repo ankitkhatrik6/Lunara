@@ -1,5 +1,11 @@
 [
   {
+    "tagName": "v3.17.3",
+    "versionName": "3.17.3",
+    "releaseDate": "2026-10-14T00:00:00Z",
+    "description": "## What's new\n\n- **Reliable release signing.** Generated a fresh, permanent release key so every build signs cleanly and future updates install over the current app without a signature mismatch.\n- **Verified app links.** Updated the App Links certificate fingerprint to match the new signing key, so shared links keep opening straight in Lunara.\n"
+  },
+  {
     "tagName": "v3.17.2",
     "versionName": "3.17.2",
     "releaseDate": "2026-10-14T00:00:00Z",

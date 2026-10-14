@@ -39,7 +39,7 @@ is already filled in: the permanent release key `keystore/lunara-release.jks` (c
 30-year RSA-4096, kept out of git) has fingerprint
 
 ```
-27:AD:CB:35:11:34:AC:33:58:4C:4A:AD:6F:F5:48:9B:ED:42:3E:F0:D5:F5:D5:17:D9:E3:38:A7:F5:25:C5:75
+21:C9:BE:79:65:5D:52:89:AA:EC:9B:79:28:3C:49:81:99:09:F7:C6:08:E2:A1:92:95:A4:CE:8A:1E:7D:55:7F
 ```
 
 which is what `assetlinks.json` serves. Nothing left to fill in here — just verify after the
