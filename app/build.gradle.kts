@@ -68,13 +68,19 @@ val releaseKeystoreFile: File =
         ?: rootProject.file("keystore/lunara-release.jks")
 val releaseStorePassword =
     releaseSecret("STORE_PASSWORD")
+        ?: releaseSecret("storePassword")
         ?: System.getenv("LUNARA_KEYSTORE_PASSWORD")?.takeIf { it.isNotBlank() }
+        ?: System.getenv("RELEASE_KEYSTORE_PASSWORD")?.takeIf { it.isNotBlank() }
 val releaseKeyAlias =
     releaseSecret("KEY_ALIAS")
+        ?: releaseSecret("keyAlias")
         ?: System.getenv("LUNARA_KEY_ALIAS")?.takeIf { it.isNotBlank() }
+        ?: System.getenv("RELEASE_KEY_ALIAS")?.takeIf { it.isNotBlank() }
 val releaseKeyPassword =
     releaseSecret("KEY_PASSWORD")
+        ?: releaseSecret("keyPassword")
         ?: System.getenv("LUNARA_KEY_PASSWORD")?.takeIf { it.isNotBlank() }
+        ?: System.getenv("RELEASE_KEY_PASSWORD")?.takeIf { it.isNotBlank() }
 val debugKeyAlias = System.getenv("LUNARA_DEBUG_KEY_ALIAS")?.takeIf { it.isNotBlank() } ?: "androiddebugkey"
 val debugKeyPassword = System.getenv("LUNARA_DEBUG_KEY_PASSWORD")?.takeIf { it.isNotBlank() } ?: "android"
 val persistentDebugKeystoreFile = file("persistent-debug.keystore")
@@ -96,8 +102,8 @@ android {
         applicationId = applicationIdOverride ?: baseApplicationId
         minSdk = 26
         targetSdk = 36
-        versionCode = 41
-        versionName = "3.17.0"
+        versionCode = 42
+        versionName = "3.17.1"
         resValue("string", "app_name", appNameOverride ?: "Lunara")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

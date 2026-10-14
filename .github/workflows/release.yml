@@ -61,23 +61,21 @@ jobs:
           KEYSTORE_PATH="$RUNNER_TEMP/lunara-release.jks"
           if [ -n "$KEYSTORE_BASE64" ]; then
             printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
-            echo "Signing with the repository keystore (stable across every release)."
-          elif [ -f "keystore/lunara-release.jks" ]; then
-            cp "keystore/lunara-release.jks" "$KEYSTORE_PATH"
-            echo "Signing with the committed keystore."
+            echo "Signing with the secret keystore (stable across every release)."
           else
-            # Last resort only. A fresh key per run means the APK can never update an installed
-            # copy (INSTALL_FAILED_UPDATE_INCOMPATIBLE, "package appears to be invalid"), so this
-            # path is a warning, not a normal mode.
-            echo "::warning::No RELEASE_KEYSTORE_BASE64 secret - generating a throwaway key. Updates will not install over an existing app."
-            keytool -genkeypair -v \
-              -keystore "$KEYSTORE_PATH" \
-              -alias lunara \
-              -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass lunara -keypass lunara \
-              -dname "CN=Lunara, O=Lunara, C=IN"
+            # The release key lives outside the repo and arrives through the
+            # RELEASE_KEYSTORE_BASE64 secret. A fresh key per run would mean the APK can never
+            # update an installed copy (INSTALL_FAILED_UPDATE_INCOMPATIBLE), so there is no
+            # fallback here — set the secret instead of shipping a build that cannot update.
+            echo "::error::RELEASE_KEYSTORE_BASE64 secret is not set. Add it (see site/README.md) and re-run."
+            exit 1
           fi
           echo "LUNARA_KEYSTORE_FILE=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+          {
+            echo "LUNARA_KEYSTORE_PASSWORD=${{ secrets.RELEASE_KEYSTORE_PASSWORD }}"
+            echo "LUNARA_KEY_ALIAS=${{ secrets.RELEASE_KEY_ALIAS || 'lunara' }}"
+            echo "LUNARA_KEY_PASSWORD=${{ secrets.RELEASE_KEY_PASSWORD }}"
+          } >> "$GITHUB_ENV"
 
       - name: Build release APK and AAB
         env:

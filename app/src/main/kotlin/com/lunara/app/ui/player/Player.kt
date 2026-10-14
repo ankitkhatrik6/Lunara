@@ -1985,6 +1985,19 @@ fun BottomSheetPlayer(
                         onToggleRepeat = { playerConnection.player.toggleRepeatMode() },
                         onToggleLike = { playerConnection.toggleLike() },
                         onShowLyrics = { showInlineLyrics = true },
+                        onShare = mediaMetadata?.let { meta ->
+                            {
+                                bottomSheetPageState.show {
+                                    com.lunara.app.ui.menu.ShareStorySheet(
+                                        coverArtUrl = meta.thumbnailUrl,
+                                        title = meta.title,
+                                        artist = meta.artists.joinToString { it.name },
+                                        link = com.lunara.app.utils.ShareLinks.song(meta.id),
+                                        kindLabel = "Song",
+                                    )
+                                }
+                            }
+                        },
                         titleActions = {
                             Spacer(Modifier.size(12.dp))
                             mediaMetadata?.let {
@@ -2940,6 +2953,7 @@ private fun RingPlayerLayout(
     onToggleLike: () -> Unit,
     onShowLyrics: () -> Unit,
     onToggleShuffle: () -> Unit,
+    onShare: (() -> Unit)? = null,
     titleActions: @Composable RowScope.() -> Unit = {},
     seeker: PlayerSeeker? = null,
     rtl: Boolean = false,
@@ -2953,11 +2967,13 @@ private fun RingPlayerLayout(
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // --- top bar: "Now Playing" and where it is playing from, centred ---
+        // --- top bar: "Now Playing" centred, with the share key at the right hand side ---
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 6.dp, end = 6.dp, top = 8.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // A spacer mirrors the share key so the title stays truly centred.
+            Spacer(Modifier.size(40.dp))
             Column(
                 modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -2980,6 +2996,16 @@ private fun RingPlayerLayout(
                         modifier = Modifier.basicMarquee(),
                     )
                 }
+            }
+            if (onShare != null) {
+                RingIconButton(
+                    res = R.drawable.share,
+                    tint = textColor,
+                    size = 22,
+                    onClick = onShare,
+                )
+            } else {
+                Spacer(Modifier.size(40.dp))
             }
 
         }

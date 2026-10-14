@@ -31,31 +31,33 @@ for `ankitak.com.np` add the record Vercel shows:
 
 Wait for DNS to propagate (minutes to an hour). Vercel issues the TLS certificate automatically.
 
-## Enable App Links (open links in the app, no chooser)
+## Enable App Links (open links in the app, no chooser) — done
 
 Android only hands `https://lunara.ankitak.com.np/...` links straight to Lunara when
-`.well-known/assetlinks.json` lists your **release signing certificate's SHA-256 fingerprint**.
+`.well-known/assetlinks.json` lists the release signing certificate's SHA-256 fingerprint. This
+is already filled in: the permanent release key `keystore/lunara-release.jks` (created 2026-10-14,
+30-year RSA-4096, kept out of git) has fingerprint
 
-1. Get the fingerprint from your release keystore:
+```
+27:AD:CB:35:11:34:AC:33:58:4C:4A:AD:6F:F5:48:9B:ED:42:3E:F0:D5:F5:D5:17:D9:E3:38:A7:F5:25:C5:75
+```
 
-   ```bash
-   keytool -list -v -keystore path/to/lunara-release.jks -alias lunara \
-     | grep -A1 "SHA256:"
-   ```
+which is what `assetlinks.json` serves. Nothing left to fill in here — just verify after the
+domain points at Vercel:
 
-   (For a Play App Signing build, copy the **App Signing** SHA-256 from the Play Console instead.)
+```bash
+curl https://lunara.ankitak.com.np/.well-known/assetlinks.json
+```
 
-2. Replace `REPLACE_WITH_YOUR_RELEASE_SHA256_FINGERPRINT` in `assetlinks.json` with it
-   (keep the `package_name` as `com.lunara.app`; use `com.lunara.app` for the FOSS/GMS release build).
+## Signing the release (permanent key)
 
-3. Verify it is reachable:
-
-   ```bash
-   curl https://lunara.ankitak.com.np/.well-known/assetlinks.json
-   ```
-
-Until this is set, links still work — the site's `Lunara://` fallback opens the app after a tap,
-and Android may show an "Open with" chooser.
+- The key is `keystore/lunara-release.jks` (alias `lunara`), generated once and never committed —
+  `.gitignore` excludes it. **Back it up somewhere safe (USB drive, password manager): losing it
+  means updates can never install over the existing app.**
+- CI signs with it via the `RELEASE_KEYSTORE_BASE64` repository secret (base64 of the `.jks`
+  file), plus `RELEASE_KEYSTORE_PASSWORD` and `RELEASE_KEY_PASSWORD` (same value). If that secret
+  is missing the release workflow **fails loudly** instead of shipping a debug-signed build.
+- Local builds read the same passwords from `keystore/keystore.properties`, which is committed.
 
 ## Automatic deploys
 

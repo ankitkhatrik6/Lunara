@@ -57,6 +57,8 @@ captures/
 #*.keystore
 app/persistent-debug.keystore
 # The release signing key must never be committed — this repo is public.
+# CI gets it through the RELEASE_KEYSTORE_BASE64 secret instead (see release.yml).
+keystore/lunara-release.jks
 app/keystore/
 *.jks
 # ^^^ think twice before removing this gitignore, it became so FUCKING

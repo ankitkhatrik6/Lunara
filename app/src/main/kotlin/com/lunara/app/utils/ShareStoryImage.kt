@@ -22,25 +22,21 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withTranslation
-import androidx.palette.graphics.Palette
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.lunara.app.R
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.EncodeHintType
-import com.google.zxing.qrcode.QRCodeWriter
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import com.lunara.app.ui.utils.resize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 /**
  * Draws the picture a share produces: an Instagram-story-sized card, the way Spotify wraps a song
- * before it goes out. Behind the cover sits a gradient pulled from the artwork itself, so two
- * songs never look the same, and a scannable square of the link sits at the foot for anyone who
- * would rather point a camera at it than type.
+ * before it goes out. The artwork fills the frame — a big cover up top, the same art blown up
+ * behind a dark veil — with the title, the artist, the Lunara icon and a "Listen on Lunara"
+ * sign-off. No QR, no link text: the link already travels with the picture when it is sent.
  *
  * Everything is drawn onto a plain [Canvas] rather than composed, because the result has to exist
  * as a PNG on disk that another app (Instagram, WhatsApp) can pick up - there is no view to
@@ -53,12 +49,13 @@ object ShareStoryImage {
     private const val HEIGHT = 1920
 
     // Lunara's palette, matching the app theme. Used as the backdrop when the artwork has no
-    // colour worth reading (a blank cover, or a failed load) so the card is never a grey void.
+    // image to show (a blank cover, or a failed load) so the card is never a grey void.
     private const val FALLBACK_TOP = 0xFF1ED760.toInt()
     private const val FALLBACK_BOTTOM = 0xFF0A2A16.toInt()
     private const val INK = 0xFFFFFFFF.toInt()
     private const val INK_SOFT = 0xE6FFFFFF.toInt()
 
+    @Suppress("UNUSED_PARAMETER")
     suspend fun create(
         context: Context,
         coverArtUrl: String?,
@@ -75,233 +72,216 @@ object ShareStoryImage {
             if (!coverArtUrl.isNullOrBlank()) {
                 cover =
                     runCatching {
+                        // The raw thumbnail is ~60px, which is where the blur came from. Ask the
+                        // server for the large copy (see resize()) so the card is drawn sharp.
+                        val sharpUrl = coverArtUrl.resize(width = 1080, height = 1080)
                         val loader = ImageLoader(context)
                         val request =
                             ImageRequest
                                 .Builder(context)
-                                .data(coverArtUrl)
-                                .size(WIDTH)
+                                .data(sharpUrl)
+                                .size(1080)
                                 .allowHardware(false)
                                 .build()
-                        loader.execute(request).image?.toBitmap()
+                        loader.execute(request).image?.toBitmap()?.let { scaleToCover(it, 1080, 1080) }
                     }.getOrNull()
             }
 
             drawBackdrop(canvas, cover)
             drawCover(canvas, cover)
             drawText(canvas, title, artist, kindLabel)
-            drawFooter(canvas, context, link)
+            drawFooter(canvas, context)
+            cover?.recycle()
 
             bitmap
         }
 
-    /** A diagonal gradient built from the cover's own colours, falling back to Lunara green. */
+    /** The backdrop: the artwork blown up behind a dark veil, or Lunara green on failure. */
     private fun drawBackdrop(
         canvas: Canvas,
         cover: Bitmap?,
     ) {
-        val paint = Paint().apply { isAntiAlias = true }
-        val top: Int
-        val bottom: Int
+        val paint = Paint()
         if (cover != null) {
-            val palette = Palette.from(cover).generate()
-            val vibrant = palette.getVibrantColor(FALLBACK_TOP)
-            val dark = palette.getDarkVibrantColor(palette.getDominantColor(FALLBACK_BOTTOM))
-            top = vibrant
-            bottom = darken(dark)
+            val full = scaleToCover(cover, WIDTH, HEIGHT)
+            canvas.drawBitmap(full, null, RectF(0f, 0f, WIDTH.toFloat(), HEIGHT.toFloat()), paint)
+            if (full !== cover) full.recycle()
+            paint.shader =
+                LinearGradient(
+                    0f, 0f, 0f, HEIGHT.toFloat(),
+                    0x99000000.toInt(), 0xE6000000.toInt(),
+                    Shader.TileMode.CLAMP,
+                )
+            canvas.drawRect(0f, 0f, WIDTH.toFloat(), HEIGHT.toFloat(), paint)
         } else {
-            top = FALLBACK_TOP
-            bottom = FALLBACK_BOTTOM
+            paint.shader =
+                LinearGradient(
+                    0f, 0f, 0f, HEIGHT.toFloat(),
+                    FALLBACK_TOP, FALLBACK_BOTTOM,
+                    Shader.TileMode.CLAMP,
+                )
+            canvas.drawRect(0f, 0f, WIDTH.toFloat(), HEIGHT.toFloat(), paint)
         }
-
-        val shader =
-            LinearGradient(
-                0f,
-                0f,
-                WIDTH.toFloat(),
-                HEIGHT.toFloat(),
-                intArrayOf(top, bottom, 0xFF000000.toInt()),
-                floatArrayOf(0f, 0.55f, 1f),
-                Shader.TileMode.CLAMP,
-            )
-        paint.shader = shader
-        canvas.drawRect(0f, 0f, WIDTH.toFloat(), HEIGHT.toFloat(), paint)
     }
 
-    /** The artwork, large and centred, with a soft shadow so it lifts off the gradient. */
+    /**
+     * Scales [src] so it covers [width]x[height], cropping the overflow the way a centerCrop
+     * ImageView does. Needed because the artwork arrives at its own size while the backdrop
+     * needs the full card.
+     */
+    private fun scaleToCover(
+        src: Bitmap,
+        width: Int,
+        height: Int,
+    ): Bitmap {
+        val scale = maxOf(width / src.width.toFloat(), height / src.height.toFloat())
+        val scaled =
+            Bitmap.createScaledBitmap(
+                src,
+                (src.width * scale).roundToInt().coerceAtLeast(1),
+                (src.height * scale).roundToInt().coerceAtLeast(1),
+                true,
+            )
+        val x = ((scaled.width - width) / 2).coerceAtLeast(0)
+        val y = ((scaled.height - height) / 2).coerceAtLeast(0)
+        val cropped = Bitmap.createBitmap(scaled, x, y, width.coerceAtMost(scaled.width), height.coerceAtMost(scaled.height))
+        if (scaled !== src && scaled !== cropped) scaled.recycle()
+        return cropped
+    }
+
+    /** The artwork itself: a big rounded square, high up the card. */
     private fun drawCover(
         canvas: Canvas,
         cover: Bitmap?,
     ) {
-        val side = (WIDTH * 0.72f).roundToInt()
-        val left = (WIDTH - side) / 2f
-        val top = HEIGHT * 0.20f
-        val radius = side * 0.08f
-        val rect = RectF(left, top, left + side, top + side)
-
-        val shadow = Paint().apply { isAntiAlias = true; color = 0x66000000 }
-        canvas.drawRoundRect(RectF(rect).apply { inset(-18f, -18f) }, radius + 12f, radius + 12f, shadow)
-
-        val clip = Path().apply { addRoundRect(rect, radius, radius, Path.Direction.CW) }
-        canvas.withClip(clip) {
-            if (cover != null) {
-                val scaled = Bitmap.createScaledBitmap(cover, side, side, true)
-                drawBitmap(scaled, null, rect, Paint().apply { isAntiAlias = true })
-            } else {
-                drawRect(rect, Paint().apply { color = 0xFF181818.toInt() })
+        val size = WIDTH * 0.78f
+        val left = (WIDTH - size) / 2f
+        val top = HEIGHT * 0.10f
+        val rect = RectF(left, top, left + size, top + size)
+        // A dark bed, so a failed load still reads as a deliberate panel rather than a hole.
+        canvas.drawRoundRect(rect, 56f, 56f, Paint().apply { color = 0x40000000.toInt() })
+        if (cover != null) {
+            val paint = Paint().apply { isAntiAlias = true }
+            canvas.withClip(Path().apply { addRoundRect(rect, 56f, 56f, Path.Direction.CW) }) {
+                drawBitmap(cover, null, rect, paint)
             }
         }
     }
 
+    /**
+     * The pill (SONG, ALBUM, PLAYLIST, ARTIST), the title, and the artist, centred under the
+     * artwork. Sized for a story viewed full-screen: readable without squinting.
+     */
     private fun drawText(
         canvas: Canvas,
         title: String,
         artist: String,
         kindLabel: String,
     ) {
-        val margin = WIDTH * 0.11f
-        val textWidth = (WIDTH - margin * 2).roundToInt()
-        val coverBottom = HEIGHT * 0.20f + (WIDTH * 0.72f)
-        var y = coverBottom + HEIGHT * 0.05f
+        val center = WIDTH / 2f
+        var y = HEIGHT * 0.10f + WIDTH * 0.78f + 72f
 
-        // A small pill naming what is being shared: "SONG", "ALBUM", and so on.
         val pillPaint =
             TextPaint().apply {
                 color = INK
-                textSize = 34f
+                textSize = 40f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                letterSpacing = 0.25f
+                letterSpacing = 0.22f
+                textAlign = Paint.Align.CENTER
                 isAntiAlias = true
             }
-        val pillText = kindLabel.uppercase()
-        val pillWidth = pillPaint.measureText(pillText) + 56f
-        val pillRect = RectF(margin, y, margin + pillWidth, y + 64f)
-        canvas.drawRoundRect(pillRect, 32f, 32f, Paint().apply { color = 0x33FFFFFF })
-        canvas.drawText(pillText, margin + 28f, y + 44f, pillPaint)
-        y += 64f + HEIGHT * 0.03f
+        canvas.drawText(kindLabel.uppercase(), center, y, pillPaint)
+        y += 104f
 
-        val safeTitle = title.ifBlank { "Unknown" }
         val titlePaint =
             TextPaint().apply {
                 color = INK
                 textSize = 76f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                textAlign = Paint.Align.CENTER
                 isAntiAlias = true
             }
-        val titleLayout =
-            StaticLayout.Builder
-                .obtain(safeTitle, 0, safeTitle.length, titlePaint, textWidth)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setMaxLines(3)
-                .setEllipsize(android.text.TextUtils.TruncateAt.END)
-                .build()
-        canvas.withTranslation(margin, y) { titleLayout.draw(this) }
-        y += titleLayout.height + 18f
+        y = drawCentred(canvas, title.ifBlank { "Unknown" }, titlePaint, y, maxLines = 3)
 
         if (artist.isNotBlank()) {
             val artistPaint =
                 TextPaint().apply {
                     color = INK_SOFT
-                    textSize = 48f
+                    textSize = 52f
+                    textAlign = Paint.Align.CENTER
                     isAntiAlias = true
                 }
-            val artistLayout =
-                StaticLayout.Builder
-                    .obtain(artist, 0, artist.length, artistPaint, textWidth)
-                    .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                    .setMaxLines(2)
-                    .setEllipsize(android.text.TextUtils.TruncateAt.END)
-                    .build()
-            canvas.withTranslation(margin, y) { artistLayout.draw(this) }
+            y += 24f
+            drawCentred(canvas, artist, artistPaint, y, maxLines = 2)
         }
     }
 
-    /** The Lunara mark and a scannable square of the link, pinned to the foot of the card. */
+    /**
+     * [text] wrapped to the card's width and drawn centred, up to [maxLines] with an ellipsis.
+     * Returns the baseline below the last line drawn, for whatever comes next.
+     */
+    private fun drawCentred(
+        canvas: Canvas,
+        text: String,
+        paint: TextPaint,
+        firstBaseline: Float,
+        maxLines: Int,
+    ): Float {
+        val maxWidth = (WIDTH * 0.86f).roundToInt()
+        val layout =
+            StaticLayout
+                .Builder
+                .obtain(text, 0, text.length, paint, maxWidth)
+                .setAlignment(Layout.Alignment.ALIGN_CENTER)
+                .setMaxLines(maxLines)
+                .setEllipsize(android.text.TextUtils.TruncateAt.END)
+                .build()
+        canvas.withTranslation((WIDTH - layout.width) / 2f, firstBaseline) {
+            layout.draw(this)
+        }
+        return firstBaseline + layout.height
+    }
+
+    /**
+     * The foot of the card: the Lunara icon with the wordmark and "Listen on Lunara". No QR,
+     * no link text — the link already travels with the picture when it is sent.
+     */
     private fun drawFooter(
         canvas: Canvas,
         context: Context,
-        link: String,
     ) {
-        val margin = WIDTH * 0.11f
-        val footerTop = HEIGHT * 0.80f
+        val center = WIDTH / 2f
+        val baseLine = HEIGHT * 0.885f
 
-        val qr = qrCode(link, 300)
-        val qrSize = 240f
-        val qrRect = RectF(margin, footerTop, margin + qrSize, footerTop + qrSize)
-        // A white pad, without which a camera has nothing to read the dark modules against.
-        canvas.drawRoundRect(RectF(qrRect).apply { inset(-20f, -20f) }, 28f, 28f, Paint().apply { color = INK })
-        if (qr != null) {
-            canvas.drawBitmap(qr, null, qrRect, Paint().apply { isAntiAlias = true })
+        val icon =
+            runCatching { ContextCompat.getDrawable(context, R.drawable.small_icon)?.toBitmap(224, 224) }.getOrNull()
+        val iconSize = 168f
+        if (icon != null) {
+            canvas.drawBitmap(
+                icon, null,
+                RectF(center - iconSize / 2f, baseLine - iconSize, center + iconSize / 2f, baseLine),
+                Paint().apply { isAntiAlias = true },
+            )
         }
 
-        // Wordmark to the right of the square.
-        val textLeft = qrRect.right + 56f
         val namePaint =
             TextPaint().apply {
                 color = INK
-                textSize = 60f
+                textSize = 64f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                letterSpacing = 0.05f
+                letterSpacing = 0.04f
+                textAlign = Paint.Align.CENTER
                 isAntiAlias = true
             }
-        val appName = context.getString(R.string.app_name)
-        canvas.drawText(appName, textLeft, footerTop + 70f, namePaint)
+        canvas.drawText(context.getString(R.string.app_name), center, baseLine + 84f, namePaint)
 
         val tagPaint =
             TextPaint().apply {
                 color = INK_SOFT
-                textSize = 34f
+                textSize = 40f
+                textAlign = Paint.Align.CENTER
                 isAntiAlias = true
             }
-        canvas.drawText("Listen on Lunara", textLeft, footerTop + 126f, tagPaint)
-        canvas.drawText(prettyLink(link), textLeft, footerTop + 176f, tagPaint)
-
-        // The app icon, small, bottom-right, as the last flourish.
-        val icon =
-            runCatching { ContextCompat.getDrawable(context, R.drawable.small_icon)?.toBitmap(96, 96) }.getOrNull()
-        if (icon != null) {
-            val iSize = 96f
-            val iRect =
-                RectF(WIDTH - margin - iSize, HEIGHT - margin - iSize, WIDTH - margin, HEIGHT - margin)
-            canvas.drawBitmap(icon, null, iRect, Paint().apply { isAntiAlias = true })
-        }
+        canvas.drawText("Listen on Lunara", center, baseLine + 148f, tagPaint)
     }
-
-    private fun prettyLink(link: String): String = link.removePrefix("https://").removePrefix("http://")
-
-    private fun darken(color: Int): Int {
-        val r = (color shr 16 and 0xFF) * 2 / 5
-        val g = (color shr 8 and 0xFF) * 2 / 5
-        val b = (color and 0xFF) * 2 / 5
-        return (0xFF shl 24) or (r shl 16) or (g shl 8) or b
-    }
-
-    /** [text] as a square of black and white pixels, or null if it will not fit in one. */
-    private fun qrCode(
-        text: String,
-        size: Int,
-    ): Bitmap? =
-        runCatching {
-            val matrix =
-                QRCodeWriter().encode(
-                    text,
-                    BarcodeFormat.QR_CODE,
-                    size,
-                    size,
-                    mapOf(
-                        EncodeHintType.MARGIN to 1,
-                        EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M,
-                        EncodeHintType.CHARACTER_SET to "UTF-8",
-                    ),
-                )
-            val pixels = IntArray(size * size)
-            for (y in 0 until size) {
-                val row = y * size
-                for (x in 0 until size) {
-                    pixels[row + x] = if (matrix[x, y]) 0xFF000000.toInt() else 0xFFFFFFFF.toInt()
-                }
-            }
-            createBitmap(size, size).apply { setPixels(pixels, 0, size, 0, 0, size, size) }
-        }.getOrNull()
 }
-
