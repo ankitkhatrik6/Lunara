@@ -621,6 +621,15 @@ class MusicService :
         isRunning = true
         shutdownDeferred = kotlinx.coroutines.CompletableDeferred<Unit>()
 
+        // Keep the media notification from being posted (or re-posted) while the player is
+        // merely idle — i.e. has a media item prepared but is not actually playing. Without
+        // this, dismissing the notification while a track is loaded-but-paused made the OS
+        // immediately bring it back, so it "kept coming" no matter how many times it was
+        // cleared. AFTER_STOP_OR_PAUSE shows the notification once playback has genuinely
+        // started and keeps it until the player is stopped, which is the behaviour users
+        // expect. This is the documented fix for the reappearing-notification problem.
+        setShowNotificationForIdlePlayer(MediaSessionService.SHOW_NOTIFICATION_FOR_IDLE_PLAYER_AFTER_STOP_OR_PAUSE)
+
         setListener(
             object : MediaSessionService.Listener {
                 override fun onForegroundServiceStartNotAllowedException() {
@@ -4592,8 +4601,16 @@ class MusicService :
         // On Android O+, every startForegroundService() call requires
         // Service.startForeground() to be called within a short timeout.
         // Some OEMs (e.g. MIUI) strictly enforce this even when the
-        // service is already in the foreground, so always promote here.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // service is already in the foreground, so promote here — but only
+        // when playback is actually active. Re-promoting on every start command
+        // (periodic home-screen widget refreshes, media-button events) is what
+        // made a notification the user had just swiped away keep popping back
+        // while a track was merely loaded or paused. When nothing is playing
+        // there is no foreground notification to restore, so we leave it gone.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            ::player.isInitialized &&
+            (player.isPlaying || player.playWhenReady)
+        ) {
             if (!ensureForegroundWithLatestNotificationOrStop()) {
                 return START_NOT_STICKY
             }

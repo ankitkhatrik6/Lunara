@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lunara.app.R
 import com.lunara.app.ui.screens.settings.MarkdownText
+import com.lunara.app.utils.BundledChangelog
 import com.lunara.app.utils.ReleaseInfo
 import com.lunara.app.utils.UpdateInstaller
 import com.lunara.app.utils.Updater
@@ -69,6 +71,19 @@ fun UpdateDialog(
 
     val asset = remember(release) { Updater.pickAsset(release.assets) }
 
+    // The release notes, shown in full rather than as a link out to a web page.
+    // Prefer the changelog that ships inside this build for the exact version
+    // being offered — it is the same text the Changelog screen shows, already
+    // formatted — and fall back to whatever the release itself carried, so a
+    // build with no bundled entry still shows the notes it was given.
+    val releaseNotes by produceState(initialValue = release.description, release) {
+        val bundled = BundledChangelog.read(context)
+            .firstOrNull { it.versionName == release.versionName || it.tagName == release.tagName }
+            ?.description
+            ?.takeIf { it.isNotBlank() }
+        value = bundled ?: release.description
+    }
+
     fun startInstall(fetched: UpdateInstaller.Fetched) {
         if (!UpdateInstaller.mayInstall(context)) {
             needsPermission = true
@@ -106,7 +121,12 @@ fun UpdateDialog(
                         if (asset == null) {
                             Text(stringResource(R.string.update_no_download))
                         }
-                        MarkdownText(release.description)
+                        if (releaseNotes.isNotBlank()) {
+                            // Rendered, not printed. These notes are written in
+                            // markdown, and as plain text they reached the screen
+                            // with their asterisks and hashes still on.
+                            MarkdownText(releaseNotes)
+                        }
                     }
 
                     is Stage.Downloading -> {
