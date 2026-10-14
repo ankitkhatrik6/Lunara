@@ -441,7 +441,7 @@ fun AlbumScreen(
                                     onClick = {
                                         if (inSelectMode) {
                                             onCheckedChange(song.id !in selection)
-                                        } {
+                                        } else {
                                             if (song.id == mediaMetadata?.id) {
                                                 playerConnection.togglePlayPause()
                                             } else {

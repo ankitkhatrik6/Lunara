@@ -283,7 +283,6 @@ fun YouTubeSongMenu(
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -295,23 +294,21 @@ fun YouTubeSongMenu(
         item {
             NewActionGrid(
                 actions = listOfNotNull(
-                    
-                        NewAction(
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.playlist_play),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(28.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            text = stringResource(R.string.play_next),
-                            onClick = {
-                                playerConnection.playNext(song.copy(thumbnail = song.thumbnail.resize(544,544)).toMediaItem())
-                                onDismiss()
-                            }
-                        )
-                     else null,
+                    NewAction(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.playlist_play),
+                                contentDescription = null,
+                                modifier = Modifier.size(28.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        text = stringResource(R.string.play_next),
+                        onClick = {
+                            playerConnection.playNext(song.copy(thumbnail = song.thumbnail.resize(544,544)).toMediaItem())
+                            onDismiss()
+                        }
+                    ),
                     NewAction(
                         icon = {
                             Icon(
@@ -355,37 +352,34 @@ fun YouTubeSongMenu(
         item {
             Material3MenuGroup(
                 items = listOfNotNull(
-                        Material3MenuItemData(
-                            title = { Text(text = stringResource(R.string.start_radio)) },
-                            description = { Text(text = stringResource(R.string.start_radio_desc)) },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.radio),
-                                    contentDescription = null,
-                                )
-                            },
-                            onClick = {
-                                playerConnection.playQueue(YouTubeQueue.radio(song.toMediaMetadata()))
-                                onDismiss()
-                            }
-                        )
-                     else null,
-                    
-                        Material3MenuItemData(
-                            title = { Text(text = stringResource(R.string.add_to_queue)) },
-                            description = { Text(text = stringResource(R.string.add_to_queue_desc)) },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.queue_music),
-                                    contentDescription = null,
-                                )
-                            },
-                            onClick = {
-                                playerConnection.addToQueue(song.toMediaItem())
-                                onDismiss()
-                            }
-                        )
-                     else null,
+                    Material3MenuItemData(
+                        title = { Text(text = stringResource(R.string.start_radio)) },
+                        description = { Text(text = stringResource(R.string.start_radio_desc)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.radio),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            playerConnection.playQueue(YouTubeQueue.radio(song.toMediaMetadata()))
+                            onDismiss()
+                        }
+                    ),
+                    Material3MenuItemData(
+                        title = { Text(text = stringResource(R.string.add_to_queue)) },
+                        description = { Text(text = stringResource(R.string.add_to_queue_desc)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.queue_music),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            playerConnection.addToQueue(song.toMediaItem())
+                            onDismiss()
+                        }
+                    ),
                     Material3MenuItemData(
                         title = {
                             Text(

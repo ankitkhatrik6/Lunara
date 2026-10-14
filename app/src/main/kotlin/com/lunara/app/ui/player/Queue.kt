@@ -713,7 +713,7 @@ fun Queue(
                                                 onClick = {
                                                     if (inSelectMode) {
                                                         onCheckedChange(window.mediaItem.mediaId !in selection)
-                                                    } {
+                                                    } else {
                                                         if (index == currentWindowIndex) {
                                                             if (isCasting) {
                                                                 if (castIsPlaying) {

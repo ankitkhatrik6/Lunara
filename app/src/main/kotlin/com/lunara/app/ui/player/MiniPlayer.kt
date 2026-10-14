@@ -742,7 +742,7 @@ private fun NewMiniPlayerPlayButton(
                 Icon(
                     painter =
                         painterResource(
-                             else if (playbackState == Player.STATE_ENDED) {
+                            if (playbackState == Player.STATE_ENDED) {
                                 R.drawable.replay
                             } else {
                                 R.drawable.play

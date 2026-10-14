@@ -17,6 +17,6 @@ Lunara never restores or uses a Google/YouTube account cookie. The catalogue and
 
 ## License
 
-Lunara is distributed under GNU GPL-3.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE) for the upstream attribution and fork requirements.
+Lunara is distributed under GNU GPL-3.0. See [LICENSE](LICENSE) for the upstream attribution and fork requirements.
 
 Source repository: https://github.com/ankitkhatrik6/lunara

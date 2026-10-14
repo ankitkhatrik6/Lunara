@@ -1727,16 +1727,15 @@ fun BottomSheetPlayer(
                                 Image(
                                     painter =
                                         painterResource(
-                                             else if (playbackState ==
-                                                STATE_ENDED
-                                            ) {
-                                                R.drawable.replay
-                                            } else if (effectiveIsPlaying) {
-                                                R.drawable.pause
-                                            } else {
-                                                R.drawable.play
-                                            },
-                                        ),
+                                        if (playbackState ==
+                                            STATE_ENDED
+                                        ) {
+                                            R.drawable.replay
+                                        } else if (effectiveIsPlaying) {
+                                            R.drawable.pause
+                                        } else {
+                                            R.drawable.play
+                                        },
                                     contentDescription = null,
                                     colorFilter = ColorFilter.tint(playIconColor),
                                     modifier =

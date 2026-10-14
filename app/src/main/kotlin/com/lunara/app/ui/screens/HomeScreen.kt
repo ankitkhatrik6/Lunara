@@ -1599,7 +1599,7 @@ fun HomeScreen(
                                                                         onClick = {
                                                                             if (isRandomizing) {
                                                                                 randomizeJob?.cancel()
-                                                                            } {
+                                                                            } else {
                                                                                 randomizeJob =
                                                                                     scope.launch {
                                                                                         val randomItem = viewModel.getRandomItem()

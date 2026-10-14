@@ -1105,17 +1105,14 @@ class MusicService :
             }
         }
 
-        combine(
-            dataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
                 Triple(
                     prefs[CrossfadeEnabledKey] ?: false,
                     prefs[CrossfadeDurationKey] ?: 5f,
                     prefs[CrossfadeGaplessKey] ?: true,
                 )
-            },
-        ) { (enabled, duration, gapless) ->
-            Triple(enabled, duration, gapless)
-        }.distinctUntilChanged()
+            }
+            .distinctUntilChanged()
             .collect(scope) { (enabled, duration, gapless) ->
                 crossfadeEnabled = enabled
                 crossfadeDuration = duration * 1000f // Convert to ms
