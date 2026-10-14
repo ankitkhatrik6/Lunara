@@ -1,6 +1,6 @@
 /**
- * Lunara Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Ankit Khatri KC (C) 2026
+ * Licensed under GPL-3.0
  *
  * Client for the Better Lyrics aggregator API (lyrics.api.dacubeking.com) —
  * the same backend the Better Lyrics browser extension uses. It aggregates

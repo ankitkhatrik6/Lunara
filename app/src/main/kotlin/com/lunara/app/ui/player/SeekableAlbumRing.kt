@@ -1,6 +1,6 @@
 /**
- * Lunara Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Ankit Khatri KC (C) 2026
+ * Licensed under GPL-3.0
  *
  * Circular album art wrapped by a real, seekable progress ring — the "CD-player"
  * player design. Tap or drag anywhere around the ring to scrub. Shared by the

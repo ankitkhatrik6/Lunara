@@ -946,10 +946,10 @@
     <string name="no_recently_played">Недавно прослушанных песен пока нет.</string>
     <string name="no_recommendations">Рекомендаций пока нет.</string>
     <string name="about_developer_role">Разработчик</string>
-    <string name="about_me_body">Я Раджендра Пандей, независимый разработчик из Непала, и мне нравится превращать идеи в продуманные повседневные приложения. Lunara — мой взгляд на музыкальный стриминг: быстрый, красивый и личный, сделанный с нуля на Kotlin и Jetpack Compose. Мне важны мелочи, благодаря которым приложением легко пользоваться, и я постоянно его улучшаю. Спасибо, что вы здесь и что моя работа стала частью вашего дня.</string>
+    <string name="about_me_body">Я Ankit Khatri KC, независимый разработчик из Непала, и мне нравится превращать идеи в продуманные повседневные приложения. Lunara — мой взгляд на музыкальный стриминг: быстрый, красивый и личный, сделанный с нуля на Kotlin и Jetpack Compose. Мне важны мелочи, благодаря которым приложением легко пользоваться, и я постоянно его улучшаю. Спасибо, что вы здесь и что моя работа стала частью вашего дня.</string>
     <string name="buy_me_a_coffee">Угостить меня кофе</string>
     <string name="coffee_dialog_subtitle">Отсканируйте код, чтобы поддержать Lunara</string>
-    <string name="made_with_love">Сделано с ❤️ Раджендрой Пандеем</string>
+    <string name="made_with_love">Сделано с ❤️ Ankit Khatri KC</string>
     <string name="arrange">Упорядочить</string>
     <string name="created_by_you">Созданные вами</string>
     <string name="artists_you_liked">Понравившиеся исполнители</string>

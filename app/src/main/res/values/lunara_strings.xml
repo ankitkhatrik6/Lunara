@@ -338,9 +338,9 @@
 
     <!-- Know about the developer, in the account sheet -->
     <string name="developer_heading">Know about the developer</string>
-    <string name="developer_name" translatable="false">Rajendra Pandey</string>
-    <string name="developer_role">Builds Lunara, from Kathmandu</string>
-    <string name="developer_role_short">Developer, Kathmandu</string>
+    <string name="developer_name" translatable="false">Ankit Khatri KC</string>
+    <string name="developer_role">Builds Lunara, in the open</string>
+    <string name="developer_role_short">Developer</string>
     <string name="developer_star">Star</string>
     <string name="update_check_idle">Tap to check</string>
     <string name="update_check_running">Checking\u2026</string>
@@ -350,7 +350,7 @@
     <string name="developer_bio">I build Lunara on my own, in the open. It began because I wanted a music player that looked the way I thought one should, and people kept asking me for a copy. What goes into each version is mostly what people tell me is broken or missing.</string>
     <string name="developer_website">Website</string>
     <string name="developer_github">GitHub</string>
-    <string name="developer_website_url" translatable="false">https://rajendrapandey.info.np</string>
+    <string name="developer_website_url" translatable="false">https://github.com/ankitkhatrik6/lunara</string>
     <string name="developer_github_url" translatable="false">https://github.com/ankitkhatrik6</string>
     <string name="lunara_repo_url" translatable="false">https://github.com/ankitkhatrik6/lunara</string>
     <string name="current_version">Current version</string>
@@ -1147,7 +1147,7 @@
     <string name="about_lunara_body">Lunara is a free, open-source music player for Android, built with Kotlin and Jetpack Compose. It streams from YouTube Music and plays the audio already on your device, with lyrics, downloads, offline playback and a look that follows you from phone to tablet to Android Auto. No account, no ads, no tracking.</string>
     <string name="buy_me_a_coffee">Buy me a coffee</string>
     <string name="coffee_dialog_subtitle">Scan the code to support Lunara</string>
-    <string name="made_with_love">Made with ❤️ by Rajendra Pandey</string>
+    <string name="made_with_love">Made with ❤️ by Ankit Khatri KC</string>
     <string name="about_open_source">Free and open source under GPL-3.0</string>
     <string name="arrange">Arrange</string>
     <!-- Library redesign -->

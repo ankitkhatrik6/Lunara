@@ -925,10 +925,10 @@
     <string name="no_recently_played">Chưa có bài hát nào phát gần đây.</string>
     <string name="no_recommendations">Chưa có đề xuất nào.</string>
     <string name="about_developer_role">Nhà phát triển</string>
-    <string name="about_me_body">Tôi là Rajendra Pandey, một nhà phát triển ứng dụng độc lập đến từ Nepal, thích biến ý tưởng thành những trải nghiệm hằng ngày chỉn chu. Lunara là cách tôi nhìn về nghe nhạc trực tuyến — nhanh, đẹp và mang dấu ấn cá nhân — được xây dựng từ đầu bằng Kotlin và Jetpack Compose. Tôi quan tâm đến những chi tiết nhỏ khiến ứng dụng dễ dùng, và luôn mày mò để nó tốt hơn. Cảm ơn bạn đã ở đây và để sản phẩm của tôi trở thành một phần trong ngày của bạn.</string>
+    <string name="about_me_body">Tôi là Ankit Khatri KC, một nhà phát triển ứng dụng độc lập đến từ Nepal, thích biến ý tưởng thành những trải nghiệm hằng ngày chỉn chu. Lunara là cách tôi nhìn về nghe nhạc trực tuyến — nhanh, đẹp và mang dấu ấn cá nhân — được xây dựng từ đầu bằng Kotlin và Jetpack Compose. Tôi quan tâm đến những chi tiết nhỏ khiến ứng dụng dễ dùng, và luôn mày mò để nó tốt hơn. Cảm ơn bạn đã ở đây và để sản phẩm của tôi trở thành một phần trong ngày của bạn.</string>
     <string name="buy_me_a_coffee">Mời tôi một ly cà phê</string>
     <string name="coffee_dialog_subtitle">Quét mã để ủng hộ Lunara</string>
-    <string name="made_with_love">Được làm với ❤️ bởi Rajendra Pandey</string>
+    <string name="made_with_love">Được làm với ❤️ bởi Ankit Khatri KC</string>
     <string name="arrange">Sắp xếp</string>
     <string name="created_by_you">Do bạn tạo</string>
     <string name="artists_you_liked">Nghệ sĩ bạn thích</string>

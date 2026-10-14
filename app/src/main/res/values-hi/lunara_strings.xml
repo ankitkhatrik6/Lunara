@@ -932,10 +932,10 @@
     <string name="no_recently_played">अभी तक हाल में कोई गाना नहीं सुना गया।</string>
     <string name="no_recommendations">अभी कोई सुझाव नहीं है।</string>
     <string name="about_developer_role">डेवलपर</string>
-    <string name="about_me_body">मैं राजेंद्र पांडे हूँ, नेपाल का एक स्वतंत्र ऐप डेवलपर, जिसे विचारों को रोज़मर्रा के सुंदर अनुभवों में बदलना पसंद है। Lunara म्यूज़िक स्ट्रीमिंग को लेकर मेरी सोच है — तेज़, सुंदर और निजी — जिसे Kotlin और Jetpack Compose से शुरू से बनाया गया है। मुझे उन छोटी बातों की परवाह है जो किसी ऐप को आसान बनाती हैं, और मैं इसे बेहतर बनाने में लगा रहता हूँ। यहाँ आने और मेरे काम को अपने दिन का हिस्सा बनाने के लिए धन्यवाद।</string>
+    <string name="about_me_body">मैं Ankit Khatri KC हूँ, नेपाल का एक स्वतंत्र ऐप डेवलपर, जिसे विचारों को रोज़मर्रा के सुंदर अनुभवों में बदलना पसंद है। Lunara म्यूज़िक स्ट्रीमिंग को लेकर मेरी सोच है — तेज़, सुंदर और निजी — जिसे Kotlin और Jetpack Compose से शुरू से बनाया गया है। मुझे उन छोटी बातों की परवाह है जो किसी ऐप को आसान बनाती हैं, और मैं इसे बेहतर बनाने में लगा रहता हूँ। यहाँ आने और मेरे काम को अपने दिन का हिस्सा बनाने के लिए धन्यवाद।</string>
     <string name="buy_me_a_coffee">मुझे एक कॉफ़ी पिलाएँ</string>
     <string name="coffee_dialog_subtitle">Lunara को सपोर्ट करने के लिए कोड स्कैन करें</string>
-    <string name="made_with_love">राजेंद्र पांडे ने ❤️ से बनाया</string>
+    <string name="made_with_love">Ankit Khatri KC ने ❤️ से बनाया</string>
     <string name="arrange">क्रम बदलें</string>
     <string name="created_by_you">आपके बनाए हुए</string>
     <string name="artists_you_liked">आपके पसंद किए कलाकार</string>

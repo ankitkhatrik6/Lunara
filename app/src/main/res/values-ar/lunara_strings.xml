@@ -958,10 +958,10 @@
     <string name="no_recently_played">لا توجد أغانٍ شُغّلت مؤخرًا بعد.</string>
     <string name="no_recommendations">لا توجد توصيات بعد.</string>
     <string name="about_developer_role">مطوّر</string>
-    <string name="about_me_body">أنا راجندرا باندي، مطوّر تطبيقات مستقل من نيبال، أحب تحويل الأفكار إلى تجارب يومية متقنة. Lunara هو رؤيتي لبث الموسيقى — سريع وجميل وشخصي — بنيته من الصفر باستخدام Kotlin وJetpack Compose. أهتم بالتفاصيل الصغيرة التي تجعل التطبيق سهل الاستخدام، وأعمل دائمًا على تحسينه. شكرًا لوجودك هنا ولأنك سمحت لعملي أن يكون جزءًا من يومك.</string>
+    <string name="about_me_body">أنا Ankit Khatri KC، مطوّر تطبيقات مستقل من نيبال، أحب تحويل الأفكار إلى تجارب يومية متقنة. Lunara هو رؤيتي لبث الموسيقى — سريع وجميل وشخصي — بنيته من الصفر باستخدام Kotlin وJetpack Compose. أهتم بالتفاصيل الصغيرة التي تجعل التطبيق سهل الاستخدام، وأعمل دائمًا على تحسينه. شكرًا لوجودك هنا ولأنك سمحت لعملي أن يكون جزءًا من يومك.</string>
     <string name="buy_me_a_coffee">اشترِ لي قهوة</string>
     <string name="coffee_dialog_subtitle">امسح الرمز لدعم Lunara</string>
-    <string name="made_with_love">صُنع بـ ❤️ بواسطة راجندرا باندي</string>
+    <string name="made_with_love">صُنع بـ ❤️ بواسطة Ankit Khatri KC</string>
     <string name="arrange">ترتيب</string>
     <string name="created_by_you">من إنشائك</string>
     <string name="artists_you_liked">فنانون أعجبوك</string>

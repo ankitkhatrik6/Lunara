@@ -44,11 +44,11 @@ object PlayerConfigStore {
      */
     internal enum class Source(private val encodedUrl: String, val cacheName: String) {
         OWN(
-            "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3JhamVuZHJhNzE2OS9ibGF6aWZ5L3BsYXllci1jb25maWdzL3BsYXllcl9jb25maWdzLmpzb24=",
+            "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2Fua2l0a2hhdHJpazYvbHVuYXJhL3BsYXllci1jb25maWdzL3BsYXllcl9jb25maWdzLmpzb24=",
             "configs_own",
         ),
         MIRROR(
-            "aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL3JhamVuZHJhNzE2OS9ibGF6aWZ5QHBsYXllci1jb25maWdzL3BsYXllcl9jb25maWdzLmpzb24=",
+            "aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL2Fua2l0a2hhdHJpazYvbHVuYXJhQHBsYXllci1jb25maWdzL3BsYXllcl9jb25maWdzLmpzb24=",
             "configs_mirror",
         ),
 

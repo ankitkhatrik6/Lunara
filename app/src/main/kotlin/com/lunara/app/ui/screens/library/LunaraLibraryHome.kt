@@ -1,6 +1,6 @@
 /**
- * Lunara Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Ankit Khatri KC (C) 2026
+ * Licensed under GPL-3.0
  *
  * Cute, dreamy "Your Library" landing: pastel emblem header, bubbly filter chips,
  * kawaii gradient pinned playlists (Liked Songs in sakura rose, Top 50 in peach coral,

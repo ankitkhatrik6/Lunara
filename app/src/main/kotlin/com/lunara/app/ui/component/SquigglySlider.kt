@@ -1,7 +1,7 @@
 /**
- * Lunara Project (C) 2026
+ * Ankit Khatri KC (C) 2026
  * Metrolist Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Licensed under GPL-3.0
  * 
  * Squiggly Slider - ported from mpvEx project
  * https://github.com/marlboro-advance/mpvEx

@@ -932,10 +932,10 @@
     <string name="no_recently_played">Noch keine zuletzt gehörten Songs.</string>
     <string name="no_recommendations">Noch keine Empfehlungen.</string>
     <string name="about_developer_role">Entwickler</string>
-    <string name="about_me_body">Ich bin Rajendra Pandey, ein unabhängiger App-Entwickler aus Nepal, der Ideen gern in durchdachte Alltagserlebnisse verwandelt. Lunara ist meine Vorstellung von Musikstreaming – schnell, schön und persönlich –, von Grund auf mit Kotlin und Jetpack Compose gebaut. Mir sind die kleinen Details wichtig, durch die sich eine App mühelos anfühlt, und ich feile ständig daran, sie besser zu machen. Danke, dass du hier bist und meine Arbeit Teil deines Tages sein lässt.</string>
+    <string name="about_me_body">Ich bin Ankit Khatri KC, ein unabhängiger App-Entwickler aus Nepal, der Ideen gern in durchdachte Alltagserlebnisse verwandelt. Lunara ist meine Vorstellung von Musikstreaming – schnell, schön und persönlich –, von Grund auf mit Kotlin und Jetpack Compose gebaut. Mir sind die kleinen Details wichtig, durch die sich eine App mühelos anfühlt, und ich feile ständig daran, sie besser zu machen. Danke, dass du hier bist und meine Arbeit Teil deines Tages sein lässt.</string>
     <string name="buy_me_a_coffee">Spendier mir einen Kaffee</string>
     <string name="coffee_dialog_subtitle">Scanne den Code, um Lunara zu unterstützen</string>
-    <string name="made_with_love">Mit ❤️ gemacht von Rajendra Pandey</string>
+    <string name="made_with_love">Mit ❤️ gemacht von Ankit Khatri KC</string>
     <string name="arrange">Anordnen</string>
     <string name="created_by_you">Von dir erstellt</string>
     <string name="artists_you_liked">Künstler, die dir gefallen</string>

@@ -1,5 +1,10 @@
 [
   {
+    "versionName": "3.16.14",
+    "releaseDate": "2026-10-14T00:00:00Z",
+    "description": "## Rebranding and cleanup\n\n- **Correct authorship.** Every file header now credits Ankit Khatri KC (C) 2026 instead of the old Lunara Project line, and the About section shows the real developer name and repository.\n- **Removed hidden third-party references.** The player-config and player-registry sources no longer point at another project's fork; they now use Lunara's own player-configs branch.\n- **Neutral developer avatar.** The personal photo is replaced with a standard account icon.\n"
+  },
+  {
     "versionName": "3.16.13",
     "releaseDate": "2026-10-14T00:00:00Z",
     "description": "## Build fix and cleanup\n\n- **Release build fixed.** A cleanup edit left a few menu and player buttons with broken code that stopped the app from compiling; the release build now builds and installs cleanly again.\n- **Removed unrelated files.** The stray NOTICE file and logo.png have been removed, and the README link updated.\n"

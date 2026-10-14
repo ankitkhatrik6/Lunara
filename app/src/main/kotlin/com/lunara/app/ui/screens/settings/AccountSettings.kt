@@ -1,7 +1,7 @@
 /**
- * Lunara Project (C) 2026
+ * Ankit Khatri KC (C) 2026
  * Metrolist Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Licensed under GPL-3.0
  */
 
 package com.lunara.app.ui.screens.settings
@@ -538,7 +538,7 @@ fun AccountSettings(
                 .padding(horizontal = 12.dp, vertical = 10.dp),
         ) {
             Image(
-                painter = painterResource(R.drawable.developer_photo),
+                painter = painterResource(R.drawable.account),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -595,7 +595,7 @@ fun AccountSettings(
     if (showDeveloperDialog) {
         DefaultDialog(onDismiss = { showDeveloperDialog = false }) {
             Image(
-                painter = painterResource(R.drawable.developer_photo),
+                painter = painterResource(R.drawable.account),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

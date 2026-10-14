@@ -1,6 +1,6 @@
 /**
- * Lunara Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Ankit Khatri KC (C) 2026
+ * Licensed under GPL-3.0
  *
  * Backs the "Yours" tab: personal home rails (recently played, recommended,
  * playlists, favorite artists) sourced from the local library, plus the

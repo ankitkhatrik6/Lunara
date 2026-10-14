@@ -1,6 +1,6 @@
 /**
- * Lunara Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Ankit Khatri KC (C) 2026
+ * Licensed under GPL-3.0
  *
  * Player-design gallery: swipe through player LAYOUTS inside a phone frame. Each
  * page is a LIVE preview of the real player rendered with the currently-playing

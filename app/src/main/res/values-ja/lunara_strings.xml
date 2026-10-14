@@ -925,10 +925,10 @@
     <string name="no_recently_played">最近再生した曲はまだありません。</string>
     <string name="no_recommendations">おすすめはまだありません。</string>
     <string name="about_developer_role">開発者</string>
-    <string name="about_me_body">ネパールの個人アプリ開発者、Rajendra Pandey です。アイデアを、毎日使える丁寧な体験に仕上げるのが好きです。Lunara は、速く、美しく、自分らしい音楽ストリーミングを目指して、Kotlin と Jetpack Compose でゼロから作ったアプリです。アプリを心地よく使えるようにする小さなこだわりを大切にしていて、いつも改良を続けています。ここに来てくれて、私の作品をあなたの一日の一部にしてくれてありがとうございます。</string>
+    <string name="about_me_body">ネパールの個人アプリ開発者、Ankit Khatri KC です。アイデアを、毎日使える丁寧な体験に仕上げるのが好きです。Lunara は、速く、美しく、自分らしい音楽ストリーミングを目指して、Kotlin と Jetpack Compose でゼロから作ったアプリです。アプリを心地よく使えるようにする小さなこだわりを大切にしていて、いつも改良を続けています。ここに来てくれて、私の作品をあなたの一日の一部にしてくれてありがとうございます。</string>
     <string name="buy_me_a_coffee">コーヒーをおごる</string>
     <string name="coffee_dialog_subtitle">コードをスキャンして Lunara を応援</string>
-    <string name="made_with_love">Rajendra Pandey が ❤️ を込めて制作</string>
+    <string name="made_with_love">Ankit Khatri KC が ❤️ を込めて制作</string>
     <string name="arrange">並べ替え</string>
     <string name="created_by_you">あなたが作成</string>
     <string name="artists_you_liked">高く評価したアーティスト</string>

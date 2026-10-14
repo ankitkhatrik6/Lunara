@@ -932,10 +932,10 @@
     <string name="no_recently_played">Henüz son çalınan şarkı yok.</string>
     <string name="no_recommendations">Henüz öneri yok.</string>
     <string name="about_developer_role">Geliştirici</string>
-    <string name="about_me_body">Ben Rajendra Pandey, Nepal\'den fikirleri özenle hazırlanmış günlük deneyimlere dönüştürmeyi seven bağımsız bir uygulama geliştiricisiyim. Lunara, müzik akışına benim yorumum — hızlı, güzel ve kişisel — ve Kotlin ile Jetpack Compose kullanılarak sıfırdan yapıldı. Bir uygulamayı zahmetsiz hissettiren küçük ayrıntıları önemsiyorum ve onu daha iyi yapmak için sürekli uğraşıyorum. Burada olduğunuz ve çalışmamın gününüzün bir parçası olmasına izin verdiğiniz için teşekkürler.</string>
+    <string name="about_me_body">Ben Ankit Khatri KC, Nepal\'den fikirleri özenle hazırlanmış günlük deneyimlere dönüştürmeyi seven bağımsız bir uygulama geliştiricisiyim. Lunara, müzik akışına benim yorumum — hızlı, güzel ve kişisel — ve Kotlin ile Jetpack Compose kullanılarak sıfırdan yapıldı. Bir uygulamayı zahmetsiz hissettiren küçük ayrıntıları önemsiyorum ve onu daha iyi yapmak için sürekli uğraşıyorum. Burada olduğunuz ve çalışmamın gününüzün bir parçası olmasına izin verdiğiniz için teşekkürler.</string>
     <string name="buy_me_a_coffee">Bana bir kahve ısmarla</string>
     <string name="coffee_dialog_subtitle">Lunara\'ı desteklemek için kodu tarayın</string>
-    <string name="made_with_love">Rajendra Pandey tarafından ❤️ ile yapıldı</string>
+    <string name="made_with_love">Ankit Khatri KC tarafından ❤️ ile yapıldı</string>
     <string name="arrange">Düzenle</string>
     <string name="created_by_you">Sizin oluşturduklarınız</string>
     <string name="artists_you_liked">Beğendiğiniz sanatçılar</string>

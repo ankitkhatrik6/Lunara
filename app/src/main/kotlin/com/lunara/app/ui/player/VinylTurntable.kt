@@ -1,6 +1,6 @@
 /**
- * Lunara Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Ankit Khatri KC (C) 2026
+ * Licensed under GPL-3.0
  *
  * RECORD design centrepiece: a spinning vinyl record (album art as the label)
  * with a realistic J-shaped tonearm — circular gimbal bearing with a vertical

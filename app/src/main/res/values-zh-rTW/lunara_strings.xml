@@ -925,10 +925,10 @@
     <string name="no_recently_played">還沒有最近播放的歌曲。</string>
     <string name="no_recommendations">目前沒有推薦內容。</string>
     <string name="about_developer_role">開發者</string>
-    <string name="about_me_body">我是 Rajendra Pandey，一位來自尼泊爾的獨立應用程式開發者，喜歡把想法變成精緻、日常好用的體驗。Lunara 是我對音樂串流的詮釋——快速、美觀又個人化，使用 Kotlin 和 Jetpack Compose 從零打造。我在意那些讓應用程式用起來毫不費力的小細節，也一直在琢磨讓它變得更好。謝謝你來到這裡，讓我的作品成為你一天的一部分。</string>
+    <string name="about_me_body">我是 Ankit Khatri KC，一位來自尼泊爾的獨立應用程式開發者，喜歡把想法變成精緻、日常好用的體驗。Lunara 是我對音樂串流的詮釋——快速、美觀又個人化，使用 Kotlin 和 Jetpack Compose 從零打造。我在意那些讓應用程式用起來毫不費力的小細節，也一直在琢磨讓它變得更好。謝謝你來到這裡，讓我的作品成為你一天的一部分。</string>
     <string name="buy_me_a_coffee">請我喝杯咖啡</string>
     <string name="coffee_dialog_subtitle">掃描條碼支持 Lunara</string>
-    <string name="made_with_love">由 Rajendra Pandey 用 ❤️ 打造</string>
+    <string name="made_with_love">由 Ankit Khatri KC 用 ❤️ 打造</string>
     <string name="arrange">排列</string>
     <string name="created_by_you">你建立的</string>
     <string name="artists_you_liked">你喜歡的藝人</string>

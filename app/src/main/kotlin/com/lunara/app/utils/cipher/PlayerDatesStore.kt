@@ -38,8 +38,8 @@ object PlayerDatesStore {
     // registry our copy is kept in step with. The first one that gives any dates wins.
     private val REMOTE_URLS by lazy {
         listOf(
-            "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3JhamVuZHJhNzE2OS9ibGF6aWZ5L3BsYXllci1jb25maWdzL3BsYXllci1yZWdpc3RyeS5qc29u",
-            "aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL3JhamVuZHJhNzE2OS9ibGF6aWZ5QHBsYXllci1jb25maWdzL3BsYXllci1yZWdpc3RyeS5qc29u",
+            "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2Fua2l0a2hhdHJpazYvbHVuYXJhL3BsYXllci1jb25maWdzL3BsYXllci1yZWdpc3RyeS5qc29u",
+            "aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL2Fua2l0a2hhdHJpazYvbHVuYXJhQHBsYXllci1jb25maWdzL3BsYXllci1yZWdpc3RyeS5qc29u",
             "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01ldHJvbGlzdEdyb3VwL2ZhcmFkYXkvbWFzdGVyL3JlZ2lzdHJ5L3BsYXllci1yZWdpc3RyeS5qc29u",
         ).map { String(Base64.decode(it, Base64.DEFAULT), StandardCharsets.UTF_8) }
     }

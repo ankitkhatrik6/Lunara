@@ -1,6 +1,6 @@
 /**
- * Lunara Project (C) 2026
- * Licensed under GPL-3.0 | See NOTICE for contributors
+ * Ankit Khatri KC (C) 2026
+ * Licensed under GPL-3.0
  *
  * Minimalist Spotify-Inspired Loader:
  * Lightweight, hardware-accelerated CircularProgressIndicator.
