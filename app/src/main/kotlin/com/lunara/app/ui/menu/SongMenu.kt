@@ -6,7 +6,6 @@
 
 package com.lunara.app.ui.menu
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
@@ -110,6 +109,7 @@ import androidx.compose.runtime.LaunchedEffect
 import com.lunara.app.ui.component.EditLocalTagsDialog
 import com.lunara.app.db.entities.LocalTagOverride
 import com.lunara.app.utils.LocalMusic
+import com.lunara.app.utils.ShareLinks
 
 @Composable
 fun SongMenu(
@@ -623,13 +623,15 @@ fun SongMenu(
                             text = stringResource(R.string.share),
                             onClick = {
                                 onDismiss()
-                                val intent =
-                                    Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        type = "text/plain"
-                                        putExtra(Intent.EXTRA_TEXT, "https://music.youtube.com/watch?v=${song.id}")
-                                    }
-                                context.startActivity(Intent.createChooser(intent, null))
+                                bottomSheetPageState.show {
+                                    ShareStorySheet(
+                                        coverArtUrl = song.song.thumbnailUrl,
+                                        title = song.title,
+                                        artist = song.artists.joinToString { it.name },
+                                        link = ShareLinks.song(song.id),
+                                        kindLabel = "Song",
+                                    )
+                                }
                             },
                         ),
                     ),

@@ -217,6 +217,7 @@ import com.lunara.app.utils.get
 import com.lunara.app.utils.rememberEnumPreference
 import com.lunara.app.utils.rememberPreference
 import com.lunara.app.utils.PlaylistLink
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.utils.SharedPlaylistImport
 import com.lunara.app.utils.reportException
 import com.lunara.app.utils.setAppLocale
@@ -1589,6 +1590,8 @@ class MainActivity : ComponentActivity() {
         val path = uri.pathSegments.firstOrNull()
         return when {
             uri.pathSegments.any { it.equals("listen", ignoreCase = true) } -> false
+            // A song this app shared plays straight away, like a watch link does.
+            ShareLinks.parse(uri) is ShareLinks.Target.Song -> true
             path in setOf("playlist", "browse", "channel", "c", "search") -> false
             path == "watch" -> uri.getQueryParameter("v") != null || uri.getQueryParameter("list") != null
             uri.host == "youtu.be" -> path != null
@@ -1608,6 +1611,49 @@ class MainActivity : ComponentActivity() {
         PlaylistLink.parse(uri)?.let { shared ->
             sharedPlaylist = shared
             return
+        }
+
+        // A link this app shared itself: lunara.ankitak.com.np/song|album|playlist|artist/<id>,
+        // or the Lunara://<type>/<id> scheme the site redirects to. These open the matching
+        // screen, and a song starts playing the way a YouTube watch link does.
+        when (val target = ShareLinks.parse(uri)) {
+            is ShareLinks.Target.Song -> {
+                coroutineScope.launch(Dispatchers.IO) {
+                    val first =
+                        YouTube
+                            .queue(listOf(target.videoId), null)
+                            .getOrElse {
+                                reportException(it)
+                                null
+                            }?.firstOrNull()
+                    withContext(Dispatchers.Main) {
+                        playerConnection?.playQueue(
+                            YouTubeQueue(
+                                WatchEndpoint(videoId = first?.id ?: target.videoId, playlistId = null),
+                                first?.toMediaMetadata(),
+                            ),
+                        )
+                    }
+                }
+                return
+            }
+
+            is ShareLinks.Target.Album -> {
+                navController.navigate("album/${target.browseId}")
+                return
+            }
+
+            is ShareLinks.Target.Playlist -> {
+                navController.navigate("online_playlist/${target.playlistId}")
+                return
+            }
+
+            is ShareLinks.Target.Artist -> {
+                navController.navigate("artist/${target.channelId}")
+                return
+            }
+
+            null -> Unit
         }
 
         when (val path = uri.pathSegments.firstOrNull()) {

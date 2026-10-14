@@ -26,6 +26,7 @@ import android.media.audiofx.AudioEffect
 import com.lunara.app.constants.AddToPlaylistAtTopKey
 import com.lunara.app.playback.audio.VolumeNormalizationAudioProcessor
 import com.lunara.app.utils.safeDataStoreEdit
+import com.lunara.app.utils.ShareLinks
 import android.net.ConnectivityManager
 import android.os.Binder
 import android.os.Build
@@ -4858,7 +4859,7 @@ class MusicService :
         val shareIntent =
             Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "https://music.youtube.com/watch?v=$songId")
+                putExtra(Intent.EXTRA_TEXT, ShareLinks.song(songId))
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
         startActivity(

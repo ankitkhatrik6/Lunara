@@ -80,6 +80,7 @@ import com.lunara.app.playback.ExoDownloadService
 import com.lunara.app.playback.queues.YouTubeQueue
 import com.lunara.app.ui.component.ListDialog
 import com.lunara.app.ui.component.LocalBottomSheetPageState
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.ui.component.Material3MenuGroup
 import com.lunara.app.ui.component.Material3MenuItemData
 import com.lunara.app.ui.component.NewAction
@@ -334,13 +335,16 @@ fun YouTubeSongMenu(
                         },
                         text = stringResource(R.string.share),
                         onClick = {
-                            val intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, song.shareLink)
-                            }
-                            context.startActivity(Intent.createChooser(intent, null))
                             onDismiss()
+                            bottomSheetPageState.show {
+                                ShareStorySheet(
+                                    coverArtUrl = song.thumbnail,
+                                    title = song.title,
+                                    artist = song.artists.joinToString { it.name },
+                                    link = ShareLinks.song(song.id),
+                                    kindLabel = "Song",
+                                )
+                            }
                         }
                     )
                 ),

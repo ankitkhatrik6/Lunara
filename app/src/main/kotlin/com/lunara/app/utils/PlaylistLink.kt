@@ -25,7 +25,7 @@ object PlaylistLink {
     /** Songs past this are left out: the link, and the square that holds it, have their limits. */
     const val MAX_SONGS = 150
 
-    private const val SITE = "https://ankitkhatrik6.github.io/lunara/playlist"
+    private const val SITE = "https://lunara.ankitak.com.np/playlist"
 
     data class Shared(val name: String, val songIds: List<String>)
 

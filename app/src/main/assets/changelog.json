@@ -1,8 +1,8 @@
 [
   {
-    "tagName": "v3.16.16",
-    "versionName": "3.16.16",
+    "tagName": "v3.17.0",
+    "versionName": "3.17.0",
     "releaseDate": "2026-10-14T00:00:00Z",
-    "description": "## What's new\n\n- **Notification stays dismissed.** The music notification no longer reappears after you swipe it away. It now only shows while a song is actually playing, so clearing it clears it for good.\n- **Smoother player.** Playback and notification updates are steadier, with no repeated popping of the now-playing card.\n"
+    "description": "## What's new\n\n- **Share songs, albums, playlists and artists.** Every share button now opens a sheet with a Spotify-style story picture — cover art on a background pulled from the artwork itself, title, artist, a QR code, and your link `lunara.ankitak.com.np`. Send the picture to Instagram Stories or WhatsApp, or just copy the link.\n- **Links open in Lunara.** Shared links open straight in the app when it is installed, and land on the new lunara.ankitak.com.np site — with a Get-it-on-GitHub page — when it is not.\n"
   }
 ]

@@ -7,7 +7,6 @@
 package com.lunara.app.ui.menu
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -78,6 +77,8 @@ import com.lunara.app.ui.component.NewAction
 import com.lunara.app.ui.component.NewActionGrid
 import com.lunara.app.ui.component.SongListItem
 import com.lunara.app.ui.component.YouTubeListItem
+import com.lunara.app.ui.component.LocalBottomSheetPageState
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.utils.reportException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -97,6 +98,7 @@ fun YouTubeAlbumMenu(
     val album by database.albumWithSongs(albumItem.id).collectAsStateWithLifecycle(initialValue = null)
     val isPinned by database.speedDialDao.isPinned(albumItem.id).collectAsStateWithLifecycle(initialValue = false)
     val coroutineScope = rememberCoroutineScope()
+    val bottomSheetPageState = LocalBottomSheetPageState.current
 
     LaunchedEffect(Unit) {
         database.album(albumItem.id).collect { album ->
@@ -296,13 +298,15 @@ fun YouTubeAlbumMenu(
                             text = stringResource(R.string.share),
                             onClick = {
                                 onDismiss()
-                                val intent =
-                                    Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        type = "text/plain"
-                                        putExtra(Intent.EXTRA_TEXT, albumItem.shareLink)
-                                    }
-                                context.startActivity(Intent.createChooser(intent, null))
+                                bottomSheetPageState.show {
+                                    ShareStorySheet(
+                                        coverArtUrl = albumItem.thumbnail,
+                                        title = albumItem.title,
+                                        artist = albumItem.artists?.joinToString { it.name } ?: "",
+                                        link = ShareLinks.album(albumItem.browseId),
+                                        kindLabel = "Album",
+                                    )
+                                }
                             },
                         ),
                     ),

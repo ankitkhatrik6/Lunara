@@ -6,7 +6,7 @@
 
 package com.lunara.app.ui.menu
 
-import android.content.Intent
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -78,6 +78,8 @@ import com.lunara.app.ui.component.Material3MenuItemData
 import com.lunara.app.ui.component.MediaMetadataListItem
 import com.lunara.app.ui.component.NewAction
 import com.lunara.app.ui.component.NewActionGrid
+import com.lunara.app.ui.component.LocalBottomSheetPageState
+import com.lunara.app.utils.ShareLinks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -116,6 +118,8 @@ fun QueueMenu(
     val artists = remember(mediaMetadata.artists) {
         mediaMetadata.artists.filter { it.id != null }
     }
+
+    val bottomSheetPageState = LocalBottomSheetPageState.current
 
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
@@ -326,15 +330,15 @@ fun QueueMenu(
                         text = stringResource(R.string.share),
                         onClick = {
                             onDismiss()
-                            val intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                type = "text/plain"
-                                putExtra(
-                                    Intent.EXTRA_TEXT,
-                                    "https://music.youtube.com/watch?v=${mediaMetadata.id}"
+                            bottomSheetPageState.show {
+                                ShareStorySheet(
+                                    coverArtUrl = mediaMetadata.thumbnailUrl,
+                                    title = mediaMetadata.title,
+                                    artist = mediaMetadata.artists.joinToString { it.name },
+                                    link = ShareLinks.song(mediaMetadata.id),
+                                    kindLabel = "Song",
                                 )
                             }
-                            context.startActivity(Intent.createChooser(intent, null))
                         }
                     )
                 ),

@@ -89,7 +89,9 @@ import com.lunara.app.ui.component.NewAction
 import com.lunara.app.ui.component.NewActionGrid
 import com.lunara.app.ui.component.SongListItem
 import com.lunara.app.ui.menu.ExportDialog
+import com.lunara.app.ui.component.LocalBottomSheetPageState
 import com.lunara.app.utils.PlaylistExporter
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.utils.getExportFileUri
 import com.lunara.app.utils.saveToPublicDocuments
 import kotlinx.coroutines.Dispatchers
@@ -107,6 +109,7 @@ fun AlbumMenu(
     val downloadUtil = LocalDownloadUtil.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val scope = rememberCoroutineScope()
+    val bottomSheetPageState = LocalBottomSheetPageState.current
     val libraryAlbum by database.album(originalAlbum.id).collectAsStateWithLifecycle(initialValue = originalAlbum)
     val album = libraryAlbum ?: originalAlbum
     var songs by remember {
@@ -322,13 +325,15 @@ fun AlbumMenu(
                             text = stringResource(R.string.share),
                             onClick = {
                                 onDismiss()
-                                val intent =
-                                    Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        type = "text/plain"
-                                        putExtra(Intent.EXTRA_TEXT, "https://music.youtube.com/playlist?list=${album.album.playlistId}")
-                                    }
-                                context.startActivity(Intent.createChooser(intent, null))
+                                bottomSheetPageState.show {
+                                    ShareStorySheet(
+                                        coverArtUrl = album.album.thumbnailUrl,
+                                        title = album.title,
+                                        artist = album.artists.joinToString { it.name },
+                                        link = ShareLinks.album(album.id),
+                                        kindLabel = "Album",
+                                    )
+                                }
                             },
                         ),
                     ),

@@ -83,6 +83,8 @@ import com.lunara.app.ui.component.Material3MenuItemData
 import com.lunara.app.ui.component.NewAction
 import com.lunara.app.ui.component.NewActionGrid
 import com.lunara.app.ui.component.YouTubeListItem
+import com.lunara.app.ui.component.LocalBottomSheetPageState
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.ui.utils.resize
 import com.lunara.app.utils.exportYouTubePlaylistAsCSV
 import com.lunara.app.utils.exportYouTubePlaylistAsM3U
@@ -111,6 +113,7 @@ fun YouTubePlaylistMenu(
     val database = LocalDatabase.current
     val downloadUtil = LocalDownloadUtil.current
     val playerConnection = LocalPlayerConnection.current ?: return
+    val bottomSheetPageState = LocalBottomSheetPageState.current
     val dbPlaylist by database.playlistByBrowseId(playlist.id).collectAsStateWithLifecycle(initialValue = null)
     val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsStateWithLifecycle(initialValue = false)
 
@@ -622,14 +625,16 @@ fun YouTubePlaylistMenu(
                                     )
                                 },
                                 onClick = {
-                                    val intent =
-                                        Intent().apply {
-                                            action = Intent.ACTION_SEND
-                                            type = "text/plain"
-                                            putExtra(Intent.EXTRA_TEXT, playlist.shareLink)
-                                        }
-                                    context.startActivity(Intent.createChooser(intent, null))
                                     onDismiss()
+                                    bottomSheetPageState.show {
+                                        ShareStorySheet(
+                                            coverArtUrl = playlist.thumbnail,
+                                            title = playlist.title,
+                                            artist = playlist.author?.name.orEmpty(),
+                                            link = ShareLinks.playlist(playlist.id),
+                                            kindLabel = "Playlist",
+                                        )
+                                    }
                                 },
                             ),
                         )

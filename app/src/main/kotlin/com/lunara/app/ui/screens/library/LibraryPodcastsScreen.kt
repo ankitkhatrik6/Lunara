@@ -6,7 +6,7 @@
 
 package com.lunara.app.ui.screens.library
 
-import android.content.Intent
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -85,9 +85,12 @@ import com.lunara.app.ui.component.HideOnScrollFAB
 import com.lunara.app.ui.component.LocalMenuState
 import com.lunara.app.ui.component.Material3MenuGroup
 import com.lunara.app.ui.component.Material3MenuItemData
+import com.lunara.app.ui.component.LocalBottomSheetPageState
 import com.lunara.app.ui.component.SongListItem
 import com.lunara.app.ui.component.SortHeader
 import com.lunara.app.ui.menu.SongMenu
+import com.lunara.app.ui.menu.ShareStorySheet
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.utils.joinByBullet
 import com.lunara.app.utils.makeTimeString
 import com.lunara.app.utils.rememberEnumPreference
@@ -646,9 +649,9 @@ private fun PodcastEpisodePlaylistMenu(
     val coroutineScope = rememberCoroutineScope()
     val syncUtils = LocalSyncUtils.current
     val isPinned by database.speedDialDao.isPinned(podcast.id).collectAsStateWithLifecycle(initialValue = false)
+    val bottomSheetPageState = LocalBottomSheetPageState.current
 
     val playlistId = podcast.id.removePrefix("MPSP")
-    val shareUrl = "https://music.youtube.com/playlist?list=$playlistId"
 
     Spacer(Modifier.height(12.dp))
     Material3MenuGroup(
@@ -683,14 +686,16 @@ private fun PodcastEpisodePlaylistMenu(
                         )
                     },
                     onClick = {
-                        val intent =
-                            Intent().apply {
-                                action = Intent.ACTION_SEND
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, shareUrl)
-                            }
-                        context.startActivity(Intent.createChooser(intent, null))
                         onDismiss()
+                        bottomSheetPageState.show {
+                            ShareStorySheet(
+                                coverArtUrl = podcast.thumbnailUrl,
+                                title = podcast.title,
+                                artist = podcast.author.orEmpty(),
+                                link = ShareLinks.playlist(playlistId),
+                                kindLabel = "Podcast",
+                            )
+                        }
                     },
                 ),
                 Material3MenuItemData(

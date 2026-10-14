@@ -40,7 +40,9 @@ import com.lunara.app.db.entities.Song
 import com.lunara.app.ui.component.DefaultDialog
 import com.lunara.app.ui.component.Material3MenuGroup
 import com.lunara.app.ui.component.Material3MenuItemData
+import com.lunara.app.ui.component.LocalBottomSheetPageState
 import com.lunara.app.utils.PlaylistExporter
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.utils.getExportFileUri
 import com.lunara.app.utils.saveToPublicDocuments
 import kotlinx.coroutines.launch
@@ -64,6 +66,8 @@ fun LocalPlaylistMenu(
     onDismiss: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val bottomSheetPageState = LocalBottomSheetPageState.current
+
     val localContext = LocalContext.current
 
     val (showExportDialog, setShowExportDialog) = remember { mutableStateOf(false) }
@@ -187,17 +191,16 @@ fun LocalPlaylistMenu(
                         // A playlist of one's own used to go out as a list of song titles,
                         // which nobody could do anything with; it is packed into a link now.
                         if (isYouTubePlaylist) {
-                            val sendIntent =
-                                Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    putExtra(
-                                        Intent.EXTRA_TEXT,
-                                        "https://music.youtube.com/playlist?list=${playlist.playlist.browseId}",
-                                    )
-                                    type = "text/plain"
-                                }
-                            context.startActivity(Intent.createChooser(sendIntent, null))
                             onDismiss()
+                            bottomSheetPageState.show {
+                                ShareStorySheet(
+                                    coverArtUrl = playlist.playlist.thumbnailUrl,
+                                    title = playlist.title,
+                                    artist = "",
+                                    link = ShareLinks.playlist(playlist.playlist.browseId ?: playlist.id),
+                                    kindLabel = "Playlist",
+                                )
+                            }
                         } else {
                             onDismiss()
                             onShareAsLink()

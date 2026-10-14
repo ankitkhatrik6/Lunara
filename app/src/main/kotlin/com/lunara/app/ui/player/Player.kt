@@ -1227,16 +1227,17 @@ fun BottomSheetPlayer(
                             } else {
                                 FilledIconButton(
                                     onClick = {
-                                        val intent =
-                                            Intent().apply {
-                                                action = Intent.ACTION_SEND
-                                                type = "text/plain"
-                                                putExtra(
-                                                    Intent.EXTRA_TEXT,
-                                                    "https://music.youtube.com/watch?v=${mediaMetadata.id}",
+                                        mediaMetadata?.let { meta ->
+                                            bottomSheetPageState.show {
+                                                com.lunara.app.ui.menu.ShareStorySheet(
+                                                    coverArtUrl = meta.thumbnailUrl,
+                                                    title = meta.title,
+                                                    artist = meta.artists.joinToString { it.name },
+                                                    link = com.lunara.app.utils.ShareLinks.song(meta.id),
+                                                    kindLabel = "Song",
                                                 )
                                             }
-                                        context.startActivity(Intent.createChooser(intent, null))
+                                        }
                                     },
                                     shape = shareShape,
                                     colors =

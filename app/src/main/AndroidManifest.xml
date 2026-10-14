@@ -124,6 +124,68 @@
                 <data android:host="playlist" />
             </intent-filter>
 
+            <!-- Share links on the custom domain. A shared song, album, playlist or artist
+                 points here, and Android App Links hand it straight to the app when it is
+                 installed. autoVerify needs the assetlinks.json the site serves, so the app is
+                 trusted to open lunara.ankitak.com.np links without a chooser. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:host="lunara.ankitak.com.np" />
+                <data android:pathPrefix="/song" />
+                <data android:pathPrefix="/album" />
+                <data android:pathPrefix="/playlist" />
+                <data android:pathPrefix="/artist" />
+            </intent-filter>
+
+            <!-- The scheme form the site redirects to. It needs no domain verification, so it is
+                 the reliable hand-off when App Links have not verified yet (fresh install). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="Lunara" />
+                <data android:host="song" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="Lunara" />
+                <data android:host="album" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="Lunara" />
+                <data android:host="artist" />
+            </intent-filter>
+
+            <!-- What the invite page actually opens. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="Lunara" />
+                <data android:host="playlist" />
+            </intent-filter>
+
             <!-- What the invite page actually opens. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

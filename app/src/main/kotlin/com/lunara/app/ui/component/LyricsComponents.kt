@@ -96,6 +96,7 @@ import com.lunara.app.lyrics.lyricsTextLooksSynced
 import com.lunara.app.models.MediaMetadata
 import com.lunara.app.ui.screens.settings.LyricsPosition
 import com.lunara.app.utils.ComposeToImage
+import com.lunara.app.utils.ShareLinks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -450,7 +451,7 @@ internal fun LyricsShareDialog(
                         val intent = Intent().apply {
                             action = Intent.ACTION_SEND
                             type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, "\"$txt\"\n\n$title - $arts\nhttps://music.youtube.com/watch?v=$songId")
+                            putExtra(Intent.EXTRA_TEXT, "\"$txt\"\n\n$title - $arts\n${ShareLinks.song(songId)}")
                         }
                         context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_lyrics)))
                         onDismiss()

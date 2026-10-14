@@ -6,7 +6,6 @@
 
 package com.lunara.app.ui.menu
 
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +42,8 @@ import com.lunara.app.ui.component.Material3MenuGroup
 import com.lunara.app.ui.component.Material3MenuItemData
 import com.lunara.app.ui.component.NewAction
 import com.lunara.app.ui.component.NewActionGrid
+import com.lunara.app.ui.component.LocalBottomSheetPageState
+import com.lunara.app.utils.ShareLinks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -57,6 +58,7 @@ fun ArtistMenu(
 ) {
     val context = LocalContext.current
     val database = LocalDatabase.current
+    val bottomSheetPageState = LocalBottomSheetPageState.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val artistState = database.artist(originalArtist.id).collectAsStateWithLifecycle(initialValue = originalArtist)
     val artist = artistState.value ?: originalArtist
@@ -199,15 +201,15 @@ fun ArtistMenu(
                                 text = stringResource(R.string.share),
                                 onClick = {
                                     onDismiss()
-                                val intent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        type = "text/plain"
-                                        putExtra(
-                                            Intent.EXTRA_TEXT,
-                                            "https://music.youtube.com/channel/${artist.id}"
-                                        )
-                                    }
-                                    context.startActivity(Intent.createChooser(intent, null))
+                                bottomSheetPageState.show {
+                                    ShareStorySheet(
+                                        coverArtUrl = artist.artist.thumbnailUrl,
+                                        title = artist.title,
+                                        artist = "",
+                                        link = ShareLinks.artist(artist.id),
+                                        kindLabel = "Artist",
+                                    )
+                                }
                                 }
                             )
                         )

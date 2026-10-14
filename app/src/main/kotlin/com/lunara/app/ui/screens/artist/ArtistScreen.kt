@@ -6,11 +6,9 @@
 
 package com.lunara.app.ui.screens.artist
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import com.lunara.app.ui.component.LocalBottomSheetPageState
+import com.lunara.app.ui.menu.ShareStorySheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +63,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
@@ -126,6 +123,7 @@ import com.lunara.app.ui.utils.fadingEdge
 import com.lunara.app.ui.utils.isScrollingUp
 import com.lunara.app.ui.utils.resize
 import com.lunara.app.utils.rememberPreference
+import com.lunara.app.utils.ShareLinks
 import com.lunara.app.viewmodels.ArtistViewModel
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.launch
@@ -137,8 +135,8 @@ fun ArtistScreen(
     navController: NavController,
     viewModel: ArtistViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
     val database = LocalDatabase.current
+    val bottomSheetPageState = LocalBottomSheetPageState.current
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
@@ -1029,16 +1027,21 @@ fun ArtistScreen(
         actions = {
             IconButton(
                 onClick = {
-                    viewModel.artistPage?.artist?.shareLink?.let { link ->
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText("Artist Link", link)
-                        clipboard.setPrimaryClip(clip)
-                        Toast.makeText(context, R.string.link_copied, Toast.LENGTH_SHORT).show()
+                    viewModel.artistPage?.artist?.let { artist ->
+                        bottomSheetPageState.show {
+                            ShareStorySheet(
+                                coverArtUrl = artist.thumbnail,
+                                title = artist.title,
+                                artist = "",
+                                link = ShareLinks.artist(artist.id),
+                                kindLabel = "Artist",
+                            )
+                        }
                     }
                 },
             ) {
                 Icon(
-                    painterResource(R.drawable.link),
+                    painterResource(R.drawable.share),
                     contentDescription = null,
                 )
             }
