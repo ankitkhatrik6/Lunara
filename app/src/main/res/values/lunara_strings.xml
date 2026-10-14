@@ -1153,7 +1153,7 @@
     <string name="no_recommendations">No recommendations yet.</string>
     <!-- About page -->
     <string name="about_developer_role">Developer</string>
-    <string name="about_me_body">I'm Ankit Khatri KC, an independent app developer from Nepal who loves turning ideas into polished everyday experiences. Lunara is my take on music streaming – fast, beautiful and personal – built from the ground up with Kotlin and Jetpack Compose. I care about the small details that make an app feel effortless, and I'm always tinkering to make it better. Thank you for being here and letting my work be part of your day.</string>
+    <string name="about_me_body">I\'m Ankit Khatri KC, an independent app developer from Nepal who loves turning ideas into polished everyday experiences. Lunara is my take on music streaming – fast, beautiful and personal – built from the ground up with Kotlin and Jetpack Compose. I care about the small details that make an app feel effortless, and I\'m always tinkering to make it better. Thank you for being here and letting my work be part of your day.</string>
     <string name="about_lunara_title">About Lunara</string>
     <string name="about_lunara_body">Lunara is a free, open-source music player for Android, built with Kotlin and Jetpack Compose. It streams from YouTube Music and plays the audio already on your device, with lyrics, downloads, offline playback and a look that follows you from phone to tablet to Android Auto. No account, no ads, no tracking.</string>
     <string name="buy_me_a_coffee">Buy me a coffee</string>
