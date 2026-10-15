@@ -70,3 +70,10 @@ be run manually). It needs three repository secrets:
 
 (Find the org/project ids with `npx vercel` locally, or in the Vercel project settings. If you prefer,
 connect the repo in the Vercel dashboard for Git-based deploys and delete `site.yml`.)
+
+## Private dev / public releases
+
+Development happens in this private repo. Tested builds are promoted to the public
+[`lunara-releases`](https://github.com/ankitkhatrik6/lunara-releases) repo by the
+`promote.yml` workflow (Actions → "Promote to public" → pick a tag). The public repo holds only
+releases and documentation — it is what the in-app updater and the site's Get-it buttons read.

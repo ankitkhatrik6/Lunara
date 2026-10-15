@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
  * their mind.
  */
 object StarPrompt {
-    const val REPO = "https://github.com/ankitkhatrik6/lunara"
+    const val REPO = "https://github.com/ankitkhatrik6/lunara-releases"
 
     private const val HOURS_BEFORE_FIRST_ASK = 24L
     private const val DAYS_BETWEEN_ASKS = 7L

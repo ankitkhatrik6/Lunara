@@ -60,9 +60,9 @@ import com.lunara.app.ui.component.IconButton
 import com.lunara.app.ui.utils.backToMain
 import java.util.Locale
 
-// Links to the project itself, not to a person's profile.
-private const val PROJECT_URL = "https://github.com/ankitkhatrik6/lunara"
-private const val LICENSE_URL = "https://github.com/ankitkhatrik6/lunara/blob/main/LICENSE"
+// Links to the public releases repo, the face users see — not the private dev repo.
+private const val PROJECT_URL = "https://github.com/ankitkhatrik6/lunara-releases"
+private const val LICENSE_URL = "https://github.com/ankitkhatrik6/lunara-releases/blob/main/LICENSE"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

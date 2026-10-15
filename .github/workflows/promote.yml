@@ -1,0 +1,126 @@
+name: Promote to public
+
+# Copies a tested tag's builds (plus changelog) from this private dev repo to the public
+# lunara-releases repo, which holds only releases + documentation. Run by hand from the Actions
+# tab after you have tested a version — the public repo and the in-app updater never see anything
+# you did not promote.
+#
+# Needs one secret: RELEASES_PAT, a fine-grained personal access token for
+# ankitkhatrik6/lunara-releases with Contents: read + write (releases publish through it).
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to promote (e.g. v3.17.5)'
+        required: true
+      publish:
+        description: 'Publish immediately (false keeps it a draft on the public repo)'
+        required: false
+        default: 'true'
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download private release assets
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = core.getInput('tag');
+            const { data: rel } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner, repo: context.repo.repo, tag,
+            });
+            const fs = require('fs');
+            fs.mkdirSync('dist', { recursive: true });
+            for (const a of rel.assets) {
+              process.stdout.write(`fetching ${a.name}\n`);
+              const dl = await github.rest.repos.getReleaseAsset({
+                owner: context.repo.owner, repo: context.repo.repo,
+                asset_id: a.id, headers: { accept: 'application/octet-stream' },
+              });
+              fs.writeFileSync(`dist/${a.name}`, Buffer.from(dl.data));
+            }
+            fs.writeFileSync('dist/tag.txt', tag);
+            fs.writeFileSync('dist/notes.md', rel.body || '');
+            core.setOutput('tag', tag);
+
+      - name: Bundle the source tree for this tag
+        run: |
+          # GPL: a public binary must travel with (or point at) its exact source. Bundle the
+          # promoted tag's tree — docs excluded, secrets never in git anyway — so the public
+          # release is self-contained and the docs-only repo still honours the licence.
+          TAG=$(cat dist/tag.txt)
+          git archive --format=tar.gz --prefix="lunara-${TAG}/" -o "dist/Lunara-${TAG#v}-source.tar.gz" "$TAG"
+          ls -la dist/
+
+      - name: Save notes for the public repo docs
+        run: |
+          # The public repo keeps per-version notes in git (docs, not just binaries); written
+          # straight to lunara-releases/notes/<tag>.md so it survives even release edits.
+          TAG=$(cat dist/tag.txt)
+          mkdir -p public-notes
+          cp dist/notes.md "public-notes/${TAG}.md"
+
+      - name: Publish to lunara-releases
+        uses: actions/github-script@v7
+        env:
+          RELEASES_PAT: ${{ secrets.RELEASES_PAT }}
+        with:
+          github-token: ${{ env.RELEASES_PAT }}
+          script: |
+            const fs = require('fs');
+            const tag = fs.readFileSync('dist/tag.txt', 'utf8').trim();
+            const notes = fs.readFileSync('dist/notes.md', 'utf8');
+            const noteFile = `public-notes/${tag}.md`;
+            const files = fs.readdirSync('dist').filter(f => !['tag.txt', 'notes.md'].includes(f));
+            const publish = core.getInput('publish') === 'true';
+            const [owner, repo] = ['ankitkhatrik6', 'lunara-releases'];
+            // Keep the public repo docs-shaped: per-version notes live in git under notes/,
+            // next to the starter kit (README/LICENCE/docs). Binaries ride on the release itself.
+            try {
+              let existing = null;
+              try {
+                ({ data: existing } = await github.rest.repos.getContent({ owner, repo, path: `notes/${tag}.md` }));
+              } catch (e) { if (e.status !== 404) throw e; }
+              await github.rest.repos.createOrUpdateFileContents({
+                owner, repo, path: `notes/${tag}.md`,
+                message: `Notes for ${tag}`,
+                content: Buffer.from(fs.readFileSync(noteFile, 'utf8')).toString('base64'),
+                ...(existing ? { sha: existing.sha } : {}),
+              });
+            } catch (e) {
+              process.stdout.write(`notes commit skipped: ${e.message}\n`);
+            }
+            let rel;
+            try {
+              ({ data: rel } = await github.rest.repos.getReleaseByTag({ owner, repo, tag }));
+              process.stdout.write(`reusing existing public release ${tag}\n`);
+            } catch (e) {
+              if (e.status !== 404) throw e;
+              ({ data: rel } = await github.rest.repos.createRelease({
+                owner, repo, tag_name: tag, name: `Lunara ${tag.replace(/^v/, '')}`,
+                body: notes, draft: !publish, prerelease: false,
+              }));
+            }
+            for (const f of files) {
+              const existing = (await github.rest.repos.listReleaseAssets({ owner, repo, release_id: rel.id, per_page: 100 })).data
+                .find(a => a.name === f);
+              if (existing) {
+                await github.rest.repos.deleteReleaseAsset({ owner, repo, asset_id: existing.id });
+              }
+              process.stdout.write(`uploading ${f}\n`);
+              await github.request({
+                method: 'POST',
+                url: rel.upload_url,
+                headers: { 'content-type': 'application/octet-stream' },
+                data: fs.readFileSync(`dist/${f}`),
+                name: f, label: f,
+              });
+            }
+            if (publish && rel.draft) {
+              await github.rest.repos.updateRelease({ owner, repo, release_id: rel.id, draft: false, body: notes });
+            }

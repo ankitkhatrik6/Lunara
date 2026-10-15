@@ -259,7 +259,7 @@
     <string name="release_notes">रिलीज़ नोट</string>
     <string name="changelog">बदलावों की सूची</string>
     <string name="changelog_empty">कोई बदलाव सूची उपलब्ध नहीं है</string>
-    <string name="github_releases_url">https://github.com/ankitkhatrik6/lunara/releases</string>
+    <string name="github_releases_url">https://github.com/ankitkhatrik6/lunara-releases/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">GitHub पर देखें</string>
     <string name="developer_heading">डेवलपर के बारे में जानें</string>
