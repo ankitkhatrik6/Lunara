@@ -393,7 +393,10 @@
       var type = m[1];
       var id = decodeURIComponent(m[2]);
       var pkg = 'com.lunara.app';
-      var fallback = location.href.split('#')[0];
+      // Never fire twice: the fallback returns to this same URL, which would loop forever.
+      if (/[?&]tried=1/.test(location.search)) return;
+      var fallback = location.href.split('#')[0] +
+        (location.search ? '&' : '?') + 'tried=1';
 
       // intent://<host>/<path>#Intent;scheme=<scheme>;package=<pkg>;S.browser_fallback_url=<url>;end
       var intentUri =

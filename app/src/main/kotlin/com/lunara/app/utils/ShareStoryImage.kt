@@ -52,6 +52,17 @@ object ShareStoryImage {
     private const val INK = 0xFFFFFFFF.toInt()
     private const val INK_SOFT = 0xE6FFFFFF.toInt()
 
+    // One loader for the whole app, built once. A fresh ImageLoader per share spins up its own
+    // thread pool and memory cache every time, which is wasteful and can stall the UI while it
+    // warms up — the "Lunara isn't responding" hitch when opening the share sheet.
+    @Volatile
+    private var cachedLoader: ImageLoader? = null
+
+    private fun imageLoader(context: Context): ImageLoader =
+        cachedLoader ?: synchronized(this) {
+            cachedLoader ?: ImageLoader(context).also { cachedLoader = it }
+        }
+
     @Suppress("UNUSED_PARAMETER")
     suspend fun create(
         context: Context,
@@ -72,7 +83,6 @@ object ShareStoryImage {
                         // The raw thumbnail is ~60px, which is where the blur came from. Ask the
                         // server for the large copy (see resize()) so the card is drawn sharp.
                         val sharpUrl = coverArtUrl.resize(width = 1080, height = 1080)
-                        val loader = ImageLoader(context)
                         val request =
                             ImageRequest
                                 .Builder(context)
@@ -80,7 +90,7 @@ object ShareStoryImage {
                                 .size(1080)
                                 .allowHardware(false)
                                 .build()
-                        loader.execute(request).image?.toBitmap()?.let { scaleToCover(it, 1080, 1080) }
+                        imageLoader(context).execute(request).image?.toBitmap()?.let { scaleToCover(it, 1080, 1080) }
                     }.getOrNull()
             }
 

@@ -45,7 +45,10 @@ import androidx.compose.ui.unit.dp
 import com.lunara.app.R
 import com.lunara.app.utils.ComposeToImage
 import com.lunara.app.utils.ShareStoryImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * The share sheet every song, album, playlist and artist opens. It draws the story picture, shows a
@@ -124,11 +127,17 @@ fun ShareStorySheet(
 
         Spacer(Modifier.height(20.dp))
 
+        // One button sends the picture and the link together — Instagram Stories, WhatsApp and
+        // most apps accept both, so the recipient gets the card and something that opens the app.
         Button(
             onClick = {
                 scope.launch {
-                    val bitmap = image ?: return@launch
-                    shareImage(context, bitmap, link)
+                    val bitmap = image
+                    if (bitmap != null) {
+                        shareImage(context, bitmap, link)
+                    } else {
+                        shareLink(context, link)
+                    }
                 }
             },
             enabled = image != null,
@@ -150,20 +159,12 @@ fun ShareStorySheet(
                 Text(stringResource(R.string.copy_link))
             }
             OutlinedButton(
-                onClick = { shareLink(context, link) },
+                onClick = { scope.launch { image?.let { shareImage(context, it, link) } ?: shareLink(context, link) } },
                 modifier = Modifier.weight(1f),
             ) {
                 Text(stringResource(R.string.share))
             }
         }
-
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = stringResource(R.string.share_story_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
     }
 }
 
@@ -172,19 +173,27 @@ private fun shareImage(
     bitmap: Bitmap,
     link: String,
 ) {
-    runCatching {
-        val uri = ComposeToImage.saveBitmapAsFile(context, bitmap, "lunara_share_${System.currentTimeMillis()}")
-        val intent =
-            Intent(Intent.ACTION_SEND).apply {
-                type = "image/png"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                // The link rides along as text too, so apps that only take text still carry it.
-                putExtra(Intent.EXTRA_TEXT, link)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    // Saving a 1080x1920 PNG is real disk work; doing it on the main thread is what made the app
+    // stutter ("Lunara isn't responding") right as the share sheet opened. Hand it to IO first.
+    CoroutineScope(Dispatchers.IO).launch {
+        runCatching {
+            val uri = ComposeToImage.saveBitmapAsFile(context, bitmap, "lunara_share_${System.currentTimeMillis()}")
+            val intent =
+                Intent(Intent.ACTION_SEND).apply {
+                    type = "image/png"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    // The link rides along as text too, so apps that only take text still carry it.
+                    putExtra(Intent.EXTRA_TEXT, link)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+            withContext(Dispatchers.Main) {
+                context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_story_image)))
             }
-        context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_story_image)))
-    }.onFailure {
-        Toast.makeText(context, R.string.share_story_failed, Toast.LENGTH_SHORT).show()
+        }.onFailure {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, R.string.share_story_failed, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
 

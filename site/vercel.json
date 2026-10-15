@@ -18,9 +18,9 @@
   ],
   "rewrites": [
     { "source": "/playlist", "destination": "/index.html" },
-    { "source": "/song/:id", "destination": "/index.html" },
-    { "source": "/album/:id", "destination": "/index.html" },
-    { "source": "/playlist/:id", "destination": "/index.html" },
-    { "source": "/artist/:id", "destination": "/index.html" }
+    { "source": "/song/:id", "destination": "/api/preview?type=song&id=:id" },
+    { "source": "/album/:id", "destination": "/api/preview?type=album&id=:id" },
+    { "source": "/playlist/:id", "destination": "/api/preview?type=playlist&id=:id" },
+    { "source": "/artist/:id", "destination": "/api/preview?type=artist&id=:id" }
   ]
 }

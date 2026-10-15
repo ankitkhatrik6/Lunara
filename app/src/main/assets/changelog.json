@@ -1,8 +1,8 @@
 [
   {
-    "tagName": "v3.17.4",
-    "versionName": "3.17.4",
+    "tagName": "v3.17.5",
+    "versionName": "3.17.5",
     "releaseDate": "2026-10-14T00:00:00Z",
-    "description": "## What's new\n\n- **Centered share pictures.** The title and artist on the story card are now properly centered instead of sitting on the left.\n- **Links open the app like Spotify.** Shared links now show the familiar \"Open with Lunara\" chooser and jump straight into the app when it is installed, falling back to the website only when it is not.\n- **Cleaner changelog.** The changelog now shows only recent releases instead of the entire history.\n- **Fresh permanent signing key.** A brand-new release signing key, so the app installs cleanly and future updates install over it without a signature mismatch.\n"
+    "description": "## What's new\n\n- **Links open the app like Spotify.** Tapping a shared link now shows the familiar Open with Lunara chooser and jumps straight into the app when it is installed, falling back to the website only when it is not.\n- **Rich link previews.** When a shared link is pasted into WhatsApp, Instagram or Telegram, it now shows the real cover, title and artist instead of a plain page.\n- **Share sends picture and link together.** The share action now attaches both the story picture and the openable link, so recipients get the card and something that opens the app.\n- **Smoother sharing.** The share sheet no longer stutters the app while it builds the picture.\n"
   }
 ]

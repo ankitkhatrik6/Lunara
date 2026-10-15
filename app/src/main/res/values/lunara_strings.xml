@@ -40,7 +40,6 @@
     <!-- Story share: the picture that goes out with a song, album, playlist or artist. -->
     <string name="share_story_title">Share</string>
     <string name="share_story_image">Share picture</string>
-    <string name="share_story_hint">Opens in Lunara when it is installed, and on lunara.ankitak.com.np when it is not.</string>
     <string name="share_story_failed">Could not build the picture to share</string>
     <string name="max_selection_limit">Maximum selection limit reached</string>
     <string name="share_selected">Share selected</string>
