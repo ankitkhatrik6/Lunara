@@ -1,0 +1,13 @@
+Lunara 1.0.1 - initial release.
+
+A clean, focused music player for Android.
+
+Music playback: play, pause, skip and seek with background playback, notification controls and lock screen controls.
+
+Library management: browse by songs, albums, artists and playlists, create custom playlists, and search your collection.
+
+Audio quality: built-in equalizer with presets, adjustable playback speed, and a sleep timer.
+
+Interface: clean modern design with light and dark theme support.
+
+Requires Android 8.0 or higher.
