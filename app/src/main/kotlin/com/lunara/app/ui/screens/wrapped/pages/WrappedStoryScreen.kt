@@ -137,7 +137,7 @@ fun WrappedStoryScreen(
             topArtist?.let { artist ->
                 StoryStatRow(
                     label = stringResource(R.string.wrapped_story_top_artist),
-                    value = artist.name.ifBlank { "Unknown artist" },
+                    value = artist.title.ifBlank { "Unknown artist" },
                     subtitle = stringResource(R.string.wrapped_story_listened_to, state.uniqueArtistCount),
                     imageUrl = null
                 )
