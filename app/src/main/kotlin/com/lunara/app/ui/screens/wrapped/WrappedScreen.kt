@@ -42,11 +42,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.lunara.app.LocalNavController
 import com.lunara.app.R
+import com.lunara.app.ui.screens.wrapped.LocalWrappedManager
+import com.lunara.app.ui.screens.wrapped.WrappedPeriod
+import com.lunara.app.ui.screens.wrapped.WrappedPeriodPicker
+import com.lunara.app.ui.screens.wrapped.WrappedScreenType
+import com.lunara.app.ui.screens.wrapped.WrappedState
+import com.lunara.app.ui.screens.wrapped.WrappedStoryShare
 import com.lunara.app.ui.screens.wrapped.pages.ConclusionPage
 import com.lunara.app.ui.screens.wrapped.pages.PlaylistPage
 import com.lunara.app.ui.screens.wrapped.pages.WrappedIntro
 import com.lunara.app.ui.screens.wrapped.pages.WrappedMinutesScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedMinutesTease
+import com.lunara.app.ui.screens.wrapped.pages.WrappedStoryScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5AlbumsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5ArtistsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5SongsScreen
@@ -60,6 +67,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 sealed class WrappedScreenType {
+    object PeriodSelection : WrappedScreenType()
+
     object Welcome : WrappedScreenType()
 
     object MinutesTease : WrappedScreenType()
@@ -158,6 +167,7 @@ fun WrappedScreenContent() {
     val screens =
         remember {
             listOf(
+                WrappedScreenType.PeriodSelection,
                 WrappedScreenType.Welcome,
                 WrappedScreenType.MinutesTease,
                 WrappedScreenType.MinutesReveal,
@@ -182,8 +192,10 @@ fun WrappedScreenContent() {
             WrappedRepository.getMessage(state.totalMinutes)
         }
 
-    LaunchedEffect(Unit) {
-        manager.prepare()
+    var showStory by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit, state.period) {
+        manager.prepare(state.period)
     }
 
     LaunchedEffect(pagerState, state.trackMap) {
@@ -223,6 +235,15 @@ fun WrappedScreenContent() {
                     .padding(paddingValues),
         ) { page ->
             when (screens[page]) {
+                is WrappedScreenType.PeriodSelection -> {
+                    WrappedPeriodPicker { period ->
+                        scope.launch {
+                            manager.prepare(period)
+                            pagerState.animateScrollToPage(page = 1)
+                        }
+                    }
+                }
+
                 is WrappedScreenType.Welcome -> {
                     WrappedIntro { scope.launch { pagerState.animateScrollToPage(page = 1) } }
                 }
@@ -311,9 +332,24 @@ fun WrappedScreenContent() {
                 }
 
                 is WrappedScreenType.Conclusion -> {
-                    ConclusionPage(onClose = onClose)
+                    ConclusionPage(
+                        onClose = onClose,
+                        onShareStory = { showStory = true }
+                    )
                 }
             }
         }
+    }
+
+    // Premium story sharing overlay
+    if (showStory) {
+        WrappedStoryScreen(
+            state = state,
+            onShare = {
+                val activity = (LocalView.current.context as android.app.Activity)
+                WrappedStoryShare.share(activity, state)
+            },
+            onClose = { showStory = false }
+        )
     }
 }

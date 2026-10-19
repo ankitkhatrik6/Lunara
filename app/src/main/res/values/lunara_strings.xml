@@ -655,6 +655,26 @@
     <string name="wrapped_create_playlist">Create playlist</string>
     <string name="wrapped_playlist_saved">Playlist saved</string>
 
+    <!-- Period selection -->
+    <string name="wrapped_period_weekly">Weekly</string>
+    <string name="wrapped_period_monthly">Monthly</string>
+    <string name="wrapped_period_yearly">Yearly</string>
+    <string name="wrapped_pick_period_title">Choose your recap</string>
+    <string name="wrapped_pick_period_subtitle">See your listening for the week, month, or year.</string>
+    <string name="wrapped_data_ready">Your recap is ready</string>
+
+    <!-- Story sharing -->
+    <string name="wrapped_story_header">Lunara Wrapped</string>
+    <string name="wrapped_story_subtitle">Here’s what defined your %s.</string>
+    <string name="wrapped_story_minutes_label">minutes of music</string>
+    <string name="wrapped_story_top_song">Top song</string>
+    <string name="wrapped_story_top_artist">Top artist</string>
+    <string name="wrapped_story_top_album">Top album</string>
+    <string name="wrapped_story_listened_to">%d unique artists</string>
+    <string name="wrapped_story_close">Close</string>
+    <string name="wrapped_story_share">Share</string>
+    <string name="wrapped_share_story">Share your story</string>
+
     <!-- Equalizer UI -->
     <plurals name="profiles_count">
         <item quantity="one">%d profile</item>

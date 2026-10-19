@@ -50,16 +50,15 @@ class WrappedManager(
     private val _state = MutableStateFlow(WrappedState())
     val state = _state.asStateFlow()
 
-    fun createPlaylist(imageResName: String) {
+    fun createPlaylist(imageResName: String, period: WrappedPeriod = WrappedPeriod.Yearly) {
         if (_state.value.playlistCreationState != PlaylistCreationState.Idle) return
 
         _state.update { it.copy(playlistCreationState = PlaylistCreationState.Creating) }
         scope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val year = WrappedConstants.year()
-                    val fromTimestamp = WrappedConstants.start(year)
-                    val toTimestamp = WrappedConstants.end(year)
+                    val fromTimestamp = WrappedConstants.start(period)
+                    val toTimestamp = WrappedConstants.end(period)
                     val allSongs = databaseDao.mostPlayedSongsStats(fromTimestamp, toTimeStamp = toTimestamp, limit = -1).first()
 
                     val playlistId = UUID.randomUUID().toString()
@@ -73,7 +72,7 @@ class WrappedManager(
 
                     val newPlaylist = PlaylistEntity(
                         id = playlistId,
-                        name = WrappedConstants.playlistName(year),
+                        name = WrappedConstants.playlistName(period),
                         thumbnailUrl = file.toURI().toString(),
                         bookmarkedAt = LocalDateTime.now(),
                         isEditable = true
@@ -97,7 +96,7 @@ class WrappedManager(
         }
     }
 
-    private suspend fun generatePlaylistMap() {
+    private suspend fun generatePlaylistMap(period: WrappedPeriod = WrappedPeriod.Yearly) {
         val topSongs = _state.value.topSongs
         val topArtists = _state.value.topArtists
         if (topSongs.isEmpty()) {
@@ -134,9 +133,8 @@ class WrappedManager(
 
             // Artist Part: Top artist's song with specific rule
             val topArtist = topArtists.firstOrNull()
-            val year = WrappedConstants.year()
-            val fromTimestamp = WrappedConstants.start(year)
-            val toTimestamp = WrappedConstants.end(year)
+            val fromTimestamp = WrappedConstants.start(period)
+            val toTimestamp = WrappedConstants.end(period)
 
             val artistSong = topArtist?.let { artist ->
                 val artistTopSongs = databaseDao.artistSongs(
@@ -175,13 +173,12 @@ class WrappedManager(
         }
     }
 
-    suspend fun prepare() {
-        if (_state.value.isDataReady) return
-        Timber.tag("WrappedManager").d("Starting Wrapped data preparation")
+    suspend fun prepare(period: WrappedPeriod = WrappedPeriod.Yearly) {
+        if (_state.value.isDataReady && _state.value.period == period) return
+        Timber.tag("WrappedManager").d("Starting Wrapped data preparation for $period")
 
-        val year = WrappedConstants.year()
-        val fromTimestamp = WrappedConstants.start(year)
-        val toTimestamp = WrappedConstants.end(year)
+        val fromTimestamp = WrappedConstants.start(period)
+        val toTimestamp = WrappedConstants.end(period)
 
         withContext(Dispatchers.IO) {
             val accountInfoDeferred = async { YouTube.accountInfo().getOrNull() }
@@ -213,6 +210,7 @@ class WrappedManager(
             _state.update {
                 it.copy(
                     accountInfo = results[0] as AccountInfo?,
+                    period = period,
                     topSongs = topSongsResult,
                     topArtists = topArtistsResult,
                     top5Albums = topAlbumsResult,
@@ -225,9 +223,9 @@ class WrappedManager(
             }
         }
 
-        generatePlaylistMap()
+        generatePlaylistMap(period)
         _state.update { it.copy(isDataReady = true) }
-        Timber.tag("WrappedManager").d("Wrapped data preparation finished")
+        Timber.tag("WrappedManager").d("Wrapped data preparation finished for $period")
     }
 
     fun dispose() {

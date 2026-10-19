@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -27,7 +28,10 @@ import com.lunara.app.ui.screens.wrapped.components.AnimatedBackground
 import com.lunara.app.ui.screens.wrapped.components.ShapeType
 
 @Composable
-fun ConclusionPage(onClose: () -> Unit) {
+fun ConclusionPage(
+    onClose: () -> Unit,
+    onShareStory: () -> Unit = {}
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(elementCount = 30, shapeTypes = listOf(ShapeType.Circle, ShapeType.Line))
         Column(
@@ -68,6 +72,20 @@ fun ConclusionPage(onClose: () -> Unit) {
                     text = stringResource(R.string.wrapped_close),
                     style = TextStyle(
                         color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onShareStory,
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f))
+            ) {
+                Text(
+                    text = stringResource(R.string.wrapped_share_story),
+                    style = TextStyle(
+                        color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                 )

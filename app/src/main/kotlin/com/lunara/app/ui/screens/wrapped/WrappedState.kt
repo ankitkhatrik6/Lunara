@@ -13,6 +13,7 @@ import com.lunara.app.db.entities.SongWithStats
 
 data class WrappedState(
     val accountInfo: AccountInfo? = null,
+    val period: WrappedPeriod = WrappedPeriod.Yearly,
     val totalMinutes: Long = 0,
     val topSongs: List<SongWithStats> = emptyList(),
     val topArtists: List<Artist> = emptyList(),
