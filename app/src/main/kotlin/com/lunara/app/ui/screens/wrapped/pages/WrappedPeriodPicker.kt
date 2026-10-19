@@ -113,7 +113,8 @@ fun WrappedPeriodPicker(onPeriodSelected: (WrappedPeriod) -> Unit) {
             Spacer(modifier = Modifier.height(32.dp))
 
             // Show whether data exists for the selected period (best effort from last run)
-            val dataReady = state.isDataReady && state.period == selectedPeriod
+            val currentState = state.value
+            val dataReady = currentState.isDataReady && currentState.period == selectedPeriod
             if (dataReady) {
                 Text(
                     text = stringResource(R.string.wrapped_data_ready),
