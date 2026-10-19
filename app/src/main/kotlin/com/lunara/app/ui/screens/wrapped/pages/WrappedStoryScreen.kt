@@ -246,6 +246,7 @@ private fun StoryStatRow(
     }
 }
 
+@Composable
 private fun TextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
