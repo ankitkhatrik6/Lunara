@@ -44,7 +44,7 @@ import com.lunara.app.LocalNavController
 import com.lunara.app.R
 import com.lunara.app.ui.screens.wrapped.LocalWrappedManager
 import com.lunara.app.ui.screens.wrapped.WrappedPeriod
-import com.lunara.app.ui.screens.wrapped.WrappedPeriodPicker
+import com.lunara.app.ui.screens.wrapped.pages.WrappedPeriodPicker
 import com.lunara.app.ui.screens.wrapped.WrappedScreenType
 import com.lunara.app.ui.screens.wrapped.WrappedState
 import com.lunara.app.ui.screens.wrapped.WrappedStoryShare
