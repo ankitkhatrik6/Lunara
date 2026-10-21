@@ -57,7 +57,7 @@ object WrappedConstants {
     /** Human-readable name of the generated Wrapped playlist for [period]. */
     fun playlistName(period: WrappedPeriod, today: LocalDate = LocalDate.now()): String =
         when (period) {
-            WrappedPeriod.Weekly -> "Lunara Weekly ${today.format(DateTimeFormatter.ofPattern(\"dd MMM\", Locale.getDefault()))}"
+            WrappedPeriod.Weekly -> "Lunara Weekly ${today.format(DateTimeFormatter.ofPattern("dd MMM", Locale.getDefault()))}"
             WrappedPeriod.Monthly -> {
                 val month = YearMonth.from(today)
                 "Lunara ${month.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${month.year}"

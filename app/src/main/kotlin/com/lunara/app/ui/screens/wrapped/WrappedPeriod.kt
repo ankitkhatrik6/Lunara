@@ -6,6 +6,8 @@
 
 package com.lunara.app.ui.screens.wrapped
 
+import com.lunara.app.R
+
 /**
  * The lookback period for a Wrapped recap.
  *
