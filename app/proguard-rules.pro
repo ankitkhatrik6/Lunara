@@ -201,3 +201,28 @@
 -keepclasseswithmembers class com.lunara.shazamkit.models.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+## Wrapped feature — keep all Wrapped classes and composables
+# R8 minify and shrinkResources are enabled for release builds. Wrapped classes are
+# referenced by the UI navigation, Hilt, and dynamic resource lookups (getIdentifier).
+# Without keep rules, R8 may strip classes that are only referenced reflectively or
+# via string-based resource IDs, causing runtime failures in release builds.
+-keep class com.lunara.app.ui.screens.wrapped.** { *; }
+-keepclassmembers class com.lunara.app.ui.screens.wrapped.** {
+    *;
+}
+
+# Keep Wrapped resources that are looked up dynamically by name via getIdentifier()
+# (e.g. wrapped_playlistv1, wrapped_playlistv2 in PlaylistPage.kt)
+-keep class com.lunara.app.R {
+    static inner class drawable {
+        static ** wrapped_playlistv1;
+        static ** wrapped_playlistv2;
+    }
+    static inner class string {
+        static ** wrapped_*;
+    }
+    static inner class raw {
+        static ** wrapped_theme;
+    }
+}
