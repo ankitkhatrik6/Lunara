@@ -214,15 +214,14 @@
 
 # Keep Wrapped resources that are looked up dynamically by name via getIdentifier()
 # (e.g. wrapped_playlistv1, wrapped_playlistv2 in PlaylistPage.kt)
--keep class com.lunara.app.R {
-    static inner class drawable {
-        static ** wrapped_playlistv1;
-        static ** wrapped_playlistv2;
-    }
-    static inner class string {
-        static ** wrapped_*;
-    }
-    static inner class raw {
-        static ** wrapped_theme;
-    }
+# ProGuard/R8 uses $ separator for inner classes, not "static inner class" syntax.
+-keep class com.lunara.app.R$drawable {
+    static ** wrapped_playlistv1;
+    static ** wrapped_playlistv2;
+}
+-keep class com.lunara.app.R$string {
+    static ** wrapped_*;
+}
+-keep class com.lunara.app.R$raw {
+    static ** wrapped_theme;
 }
