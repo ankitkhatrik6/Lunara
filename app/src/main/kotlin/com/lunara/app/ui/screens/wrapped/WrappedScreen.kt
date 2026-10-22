@@ -193,7 +193,7 @@ fun WrappedScreenContent() {
             WrappedRepository.getMessage(state.totalMinutes)
         }
 
-    var showStory by remember { mutableStateOf(false) }
+    var showStory: Boolean by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit, state.period) {
         manager.prepare(state.period)
