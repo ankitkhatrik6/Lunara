@@ -348,7 +348,7 @@ fun WrappedScreenContent() {
         WrappedStoryScreen(
             state = state,
             onShare = {
-                val activity = (LocalView.current.context as android.app.Activity)
+                val activity = (view.context as android.app.Activity)
                 WrappedStoryShare.share(activity, state)
             },
             onClose = { showStory = false }
