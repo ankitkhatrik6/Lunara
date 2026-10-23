@@ -73,9 +73,8 @@ import com.lunara.app.ui.component.LunaraMusicCard
 import com.lunara.app.ui.component.LunaraPlaylistCard
 import com.lunara.app.ui.component.LunaraPlaylistPalette
 import com.lunara.app.ui.component.LunaraSectionHeader
-import com.lunara.app.ui.screens.Screens
-import com.lunara.app.utils.LocalMusic
-import com.lunara.app.utils.rememberPreference
+import com.lunara.app.ui.screens.wrapped.wrappedStats
+import com.lunara.app.ui.screens.wrapped.LunaraWrappedPopup
 import com.lunara.app.viewmodels.YoursViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -241,6 +240,21 @@ fun LunaraLibraryHome(
             }
         }
 
+        // ---- Lunara Wrapped section ----
+        // Check if today is a special day (Sunday/1st/Jan 1) and show wrapped if first time
+        val wrapped by viewModel(wrappedStats)
+        val isWrappedDay = isWrappedDayLocal()
+        item("lunara_wrapped") {
+            if (isWrappedDay) {
+                LunaraWrappedPopup(
+                    onDismissed = { /* handled internally */ },
+                    wrappedStats = wrapped.value,
+                )
+            } else {
+                Spacer(Modifier.weight(1f))
+            }
+        }
+
         if (showSystemPlaylists && showTop) {
             item("top") {
                 LongPad {
@@ -398,5 +412,148 @@ fun LunaraLibraryHome(
 private fun LongPad(content: @Composable () -> Unit) {
     Box(Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
         content()
+    }
+}
+
+/**
+ * Ankit Khatri KC (C) 2026
+ * Checks if today is a wrapped day (Sunday, first of month, or first of year).
+ * Also tracks if the wrapped has been shown this cycle using data store.
+ */
+private fun isWrappedDayLocal(context: Context = LocalContext.current): Boolean {
+    val today = java.time.LocalDate.now()
+    val calendar = java.util.Calendar.getInstance()
+    calendar.timeInMillis = System.currentTimeMillis()
+    val isSunday = today.dayOfWeek == java.time.DayOfWeek.SUNDAY
+    val isFirstOfMonth = today.dayOfMonth == 1
+    val isFirstOfYear = today.dayOfYear == 1
+    if (isSunday && !isFirstOfMonth && !isFirstOfYear) {
+        return true
+    }
+    if (!isSunday && isFirstOfMonth && !isFirstOfYear) {
+        return true
+    }
+    if (!isSunday && !isFirstOfMonth && isFirstOfYear) {
+        return true
+    }
+    val dataStore = context.dataStore.data ?: return true
+    val showedWeekly = dataStore.getOrDefault("wrapped_showed_weekly_" + today.year + "-" + today.weekOfYear, false)
+    val showedMonthly = dataStore.getOrDefault("wrapped_showed_monthly_" + today.year + "-" + today.month, false)
+    val showedYearly = dataStore.getOrDefault("wrapped_showed_yearly_" + today.year, false)
+    val shouldShow = mutableListOf(false)
+    if (isSunday) shouldShow[0] = !showedWeekly
+    if (isFirstOfMonth) shouldShow[1] = !showedMonthly
+    if (isFirstOfYear) shouldShow[2] = !showedYearly
+    return shouldShow.any { it }
+}
+
+/**
+ * Ankit Khatri KC (C) 2026
+ * Popup displayed when Lunara Wrapped is available (on wrapped days).
+ * Shows aggregated weekly, monthly, and yearly play counts with an animated entrance.
+ */
+@Composable
+fun LunaraWrappedPopup(
+    onDismissed: () -> Unit = {},
+    wrappedStats: WrappedStats = WrappedStats(),
+) {
+    var showPopup by remember { mutableStateOf(true) }
+    if (showPopup == false) {
+        onDismissed()
+        return
+    }
+    val progress = animateEnterCurve(
+        targetState = 1f,
+        animationSpec = tween(300, easing = kotlin.easing.Out(CubicOut)),
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+            .pointerInput(Unit) { clickableTarget(showPopup = false) }
+            .clickable { showPopup = false },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Card(
+            modifier = Modifier.padding(16.dp).size(280.dp).opacity(progress),
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(16.dp),
+            ) {
+                Text(
+                    text = R.string.lunara_wrapped_title,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Box(
+                    modifier = Modifier.height(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.onSurfaceVariant),
+                )
+                if (wrappedStats.weeklyPlayCount > 0) {
+                    wrappedCountRow(
+                        icon = R.drawable.ic_weekly,
+                        count = wrappedStats.weeklyPlayCount,
+                        label = R.string.weekly,
+                    )
+                }
+                if (wrappedStats.monthlyPlayCount > 0) {
+                    wrappedCountRow(
+                        icon = R.drawable.ic_monthly,
+                        count = wrappedStats.monthlyPlayCount,
+                        label = R.string.monthly,
+                    )
+                }
+                if (wrappedStats.yearlyPlayCount > 0) {
+                    wrappedCountRow(
+                        icon = R.drawable.ic_yearly,
+                        count = wrappedStats.yearlyPlayCount,
+                        label = R.string.yearly,
+                    )
+                }
+                Button(
+                    onClick = { showPopup = false },
+                    modifier = Modifier.align(Alignment.End),
+                ) {
+                    Text(
+                        text = R.string.dismiss,
+                        style = MaterialTheme.typography.button,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Row displaying a wrapped count with icon and label.
+ */
+private fun wrappedCountRow(
+    @DrawableRes icon: Int,
+    count: Int,
+    label: Int,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(4.dp),
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(20.dp),
+        )
+        Text(
+            text = "" + count,
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = "" + label,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }

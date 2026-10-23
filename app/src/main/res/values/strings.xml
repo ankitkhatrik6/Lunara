@@ -343,4 +343,19 @@
     <string name="new_version_available">New version available</string>
     <string name="translation_models">Translation Models</string>
     <string name="clear_translation_models">Clear translation models</string>
+
+    <!-- Lunara Wrapped strings -->
+    <string name="lunara_wrapped_title">Lunara Wrapped</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
+
+    <!-- Notification strings -->
+    <string name="wrapped_weekly_title">Your Lunara Wrapped is here</string>
+    <string name="wrapped_weekly_message">Check out your weekly wrapped summary</string>
+    <string name="wrapped_monthly_title">Your Lunara Wrapped is here</string>
+    <string name="wrapped_monthly_message">Check out your monthly wrapped summary</string>
+    <string name="wrapped_yearly_title">Your Lunara Wrapped is here</string>
+    <string name="wrapped_yearly_message">Check out your yearly wrapped summary</string>
+</resources>
 </resources>
