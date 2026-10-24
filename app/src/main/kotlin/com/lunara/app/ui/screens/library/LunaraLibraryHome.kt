@@ -5,6 +5,9 @@
  * Cute, dreamy "Your Library" landing: pastel emblem header, bubbly filter chips,
  * kawaii gradient pinned playlists (Liked Songs in sakura rose, Top 50 in peach coral,
  * Offline in mint-teal, Cached in lavender, Local Music in sky blue), followed by
+import androidx.compose.animation.core.animateEnterCurve
+import androidx.compose.animation.tween
+import androidx.animation.core.CubicOut
  * user playlists and favorite artists.
  */
 
@@ -38,6 +41,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,19 +65,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.lunara.app.ui.theme.SpotifyTextPrimary
 import com.lunara.app.LocalDatabase
+import com.lunara.app.LocalMusic
 import com.lunara.app.LocalPlayerAwareWindowInsets
 import com.lunara.app.R
 import com.lunara.app.constants.LocalMusicFoldersKey
-import com.lunara.app.constants.ShowDownloadedPlaylistKey
-import com.lunara.app.constants.ShowLikedPlaylistKey
-import com.lunara.app.constants.ShowTopPlaylistKey
+import androidx.compose.material3.Card
+import com.lunara.app.ui.screens.Screens
+import com.lunara.app.ui.screens.wrapped.WrappedStats
 import com.lunara.app.ui.component.CreatePlaylistDialog
 import com.lunara.app.ui.component.LunaraFilterChips
 import com.lunara.app.ui.component.LunaraMusicCard
 import com.lunara.app.ui.component.LunaraPlaylistCard
 import com.lunara.app.ui.component.LunaraPlaylistPalette
 import com.lunara.app.ui.component.LunaraSectionHeader
-import com.lunara.app.ui.screens.wrapped.wrappedStats
+import com.lunara.app.ui.screens.wrapped.WrappedStats
 import com.lunara.app.ui.screens.wrapped.LunaraWrappedPopup
 import com.lunara.app.viewmodels.YoursViewModel
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +106,7 @@ fun LunaraLibraryHome(
     val context = LocalContext.current
     val database = LocalDatabase.current
     val scope = rememberCoroutineScope()
-    val (localMusicFolders) = rememberPreference(LocalMusicFoldersKey, emptySet())
+    val localMusicFolders = rememberSaveable { context.dataStore.data.map { it[LocalMusicFoldersKey] ?: emptySet() } }
     var localGranted by remember { mutableStateOf(LocalMusic.hasPermission(context)) }
     val audioPermission =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -113,9 +118,9 @@ fun LunaraLibraryHome(
             }
         }
     val topThumbs by viewModel.topThumbnails.collectAsStateWithLifecycle()
-    val (showLiked) = rememberPreference(ShowLikedPlaylistKey, defaultValue = true)
-    val (showTop) = rememberPreference(ShowTopPlaylistKey, defaultValue = true)
-    val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, defaultValue = true)
+    val (showLiked) = rememberSaveable { context.dataStore.data.map { it[ShowLikedPlaylistKey] ?: true } }
+    val (showTop) = rememberSaveable { context.dataStore.data.map { it[ShowTopPlaylistKey] ?: true } }
+    val (showDownloaded) = rememberSaveable { context.dataStore.data.map { it[ShowDownloadedPlaylistKey] ?: true } }
     val songsWord = stringResource(R.string.songs).lowercase()
 
     var selectedTab by rememberSaveable { mutableStateOf(LibraryTab.ALL) }
@@ -145,7 +150,7 @@ fun LunaraLibraryHome(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = stringResource(R.string.filter_library),
+                        text = stringResource(id = R.string.filter_library),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = SpotifyTextPrimary,
@@ -160,7 +165,7 @@ fun LunaraLibraryHome(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.search),
-                            contentDescription = stringResource(R.string.search),
+                            contentDescription = stringResource(id = R.string.search),
                             tint = SpotifyTextPrimary,
                             modifier = Modifier.size(22.dp),
                         )
@@ -172,9 +177,9 @@ fun LunaraLibraryHome(
                 LunaraFilterChips(
                     chips = listOf(
                         LibraryTab.ALL to "All",
-                        LibraryTab.PLAYLISTS to stringResource(R.string.playlists),
-                        LibraryTab.ARTISTS to stringResource(R.string.artists),
-                        LibraryTab.DOWNLOADED to stringResource(R.string.offline),
+                        LibraryTab.PLAYLISTS to stringResource(id = R.string.playlists),
+                        LibraryTab.ARTISTS to stringResource(id = R.string.artists),
+                        LibraryTab.DOWNLOADED to stringResource(id = R.string.offline),
                     ),
                     currentValue = selectedTab,
                     onSelect = { selectedTab = it },
@@ -190,7 +195,7 @@ fun LunaraLibraryHome(
             item("liked") {
                 LongPad {
                     LunaraPlaylistCard(
-                        title = stringResource(R.string.liked),
+                        title = stringResource(id = R.string.liked),
                         subtitle = "${likedSongs.size} $songsWord",
                         thumbnails = likedThumbs,
                         seedColor = Color(0xFF5138AC),
@@ -242,13 +247,13 @@ fun LunaraLibraryHome(
 
         // ---- Lunara Wrapped section ----
         // Check if today is a special day (Sunday/1st/Jan 1) and show wrapped if first time
-        val wrapped by viewModel(wrappedStats)
+        val wrapped = WrappedStats()
         val isWrappedDay = isWrappedDayLocal()
         item("lunara_wrapped") {
             if (isWrappedDay) {
                 LunaraWrappedPopup(
                     onDismissed = { /* handled internally */ },
-                    wrappedStats = wrapped.value,
+                    wrappedStats = wrapped,
                 )
             } else {
                 Spacer(Modifier.weight(1f))
@@ -259,7 +264,7 @@ fun LunaraLibraryHome(
             item("top") {
                 LongPad {
                     LunaraPlaylistCard(
-                        title = stringResource(R.string.your_top_50),
+                        title = stringResource(id = R.string.your_top_50),
                         subtitle = "Most played tracks",
                         thumbnails = topThumbs,
                         seedColor = Color(0xFF1E3264),
@@ -276,7 +281,7 @@ fun LunaraLibraryHome(
                 item("downloaded") {
                     LongPad {
                         LunaraPlaylistCard(
-                            title = stringResource(R.string.offline),
+                            title = stringResource(id = R.string.offline),
                             subtitle = "Downloaded songs",
                             thumbnails = downloadedThumbs,
                             seedColor = Color(0xFF148A08),
@@ -294,7 +299,7 @@ fun LunaraLibraryHome(
             item("create_playlist") {
                 LongPad {
                     LunaraPlaylistCard(
-                        title = stringResource(R.string.create_playlist),
+                        title = stringResource(id = R.string.create_playlist),
                         subtitle = "Start a new playlist",
                         thumbnails = emptyList(),
                         seedColor = Color(0xFF1ED760),
@@ -310,8 +315,8 @@ fun LunaraLibraryHome(
             item("local-invite") {
                 LongPad {
                     LunaraPlaylistCard(
-                        title = stringResource(R.string.local_music),
-                        subtitle = stringResource(R.string.local_music_scan),
+                        title = stringResource(id = R.string.local_music),
+                        subtitle = stringResource(id = R.string.local_music_scan),
                         thumbnails = emptyList(),
                         seedColor = Color(0xFF282828),
                         aspectRatio = LONG_RATIO,
@@ -334,7 +339,7 @@ fun LunaraLibraryHome(
             item("local") {
                 LongPad {
                     LunaraPlaylistCard(
-                        title = stringResource(R.string.local_music),
+                        title = stringResource(id = R.string.local_music),
                         subtitle = "$localCount $songsWord",
                         thumbnails = localThumbs,
                         seedColor = Color(0xFF282828),
@@ -349,7 +354,7 @@ fun LunaraLibraryHome(
         // ---- Created by you ----
         if ((selectedTab == LibraryTab.ALL || selectedTab == LibraryTab.PLAYLISTS) && userPlaylists.isNotEmpty()) {
             item("cby_head") {
-                LunaraSectionHeader(stringResource(R.string.created_by_you))
+                LunaraSectionHeader(stringResource(id = R.string.created_by_you)),
             }
             itemsIndexed(userPlaylists.chunked(2), key = { _, row -> "cby_${row.first().id}" }) { rowIndex, rowItems ->
                 Row(
@@ -377,7 +382,7 @@ fun LunaraLibraryHome(
         // ---- Artists you liked ----
         if ((selectedTab == LibraryTab.ALL || selectedTab == LibraryTab.ARTISTS) && artists.isNotEmpty()) {
             item("art_head") {
-                LunaraSectionHeader(stringResource(R.string.artists_you_liked))
+                LunaraSectionHeader(stringResource(id = R.string.artists_you_liked)),
             }
             item("art_rail") {
                 LazyRow(
@@ -420,6 +425,7 @@ private fun LongPad(content: @Composable () -> Unit) {
  * Checks if today is a wrapped day (Sunday, first of month, or first of year).
  * Also tracks if the wrapped has been shown this cycle using data store.
  */
+@Composable
 private fun isWrappedDayLocal(context: Context = LocalContext.current): Boolean {
     val today = java.time.LocalDate.now()
     val calendar = java.util.Calendar.getInstance()
@@ -470,7 +476,6 @@ fun LunaraWrappedPopup(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .pointerInput(Unit) { clickableTarget(showPopup = false) }
             .clickable { showPopup = false },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -484,7 +489,7 @@ fun LunaraWrappedPopup(
                 modifier = Modifier.padding(16.dp),
             ) {
                 Text(
-                    text = R.string.lunara_wrapped_title,
+                    text = stringResource(id = R.string.lunara_wrapped_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -518,7 +523,7 @@ fun LunaraWrappedPopup(
                     modifier = Modifier.align(Alignment.End),
                 ) {
                     Text(
-                        text = R.string.dismiss,
+                        text = stringResource(id = R.string.dismiss),
                         style = MaterialTheme.typography.button,
                     )
                 }
@@ -530,6 +535,7 @@ fun LunaraWrappedPopup(
 /**
  * Row displaying a wrapped count with icon and label.
  */
+@Composable
 private fun wrappedCountRow(
     @DrawableRes icon: Int,
     count: Int,
