@@ -10,6 +10,7 @@ Lunara is a GPL-3.0 Android music player with a sign-in-free, account-free liste
 - Persistent mini-player and expanded player sheet
 - Synced lyrics through Paxsenix, LRCLIB, KuGou, LyricsPlus, and related lyric modules
 - Compose Material 3 UI with Lunara branding
+- Wrapped weekly/monthly/yearly summary screens
 
 ## No-login policy
 
