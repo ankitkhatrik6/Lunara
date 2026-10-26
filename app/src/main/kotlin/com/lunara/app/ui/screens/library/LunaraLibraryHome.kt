@@ -78,8 +78,6 @@ import com.lunara.app.ui.component.LunaraMusicCard
 import com.lunara.app.ui.component.LunaraPlaylistCard
 import com.lunara.app.ui.component.LunaraPlaylistPalette
 import com.lunara.app.ui.component.LunaraSectionHeader
-import com.lunara.app.ui.screens.wrapped.WrappedStats
-import com.lunara.app.ui.screens.wrapped.LunaraWrappedPopup
 import com.lunara.app.viewmodels.YoursViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
