@@ -4,8 +4,6 @@
  *
  * Holds the aggregated play counts and timestamps for weekly, monthly, and yearly wrapped views.
  */
-import com.lunara.app.db.entities.LocalItem
-
 import androidx.annotation.Immutable
 
 @Immutable
@@ -28,4 +26,4 @@ data class WrappedStats(
     val monthlyShown: Boolean = false,
     /** Flag indicating if yearly wrapped has been shown this cycle */
     val yearlyShown: Boolean = false
-) : LocalItem()
+)
