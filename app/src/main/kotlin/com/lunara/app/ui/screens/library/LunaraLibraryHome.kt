@@ -5,9 +5,6 @@
  * Cute, dreamy "Your Library" landing: pastel emblem header, bubbly filter chips,
  * kawaii gradient pinned playlists (Liked Songs in sakura rose, Top 50 in peach coral,
  * Offline in mint-teal, Cached in lavender, Local Music in sky blue), followed by
-import androidx.compose.animation.core.animateEnterCurve
-import androidx.compose.animation.tween
-import androidx.animation.core.CubicOut
  * user playlists and favorite artists.
  */
 
@@ -31,6 +28,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.animation.tween
+import androidx.compose.animation.core.animateEnterCurve
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -468,7 +468,7 @@ fun LunaraWrappedPopup(
     }
     val progress = animateEnterCurve(
         targetState = 1f,
-        animationSpec = tween(300, easing = kotlin.easing.Out(CubicOut)),
+        animationSpec = tween(300, easing = FastOutSlowInEasing),
     )
     Column(
         modifier = Modifier
