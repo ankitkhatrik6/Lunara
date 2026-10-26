@@ -57,7 +57,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.lunara.app.ui.screens.Screens
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +70,7 @@ import com.lunara.app.LocalPlayerAwareWindowInsets
 import com.lunara.app.R
 import com.lunara.app.constants.LocalMusicFoldersKey
 import androidx.compose.material3.Card
+import com.lunara.app.ui.screens.Screens
 import com.lunara.app.ui.screens.wrapped.WrappedStats
 import com.lunara.app.ui.component.CreatePlaylistDialog
 import com.lunara.app.ui.component.LunaraFilterChips
@@ -78,6 +78,7 @@ import com.lunara.app.ui.component.LunaraMusicCard
 import com.lunara.app.ui.component.LunaraPlaylistCard
 import com.lunara.app.ui.component.LunaraPlaylistPalette
 import com.lunara.app.ui.component.LunaraSectionHeader
+import com.lunara.app.ui.screens.wrapped.WrappedStats
 import com.lunara.app.ui.screens.wrapped.LunaraWrappedPopup
 import com.lunara.app.viewmodels.YoursViewModel
 import kotlinx.coroutines.Dispatchers
@@ -120,7 +121,7 @@ fun LunaraLibraryHome(
     val (showLiked) = rememberSaveable { context.dataStore.data.map { it[ShowLikedPlaylistKey] ?: true } }
     val (showTop) = rememberSaveable { context.dataStore.data.map { it[ShowTopPlaylistKey] ?: true } }
     val (showDownloaded) = rememberSaveable { context.dataStore.data.map { it[ShowDownloadedPlaylistKey] ?: true } }
-    val songsWord = stringResource(id = R.string.songs).lowercase()
+    val songsWord = stringResource(R.string.songs).lowercase()
 
     var selectedTab by rememberSaveable { mutableStateOf(LibraryTab.ALL) }
     var showCreatePlaylist by rememberSaveable { mutableStateOf(false) }
