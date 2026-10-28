@@ -10,6 +10,7 @@
 
 package com.lunara.app.ui.screens.library
 
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.weight
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -82,6 +84,7 @@ import com.lunara.app.ui.component.LunaraPlaylistCard
 import com.lunara.app.ui.component.LunaraPlaylistPalette
 import com.lunara.app.ui.component.LunaraSectionHeader
 import com.lunara.app.viewmodels.YoursViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
