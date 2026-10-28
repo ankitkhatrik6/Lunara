@@ -109,7 +109,7 @@ fun LunaraLibraryHome(
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val localMusicFolders = rememberSaveable { context.dataStore.data.map { it[LocalMusicFoldersKey] ?: emptySet() } }
+    val localMusicFolders = rememberSaveable { context.dataStore.get(LocalMusicFoldersKey, emptySet()) }
     var localGranted by remember { mutableStateOf(LocalMusic.hasPermission(context)) }
     val audioPermission =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -121,9 +121,9 @@ fun LunaraLibraryHome(
             }
         }
     val topThumbs by viewModel.topThumbnails.collectAsStateWithLifecycle()
-    val (showLiked) = rememberSaveable { context.dataStore.data.map { it[ShowLikedPlaylistKey] ?: true } }
-    val (showTop) = rememberSaveable { context.dataStore.data.map { it[ShowTopPlaylistKey] ?: true } }
-    val (showDownloaded) = rememberSaveable { context.dataStore.data.map { it[ShowDownloadedPlaylistKey] ?: true } }
+    val showLiked = rememberSaveable { context.dataStore.get(ShowLikedPlaylistKey, true) }
+    val showTop = rememberSaveable { context.dataStore.get(ShowTopPlaylistKey, true) }
+    val showDownloaded = rememberSaveable { context.dataStore.get(ShowDownloadedPlaylistKey, true) }
     val songsWord = stringResource(R.string.songs).lowercase()
 
     var selectedTab by rememberSaveable { mutableStateOf(LibraryTab.ALL) }
