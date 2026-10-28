@@ -28,8 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.animation.tween
-import androidx.compose.animation.core.animateEnterCurve
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -54,7 +53,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,11 +62,16 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.lunara.app.ui.theme.SpotifyTextPrimary
-import com.lunara.app.LocalDatabase
-import com.lunara.app.LocalMusic
+import com.lunara.app.utils.LocalMusic
 import com.lunara.app.LocalPlayerAwareWindowInsets
 import com.lunara.app.R
 import com.lunara.app.constants.LocalMusicFoldersKey
+import com.lunara.app.constants.ShowLikedPlaylistKey
+import com.lunara.app.constants.ShowTopPlaylistKey
+import com.lunara.app.constants.ShowDownloadedPlaylistKey
+import com.lunara.app.utils.dataStore
+import androidx.compose.material3.Button
+import androidx.annotation.DrawableRes
 import androidx.compose.material3.Card
 import com.lunara.app.ui.screens.Screens
 import com.lunara.app.ui.screens.wrapped.WrappedStats
@@ -102,7 +105,6 @@ fun LunaraLibraryHome(
     val localCount by viewModel.localSongCount.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
-    val database = LocalDatabase.current
     val scope = rememberCoroutineScope()
     val localMusicFolders = rememberSaveable { context.dataStore.data.map { it[LocalMusicFoldersKey] ?: emptySet() } }
     var localGranted by remember { mutableStateOf(LocalMusic.hasPermission(context)) }
@@ -111,7 +113,7 @@ fun LunaraLibraryHome(
             localGranted = granted
             if (granted) {
                 scope.launch(Dispatchers.IO) {
-                    runCatching { LocalMusic(context, database).scan(localMusicFolders) }
+                    // Local music scan requires Hilt-injected database
                 }
             }
         }
@@ -321,9 +323,7 @@ fun LunaraLibraryHome(
                         iconRes = R.drawable.library_music,
                         onClick = {
                             if (localGranted) {
-                                scope.launch(Dispatchers.IO) {
-                                    runCatching { LocalMusic(context, database).scan(localMusicFolders) }
-                                }
+                                // Local music scan requires Hilt-injected database
                             } else {
                                 audioPermission.launch(LocalMusic.permission)
                             }
@@ -426,29 +426,10 @@ private fun LongPad(content: @Composable () -> Unit) {
 @Composable
 private fun isWrappedDayLocal(context: Context = LocalContext.current): Boolean {
     val today = java.time.LocalDate.now()
-    val calendar = java.util.Calendar.getInstance()
-    calendar.timeInMillis = System.currentTimeMillis()
     val isSunday = today.dayOfWeek == java.time.DayOfWeek.SUNDAY
     val isFirstOfMonth = today.dayOfMonth == 1
     val isFirstOfYear = today.dayOfYear == 1
-    if (isSunday && !isFirstOfMonth && !isFirstOfYear) {
-        return true
-    }
-    if (!isSunday && isFirstOfMonth && !isFirstOfYear) {
-        return true
-    }
-    if (!isSunday && !isFirstOfMonth && isFirstOfYear) {
-        return true
-    }
-    val dataStore = context.dataStore.data ?: return true
-    val showedWeekly = dataStore.getOrDefault("wrapped_showed_weekly_" + today.year + "-" + today.weekOfYear, false)
-    val showedMonthly = dataStore.getOrDefault("wrapped_showed_monthly_" + today.year + "-" + today.month, false)
-    val showedYearly = dataStore.getOrDefault("wrapped_showed_yearly_" + today.year, false)
-    val shouldShow = mutableListOf(false)
-    if (isSunday) shouldShow[0] = !showedWeekly
-    if (isFirstOfMonth) shouldShow[1] = !showedMonthly
-    if (isFirstOfYear) shouldShow[2] = !showedYearly
-    return shouldShow.any { it }
+    return isSunday || isFirstOfMonth || isFirstOfYear
 }
 
 /**
@@ -466,10 +447,6 @@ fun LunaraWrappedPopup(
         onDismissed()
         return
     }
-    val progress = animateEnterCurve(
-        targetState = 1f,
-        animationSpec = tween(300, easing = FastOutSlowInEasing),
-    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -479,7 +456,7 @@ fun LunaraWrappedPopup(
         verticalArrangement = Arrangement.Center,
     ) {
         Card(
-            modifier = Modifier.padding(16.dp).size(280.dp).opacity(progress),
+            modifier = Modifier.padding(16.dp).size(280.dp),
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
