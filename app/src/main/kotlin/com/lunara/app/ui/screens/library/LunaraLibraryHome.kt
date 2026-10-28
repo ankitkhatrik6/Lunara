@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.weight
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -72,6 +71,7 @@ import com.lunara.app.constants.ShowLikedPlaylistKey
 import com.lunara.app.constants.ShowTopPlaylistKey
 import com.lunara.app.constants.ShowDownloadedPlaylistKey
 import com.lunara.app.utils.dataStore
+import com.lunara.app.utils.get
 import androidx.compose.material3.Button
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Card
@@ -477,21 +477,21 @@ fun LunaraWrappedPopup(
                 )
                 if (wrappedStats.weeklyPlayCount > 0) {
                     wrappedCountRow(
-                        icon = R.drawable.ic_weekly,
+                        icon = R.drawable.stats,
                         count = wrappedStats.weeklyPlayCount,
                         label = R.string.weekly,
                     )
                 }
                 if (wrappedStats.monthlyPlayCount > 0) {
                     wrappedCountRow(
-                        icon = R.drawable.ic_monthly,
+                        icon = R.drawable.stats,
                         count = wrappedStats.monthlyPlayCount,
                         label = R.string.monthly,
                     )
                 }
                 if (wrappedStats.yearlyPlayCount > 0) {
                     wrappedCountRow(
-                        icon = R.drawable.ic_yearly,
+                        icon = R.drawable.stats,
                         count = wrappedStats.yearlyPlayCount,
                         label = R.string.yearly,
                     )
@@ -502,7 +502,6 @@ fun LunaraWrappedPopup(
                 ) {
                     Text(
                         text = stringResource(id = R.string.dismiss),
-                        style = MaterialTheme.typography.button,
                     )
                 }
             }
