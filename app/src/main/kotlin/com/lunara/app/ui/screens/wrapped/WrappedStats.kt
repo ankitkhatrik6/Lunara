@@ -4,6 +4,8 @@
  *
  * Holds the aggregated play counts and timestamps for weekly, monthly, and yearly wrapped views.
  */
+package com.lunara.app.ui.screens.wrapped
+
 data class WrappedStats(
     /** Total play count for the current week (resets every Sunday) */
     val weeklyPlayCount: Int = 0,
