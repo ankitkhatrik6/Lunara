@@ -10,6 +10,7 @@
 package com.lunara.app.ui.screens.wrapped
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -21,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -161,7 +163,6 @@ private fun WrappedTabStoryImage(weekly: Int, monthly: Int, yearly: Int) {
 private fun WrappedStatCard(label: String, count: Int, @androidx.annotation.DrawableRes icon: Int) {
     Card(
         modifier = Modifier
-            .weight(1f)
             .size(192.dp),
         shape = RoundedCornerShape(24.dp),
         colors = androidx.compose.material3.CardDefaults.cardColors(
@@ -261,23 +262,23 @@ fun WrappedTabScreen(
         ) {
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_weekly),
-                count = wrappedStats.weeklyPlayCount,
+                count = wrappedStats.weeklyPlayCount.toInt(),
                 icon = R.drawable.trending_up,
-                color = 0xFFFFA88B,
+                color = Color(0xFFFFA88B).toArgb().toInt(),
             )
             Spacer(modifier = Modifier.height(12.dp))
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_monthly),
-                count = wrappedStats.monthlyPlayCount,
+                count = wrappedStats.monthlyPlayCount.toInt(),
                 icon = R.drawable.trending_up,
-                color = 0xFF7AD7F0,
+                color = Color(0xFF7AD7F0).toArgb().toInt(),
             )
             Spacer(modifier = Modifier.height(12.dp))
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_yearly),
-                count = wrappedStats.yearlyPlayCount,
+                count = wrappedStats.yearlyPlayCount.toInt(),
                 icon = R.drawable.trending_up,
-                color = 0xFF5138AC,
+                color = Color(0xFF5138AC).toArgb().toInt(),
             )
         }
 
