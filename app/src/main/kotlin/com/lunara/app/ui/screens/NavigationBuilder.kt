@@ -39,6 +39,7 @@ import com.lunara.app.ui.screens.library.LibraryArtistsScreen
 import com.lunara.app.ui.screens.library.LibraryScreen
 import com.lunara.app.ui.screens.library.LibrarySongsScreen
 import com.lunara.app.ui.screens.library.LocalFoldersScreen
+import com.lunara.app.ui.screens.wrapped.WrappedTabScreen
 import com.lunara.app.ui.screens.playlist.AutoPlaylistScreen
 import com.lunara.app.ui.screens.playlist.CachePlaylistScreen
 import com.lunara.app.ui.screens.playlist.LocalPlaylistScreen
@@ -124,6 +125,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable(Screens.Library.route) {
         LibraryScreen()
+    }
+
+    composable(Screens.Wrapped.route) {
+        WrappedTabScreen(navController = navController)
     }
 
     composable("history") {

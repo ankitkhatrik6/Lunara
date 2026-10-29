@@ -1,5 +1,17 @@
 [
   {
+    "tagName": "v1.2.0",
+    "versionName": "1.2.0",
+    "releaseDate": "2026-10-29T00:00:00Z",
+    "description": "## What's new\n\n- **Wrapped tab.** New Lunara Wrapped tab showing your weekly, monthly and yearly listening recaps with beautiful stats cards.\n- **Wrapped share.** Share your Wrapped recap as an Instagram-style story image to any app.\n- **Changelog.** In-app changelog now shows what changed in each release.\n- **Fixes.** Resolved Kotlin compilation errors in the Library screen and wired real playback-history Wrapped statistics.\n\nEnjoy your music recap!\n"
+  },
+  {
+    "tagName": "v1.1.1",
+    "versionName": "1.1.1",
+    "releaseDate": "2026-10-29T00:00:00Z",
+    "description": "## What's new\n\n- **Compilation fixes.** Resolved Kotlin compilation errors in the Library screen (Wrapped stats, modifier weight, syntax).\n- **Wrapped stats.** Wrapped popup now computes real weekly, monthly and yearly play counts from your playback history.\n- **Stability.** Various crash fixes and UI stability improvements.\n"
+  },
+  {
     "tagName": "v1.0.1",
     "versionName": "1.0.1",
     "releaseDate": "2026-10-18T00:00:00Z",
