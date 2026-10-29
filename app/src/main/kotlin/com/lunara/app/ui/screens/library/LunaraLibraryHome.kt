@@ -353,7 +353,7 @@ fun LunaraLibraryHome(
         // ---- Created by you ----
         if ((selectedTab == LibraryTab.ALL || selectedTab == LibraryTab.PLAYLISTS) && userPlaylists.isNotEmpty()) {
             item("cby_head") {
-                LunaraSectionHeader(stringResource(id = R.string.created_by_you)),
+                LunaraSectionHeader(stringResource(id = R.string.created_by_you))
             }
             itemsIndexed(userPlaylists.chunked(2), key = { _, row -> "cby_${row.first().id}" }) { rowIndex, rowItems ->
                 Row(
@@ -381,7 +381,7 @@ fun LunaraLibraryHome(
         // ---- Artists you liked ----
         if ((selectedTab == LibraryTab.ALL || selectedTab == LibraryTab.ARTISTS) && artists.isNotEmpty()) {
             item("art_head") {
-                LunaraSectionHeader(stringResource(id = R.string.artists_you_liked)),
+                LunaraSectionHeader(stringResource(id = R.string.artists_you_liked))
             }
             item("art_rail") {
                 LazyRow(
