@@ -22,7 +22,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -262,23 +261,23 @@ fun WrappedTabScreen(
         ) {
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_weekly),
-                count = wrappedStats.weeklyPlayCount.toInt(),
+                count = wrappedStats.weeklyPlayCount,
                 icon = R.drawable.trending_up,
-                color = Color(0xFFFFA88B).toArgb().toInt(),
+                color = 0xFFFFA88B,
             )
             Spacer(modifier = Modifier.height(12.dp))
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_monthly),
-                count = wrappedStats.monthlyPlayCount.toInt(),
+                count = wrappedStats.monthlyPlayCount,
                 icon = R.drawable.trending_up,
-                color = Color(0xFF7AD7F0).toArgb().toInt(),
+                color = 0xFF7AD7F0,
             )
             Spacer(modifier = Modifier.height(12.dp))
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_yearly),
-                count = wrappedStats.yearlyPlayCount.toInt(),
+                count = wrappedStats.yearlyPlayCount,
                 icon = R.drawable.trending_up,
-                color = Color(0xFF5138AC).toArgb().toInt(),
+                color = 0xFF5138AC,
             )
         }
 
