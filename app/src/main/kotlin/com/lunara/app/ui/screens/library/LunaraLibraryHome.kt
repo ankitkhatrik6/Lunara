@@ -250,7 +250,7 @@ fun LunaraLibraryHome(
 
         // ---- Lunara Wrapped section ----
         // Check if today is a special day (Sunday/1st/Jan 1) and show wrapped if first time
-        val wrapped = WrappedStats()
+        val wrapped by viewModel.wrappedStats.collectAsStateWithLifecycle(initialValue = WrappedStats())
         item("lunara_wrapped") {
             if (isWrappedDayLocal()) {
                 LunaraWrappedPopup(
