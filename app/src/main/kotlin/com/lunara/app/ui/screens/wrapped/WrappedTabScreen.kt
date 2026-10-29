@@ -263,21 +263,21 @@ fun WrappedTabScreen(
                 period = stringResource(R.string.wrapped_period_weekly),
                 count = wrappedStats.weeklyPlayCount,
                 icon = R.drawable.trending_up,
-                color = 0xFFFFA88B,
+                color = Color(0xFFFFA88B),
             )
             Spacer(modifier = Modifier.height(12.dp))
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_monthly),
                 count = wrappedStats.monthlyPlayCount,
                 icon = R.drawable.trending_up,
-                color = 0xFF7AD7F0,
+                color = Color(0xFF7AD7F0),
             )
             Spacer(modifier = Modifier.height(12.dp))
             WrappedRecapCard(
                 period = stringResource(R.string.wrapped_period_yearly),
                 count = wrappedStats.yearlyPlayCount,
                 icon = R.drawable.trending_up,
-                color = 0xFF5138AC,
+                color = Color(0xFF5138AC),
             )
         }
 
@@ -322,7 +322,7 @@ private fun WrappedRecapCard(
     period: String,
     count: Int,
     @androidx.annotation.DrawableRes icon: Int,
-    color: Int,
+    color: Color,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -340,7 +340,7 @@ private fun WrappedRecapCard(
             Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
-                tint = Color(color),
+                tint = color,
                 modifier = Modifier.size(32.dp),
             )
             Spacer(modifier = Modifier.width(16.dp))
