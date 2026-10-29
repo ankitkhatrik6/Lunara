@@ -251,9 +251,8 @@ fun LunaraLibraryHome(
         // ---- Lunara Wrapped section ----
         // Check if today is a special day (Sunday/1st/Jan 1) and show wrapped if first time
         val wrapped = WrappedStats()
-        val isWrappedDay = isWrappedDayLocal()
         item("lunara_wrapped") {
-            if (isWrappedDay) {
+            if (isWrappedDayLocal()) {
                 LunaraWrappedPopup(
                     onDismissed = { /* handled internally */ },
                     wrappedStats = wrapped,
