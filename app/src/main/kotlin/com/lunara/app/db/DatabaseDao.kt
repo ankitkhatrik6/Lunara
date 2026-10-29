@@ -614,10 +614,6 @@ interface DatabaseDao {
     @Query("SELECT count from playCount WHERE song = :songId AND year = :year AND month = :month")
     fun getPlayCountByMonth(songId: String?, year: Int, month: Int): Flow<Int>
 
-    /** Total plays in a time range, sourced from the play-event log. */
-    @Query("SELECT COUNT(*) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp <= :toTimeStamp")
-    fun getPlayCountInRange(fromTimeStamp: LocalDateTime, toTimeStamp: LocalDateTime): Flow<Int>
-
     @Transaction
     @Query(
         """
