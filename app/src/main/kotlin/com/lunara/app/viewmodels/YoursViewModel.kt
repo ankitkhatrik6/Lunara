@@ -102,7 +102,7 @@ class YoursViewModel @Inject constructor(
         val today = now.toLocalDate()
         val daysSinceSunday =
             if (today.dayOfWeek == java.time.DayOfWeek.SUNDAY) 0 else today.dayOfWeek.value
-        val weekStart = today.minusDays(daysSinceSunday).atStartOfDay()
+        val weekStart = today.minusDays(daysSinceSunday.toLong()).atStartOfDay()
         val monthStart = today.withDayOfMonth(1).atStartOfDay()
         val yearStart = today.withDayOfYear(1).atStartOfDay()
         combine(

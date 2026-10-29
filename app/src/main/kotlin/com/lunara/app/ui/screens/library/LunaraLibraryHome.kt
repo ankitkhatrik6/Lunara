@@ -106,6 +106,7 @@ fun LunaraLibraryHome(
     val downloadedThumbs by viewModel.downloadedThumbnails.collectAsStateWithLifecycle()
     val localThumbs by viewModel.localThumbnails.collectAsStateWithLifecycle()
     val localCount by viewModel.localSongCount.collectAsStateWithLifecycle()
+    val wrapped by viewModel.wrappedStats.collectAsStateWithLifecycle(initialValue = WrappedStats())
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -250,7 +251,6 @@ fun LunaraLibraryHome(
 
         // ---- Lunara Wrapped section ----
         // Check if today is a special day (Sunday/1st/Jan 1) and show wrapped if first time
-        val wrapped by viewModel.wrappedStats.collectAsStateWithLifecycle(initialValue = WrappedStats())
         item("lunara_wrapped") {
             if (isWrappedDayLocal()) {
                 LunaraWrappedPopup(
