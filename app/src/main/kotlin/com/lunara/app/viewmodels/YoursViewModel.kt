@@ -24,12 +24,14 @@ import com.lunara.app.di.PlayerCache
 import com.lunara.app.db.entities.Artist
 import com.lunara.app.db.entities.Playlist
 import com.lunara.app.db.entities.Song
+import com.lunara.app.ui.screens.wrapped.WrappedStats
 import com.lunara.app.utils.dataStore
 import com.lunara.app.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -92,6 +94,29 @@ class YoursViewModel @Inject constructor(
     val trendingArtists = database
         .mostPlayedArtists(fromTimeStamp = java.time.LocalDateTime.of(1970, 1, 1, 0, 0), limit = 12)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    // Wrapped play counts for the Library "Wrapped" popup, computed from local playback data:
+    // plays since last Sunday (weekly), and plays since the start of this month and this year.
+    val wrappedStats: StateFlow<WrappedStats> = {
+        val now = java.time.LocalDateTime.now()
+        val today = now.toLocalDate()
+        val daysSinceSunday =
+            if (today.dayOfWeek == java.time.DayOfWeek.SUNDAY) 0 else today.dayOfWeek.value
+        val weekStart = today.minusDays(daysSinceSunday).atStartOfDay()
+        val monthStart = today.withDayOfMonth(1).atStartOfDay()
+        val yearStart = today.withDayOfYear(1).atStartOfDay()
+        combine(
+            database.getPlayCountInRange(weekStart, now),
+            database.getPlayCountInRange(monthStart, now),
+            database.getPlayCountInRange(yearStart, now),
+        ) { weekly, monthly, yearly ->
+            WrappedStats(
+                weeklyPlayCount = weekly,
+                monthlyPlayCount = monthly,
+                yearlyPlayCount = yearly,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Lazily, WrappedStats())
+    }()
 
     // Local playlists, most-recently-updated first.
     val playlists: kotlinx.coroutines.flow.StateFlow<List<Playlist>> =

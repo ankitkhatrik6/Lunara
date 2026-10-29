@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.weight
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -250,7 +251,7 @@ fun LunaraLibraryHome(
 
         // ---- Lunara Wrapped section ----
         // Check if today is a special day (Sunday/1st/Jan 1) and show wrapped if first time
-        val wrapped = WrappedStats()
+        val wrapped by viewModel.wrappedStats.collectAsStateWithLifecycle(initial = WrappedStats())
         val isWrappedDay = isWrappedDayLocal()
         item("lunara_wrapped") {
             if (isWrappedDay) {
@@ -258,8 +259,6 @@ fun LunaraLibraryHome(
                     onDismissed = { /* handled internally */ },
                     wrappedStats = wrapped,
                 )
-            } else {
-                Spacer(Modifier.weight(1f))
             }
         }
 
