@@ -1287,7 +1287,7 @@ class MainActivity : ComponentActivity() {
                             // Pre-calculate values for graphicsLayer to avoid reading state during composition
                             val navBarTotalHeight = bottomInset + NavigationBarHeight
 
-                            if (!showRail) {
+                            if (!showRail && currentRoute != "wrapped") {
                                 Box {
                                     if (activePlayerConnection != null) {
                                         BottomSheetPlayer(
@@ -1348,7 +1348,8 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             } else {
-                                if (activePlayerConnection != null) {
+                                if (currentRoute != "wrapped") {
+                                    if (activePlayerConnection != null) {
                                         BottomSheetPlayer(
                                             state = playerBottomSheetState,
                                             navController = navController,
@@ -1402,7 +1403,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                            if (showRail) {
+                            if (showRail && currentRoute != "wrapped") {
                                 AppNavigationRail(
                                     navigationItems = navigationItems,
                                     currentRoute = currentRoute,
