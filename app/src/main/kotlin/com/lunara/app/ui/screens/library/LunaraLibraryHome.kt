@@ -479,20 +479,7 @@ fun LunaraWrappedPopup(
                         label = R.string.weekly,
                     )
                 }
-                if (wrappedStats.monthlyPlayCount > 0) {
-                    wrappedCountRow(
-                        icon = R.drawable.stats,
-                        count = wrappedStats.monthlyPlayCount,
-                        label = R.string.monthly,
-                    )
-                }
-                if (wrappedStats.yearlyPlayCount > 0) {
-                    wrappedCountRow(
-                        icon = R.drawable.stats,
-                        count = wrappedStats.yearlyPlayCount,
-                        label = R.string.yearly,
-                    )
-                }
+
                 Button(
                     onClick = { showPopup = false },
                     modifier = Modifier.align(Alignment.End),

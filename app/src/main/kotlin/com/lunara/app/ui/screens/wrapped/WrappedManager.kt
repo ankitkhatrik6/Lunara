@@ -139,6 +139,26 @@ class WrappedManager(
         Timber.tag("WrappedManager").d("Wrapped data preparation finished for $period")
     }
 
+    private fun generatePlaylistMap(period: WrappedPeriod) {
+        // Weekly playlist map generation
+        val topSongs = _state.value.topSongs
+        val topArtists = _state.value.topArtists
+        val trackMap = mutableMapOf<String, String>()
+
+        if (topSongs.isNotEmpty()) {
+            trackMap["WrappedScreenType.TopSongReveal"] = topSongs.first().id
+            trackMap["WrappedScreenType.Top5Songs"] = topSongs.firstOrNull()?.id
+            trackMap["WrappedScreenType.Playlist"] = topSongs.firstOrNull()?.id
+        }
+        if (topArtists.isNotEmpty()) {
+            trackMap["WrappedScreenType.TopArtistReveal"] = topArtists.first().artist.id
+            trackMap["WrappedScreenType.Top5Artists"] = topArtists.first().artist.id
+        }
+        trackMap["WrappedScreenType.Conclusion"] = "2-p9DM2Xvsc"
+
+        _state.update { it.copy(trackMap = trackMap) }
+    }
+
     fun dispose() {
         scope.cancel()
     }

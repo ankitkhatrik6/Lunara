@@ -38,4 +38,7 @@ object WrappedConstants {
         when (period) {
             WrappedPeriod.Weekly -> today.atTime(23, 59, 59)
         }
+
+    /** The current year for display purposes. */
+    fun year(today: LocalDate = LocalDate.now()): Int = today.year
 }

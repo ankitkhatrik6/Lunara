@@ -78,6 +78,12 @@ sealed class WrappedScreenType {
 
     object Top5Songs : WrappedScreenType()
 
+    object TotalArtists : WrappedScreenType()
+
+    object TopArtistReveal : WrappedScreenType()
+
+    object Top5Artists : WrappedScreenType()
+
     object Playlist : WrappedScreenType()
 
     object Conclusion : WrappedScreenType()
@@ -216,15 +222,6 @@ fun WrappedScreenContent() {
                     .padding(paddingValues),
         ) { page ->
             when (screens[page]) {
-                is WrappedScreenType.PeriodSelection -> {
-                    WrappedPeriodPicker { period ->
-                        scope.launch {
-                            manager.prepare(period)
-                            pagerState.animateScrollToPage(page = 1)
-                        }
-                    }
-                }
-
                 is WrappedScreenType.Welcome -> {
                     WrappedIntro { scope.launch { pagerState.animateScrollToPage(page = 1) } }
                 }
