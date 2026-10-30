@@ -33,6 +33,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -197,7 +198,7 @@ fun WrappedScreenContent() {
                 title = {
                     Text(
                         text = stringResource(R.string.lunara_wrapped_title),
-                        style = androidx.compose.material3.TextStyle(
+                        style = TextStyle(
                             fontSize = 18.sp,
                             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                             color = Color.White,
