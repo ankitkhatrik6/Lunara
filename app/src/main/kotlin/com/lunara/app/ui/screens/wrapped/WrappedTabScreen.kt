@@ -2,9 +2,8 @@
  * Ankit Khatri KC (C) 2026
  * Licensed under GPL-3.0
  *
- * Lunara Wrapped tab: a beautiful home for your weekly, monthly and yearly
- * listening recaps. Shows real play counts from your playback history and lets
- * you share each recap as an Instagram-style story image.
+ * Lunara Wrapped tab: weekly listening recap. Shows real play counts from your playback history
+ * and lets you share the weekly recap as an Instagram-style story image.
  */
 
 package com.lunara.app.ui.screens.wrapped
@@ -68,14 +67,13 @@ private const val STORY_HEIGHT = 1920
 
 /** Renders the Wrapped tab stats to a story-sized PNG and shares it via the system chooser. */
 object WrappedTabShare {
-    fun share(host: Activity, weekly: Int, monthly: Int, yearly: Int) {
+    fun share(host: Activity, weekly: Int) {
         val file = java.io.File(host.cacheDir, "lunara_wrapped_tab_story.png")
         val title = host.getString(R.string.lunara_wrapped_title)
-        val subtitle = host.getString(R.string.wrapped_story_subtitle).format("year")
+        val subtitle = host.getString(R.string.wrapped_story_subtitle).format("week")
         val weeklyLabel = host.getString(R.string.wrapped_period_weekly)
-        val monthlyLabel = host.getString(R.string.wrapped_period_monthly)
-        val yearlyLabel = host.getString(R.string.wrapped_period_yearly)
-        val bitmap = renderStoryToBitmap(host, weekly, monthly, yearly, title, subtitle, weeklyLabel, monthlyLabel, yearlyLabel)
+        val bitmap = renderStoryToBitmap(host, weekly, title, subtitle, weeklyLabel)
+
         java.io.FileOutputStream(file).use { out ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 92, out)
         }
@@ -99,13 +97,9 @@ object WrappedTabShare {
     private fun renderStoryToBitmap(
         context: Context,
         weekly: Int,
-        monthly: Int,
-        yearly: Int,
         title: String,
         subtitle: String,
         weeklyLabel: String,
-        monthlyLabel: String,
-        yearlyLabel: String,
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(STORY_WIDTH, STORY_HEIGHT, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -132,17 +126,11 @@ object WrappedTabShare {
         }
         canvas.drawText(subtitle, STORY_WIDTH / 2f, 280f, subPaint)
 
-        // Stat cards
-        val cardWidth = 280f
-        val cardHeight = 300f
-        val spacing = 40f
-        val startX = (STORY_WIDTH - (cardWidth * 3 + spacing * 2)) / 2f
-
-        val stats = listOf(
-            Pair(weeklyLabel, weekly),
-            Pair(monthlyLabel, monthly),
-            Pair(yearlyLabel, yearly),
-        )
+        // Weekly stat card
+        val cardWidth = 400f
+        val cardHeight = 320f
+        val cx = STORY_WIDTH / 2f
+        val cy = 500f
 
         val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.parseColor("#1E1E1E")
@@ -162,33 +150,23 @@ object WrappedTabShare {
             textAlign = Paint.Align.CENTER
         }
 
-        for (i in stats.indices) {
-            val (label, count) = stats[i]
-            val cx = startX + i * (cardWidth + spacing) + cardWidth / 2f
-            val cy = 500f
+        // Card background
+        canvas.drawRoundRect(
+            cx - cardWidth / 2f, cy - cardHeight / 2f,
+            cx + cardWidth / 2f, cy + cardHeight / 2f,
+            32f, 32f, cardPaint
+        )
 
-            // Card background
-            canvas.drawRoundRect(
-                cx - cardWidth / 2f, cy - cardHeight / 2f,
-                cx + cardWidth / 2f, cy + cardHeight / 2f,
-                32f, 32f, cardPaint
-            )
+        // Label
+        canvas.drawText(weeklyLabel, cx, cy - 60f, labelPaint)
 
-            // Label
-            canvas.drawText(label, cx, cy - 60f, labelPaint)
-
-            // Count
-            canvas.drawText(count.toString(), cx, cy + 20f, countPaint)
-        }
+        // Count
+        canvas.drawText(weekly.toString(), cx, cy + 20f, countPaint)
 
         return bitmap
     }
 }
 
-/**
- * The Wrapped tab screen. Shows weekly, monthly and yearly listening recaps
- * computed from real playback history, with an Instagram-style story share.
- */
 @Composable
 fun WrappedTabScreen(
     navController: androidx.navigation.NavController,
@@ -197,7 +175,7 @@ fun WrappedTabScreen(
     val context = LocalContext.current
 
     val wrappedStats by viewModel.wrappedStats.collectAsStateWithLifecycle(
-        initialValue = WrappedStats(),
+        initialValue = com.lunara.app.ui.screens.wrapped.WrappedStats(),
     )
 
     Column(
@@ -225,8 +203,6 @@ fun WrappedTabScreen(
                         WrappedTabShare.share(
                             activity,
                             wrappedStats.weeklyPlayCount,
-                            wrappedStats.monthlyPlayCount,
-                            wrappedStats.yearlyPlayCount,
                         )
                     }
                 },
@@ -252,25 +228,11 @@ fun WrappedTabScreen(
                 icon = R.drawable.trending_up,
                 color = Color(0xFFFFA88B),
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            WrappedRecapCard(
-                period = stringResource(R.string.wrapped_period_monthly),
-                count = wrappedStats.monthlyPlayCount,
-                icon = R.drawable.trending_up,
-                color = Color(0xFF7AD7F0),
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            WrappedRecapCard(
-                period = stringResource(R.string.wrapped_period_yearly),
-                count = wrappedStats.yearlyPlayCount,
-                icon = R.drawable.trending_up,
-                color = Color(0xFF5138AC),
-            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (wrappedStats.weeklyPlayCount == 0 && wrappedStats.monthlyPlayCount == 0 && wrappedStats.yearlyPlayCount == 0) {
+        if (wrappedStats.weeklyPlayCount == 0) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -301,9 +263,7 @@ fun WrappedTabScreen(
     }
 }
 
-/**
- * A single recap card showing a period label, play count and a descriptive message.
- */
+/** A single recap card showing a period label, play count and a descriptive message. */
 @Composable
 private fun WrappedRecapCard(
     period: String,

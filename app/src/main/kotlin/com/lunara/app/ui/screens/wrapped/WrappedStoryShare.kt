@@ -1,6 +1,5 @@
 /**
  * Ankit Khatri KC (C) 2026
- * Metrolist Project (C) 2026
  * Licensed under GPL-3.0
  */
 
@@ -87,7 +86,7 @@ object WrappedStoryShare {
         }
         canvas.drawText("Lunara Wrapped", width / 2f, 380f, headerPaint)
 
-        // Stats section
+        // Stats section - weekly only
         val topSong = state.topSongs.firstOrNull()
         val topArtist = state.topArtists.firstOrNull()
 

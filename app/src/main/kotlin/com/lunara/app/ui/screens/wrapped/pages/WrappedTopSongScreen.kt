@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.lunara.app.R
@@ -74,7 +75,7 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -84,13 +85,14 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
             ) {
                 Text(
                     text = stringResource(id = R.string.wrapped_top_song_title),
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp),
                     color = Color.White,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             AnimatedVisibility(
                 visible = visible,
@@ -100,9 +102,9 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(topSong?.thumbnailUrl)
                         .build(),
-                contentDescription = stringResource(id = R.string.wrapped_top_song_album_art_content_description),
+                    contentDescription = stringResource(id = R.string.wrapped_top_song_album_art_content_description),
                     modifier = Modifier
-                        .size(200.dp)
+                        .size(180.dp)
                         .clip(RoundedCornerShape(3.dp)),
                     contentScale = ContentScale.Crop
                 )
@@ -116,17 +118,18 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
             ) {
                 Text(
                 text = topSong?.title ?: stringResource(id = R.string.wrapped_no_data),
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineMedium.copy(fontSize = 22.sp),
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
             // Artists are not available in SongWithStats, so this part is removed.
             // A possible improvement would be to fetch artist data separately.
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             AnimatedVisibility(
                 visible = visible,
@@ -136,7 +139,7 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
                 text = stringResource(id = R.string.wrapped_top_song_listening_time, topSong?.timeListened?.div(60000) ?: 0),
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White.copy(alpha = 0.8f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
         }

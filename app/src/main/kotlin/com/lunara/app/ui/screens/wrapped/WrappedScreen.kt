@@ -56,21 +56,16 @@ import com.lunara.app.ui.screens.wrapped.pages.WrappedIntro
 import com.lunara.app.ui.screens.wrapped.pages.WrappedMinutesScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedMinutesTease
 import com.lunara.app.ui.screens.wrapped.pages.WrappedStoryScreen
-import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5AlbumsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5ArtistsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5SongsScreen
-import com.lunara.app.ui.screens.wrapped.pages.WrappedTopAlbumScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTopArtistScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTopSongScreen
-import com.lunara.app.ui.screens.wrapped.pages.WrappedTotalAlbumsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTotalArtistsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTotalSongsScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 sealed class WrappedScreenType {
-    object PeriodSelection : WrappedScreenType()
-
     object Welcome : WrappedScreenType()
 
     object MinutesTease : WrappedScreenType()
@@ -82,18 +77,6 @@ sealed class WrappedScreenType {
     object TopSongReveal : WrappedScreenType()
 
     object Top5Songs : WrappedScreenType()
-
-    object TotalAlbums : WrappedScreenType()
-
-    object TopAlbumReveal : WrappedScreenType()
-
-    object Top5Albums : WrappedScreenType()
-
-    object TotalArtists : WrappedScreenType()
-
-    object TopArtistReveal : WrappedScreenType()
-
-    object Top5Artists : WrappedScreenType()
 
     object Playlist : WrappedScreenType()
 
@@ -169,16 +152,12 @@ fun WrappedScreenContent() {
     val screens =
         remember {
             listOf(
-                WrappedScreenType.PeriodSelection,
                 WrappedScreenType.Welcome,
                 WrappedScreenType.MinutesTease,
                 WrappedScreenType.MinutesReveal,
                 WrappedScreenType.TotalSongs,
                 WrappedScreenType.TopSongReveal,
                 WrappedScreenType.Top5Songs,
-                WrappedScreenType.TotalAlbums,
-                WrappedScreenType.TopAlbumReveal,
-                WrappedScreenType.Top5Albums,
                 WrappedScreenType.TotalArtists,
                 WrappedScreenType.TopArtistReveal,
                 WrappedScreenType.Top5Artists,
@@ -284,27 +263,6 @@ fun WrappedScreenContent() {
                     WrappedTop5SongsScreen(
                         topSongs = state.topSongs.take(5),
                         isVisible = pagerState.currentPage == screens.indexOf(WrappedScreenType.Top5Songs),
-                    )
-                }
-
-                is WrappedScreenType.TotalAlbums -> {
-                    WrappedTotalAlbumsScreen(
-                        uniqueAlbumCount = state.totalAlbums,
-                        isVisible = pagerState.currentPage == screens.indexOf(WrappedScreenType.TotalAlbums),
-                    )
-                }
-
-                is WrappedScreenType.TopAlbumReveal -> {
-                    WrappedTopAlbumScreen(
-                        topAlbum = state.topAlbum,
-                        isVisible = pagerState.currentPage == screens.indexOf(WrappedScreenType.TopAlbumReveal),
-                    )
-                }
-
-                is WrappedScreenType.Top5Albums -> {
-                    WrappedTop5AlbumsScreen(
-                        topAlbums = state.top5Albums,
-                        isVisible = pagerState.currentPage == screens.indexOf(WrappedScreenType.Top5Albums),
                     )
                 }
 

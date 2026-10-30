@@ -40,6 +40,7 @@ import com.lunara.app.R
 import com.lunara.app.ui.screens.wrapped.LocalWrappedManager
 import com.lunara.app.ui.screens.wrapped.PlaylistCreationState
 import com.lunara.app.ui.screens.wrapped.WrappedConstants
+import com.lunara.app.ui.screens.wrapped.WrappedPeriod
 import com.lunara.app.ui.screens.wrapped.components.AnimatedBackground
 import com.lunara.app.ui.screens.wrapped.components.AutoResizingText
 import com.lunara.app.ui.screens.wrapped.components.ShapeType
@@ -53,13 +54,8 @@ fun PlaylistPage() {
     val state by manager.state.collectAsStateWithLifecycle()
     val playlistCreationState = state.playlistCreationState
 
-    val (playlistImageRes, playlistImageName) = remember {
-        if (Random.nextBoolean()) {
-            Pair(R.drawable.wrapped_playlistv1, "wrapped_playlistv1")
-        } else {
-            Pair(R.drawable.wrapped_playlistv2, "wrapped_playlistv2")
-        }
-    }
+    val playlistImageRes = R.drawable.lunara_logo_white
+    val playlistImageName = "lunara_logo_white"
 
     var startAnimation by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -102,12 +98,13 @@ fun PlaylistPage() {
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = stringResource(R.string.wrapped_playlist_title, WrappedConstants.year()),
+                text = stringResource(R.string.wrapped_playlist_title, WrappedConstants.periodLabel(WrappedPeriod.Weekly)),
                 style = TextStyle(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
-                )
+                ),
+                modifier = Modifier.padding(top = 8.dp),
             )
             Spacer(modifier = Modifier.height(48.dp))
             Button(

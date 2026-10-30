@@ -68,11 +68,12 @@ fun ConclusionPage(
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = onShareStory,
                 shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f))
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f)),
+                modifier = Modifier.padding(horizontal = 32.dp)
             ) {
                 Text(
                     text = stringResource(R.string.wrapped_share_story),
@@ -82,6 +83,7 @@ fun ConclusionPage(
                     )
                 )
             }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

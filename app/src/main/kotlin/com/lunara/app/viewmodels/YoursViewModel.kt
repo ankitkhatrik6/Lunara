@@ -96,25 +96,15 @@ class YoursViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // Wrapped play counts for the Library "Wrapped" popup, computed from local playback data:
-    // plays since last Sunday (weekly), and plays since the start of this month and this year.
+    // plays since last Sunday (weekly).
     val wrappedStats: StateFlow<WrappedStats> = {
         val now = java.time.LocalDateTime.now()
         val today = now.toLocalDate()
         val daysSinceSunday =
             if (today.dayOfWeek == java.time.DayOfWeek.SUNDAY) 0 else today.dayOfWeek.value
         val weekStart = today.minusDays(daysSinceSunday.toLong()).atStartOfDay()
-        val monthStart = today.withDayOfMonth(1).atStartOfDay()
-        val yearStart = today.withDayOfYear(1).atStartOfDay()
-        combine(
-            database.getPlayCountInRange(weekStart, now),
-            database.getPlayCountInRange(monthStart, now),
-            database.getPlayCountInRange(yearStart, now),
-        ) { weekly, monthly, yearly ->
-            WrappedStats(
-                weeklyPlayCount = weekly,
-                monthlyPlayCount = monthly,
-                yearlyPlayCount = yearly,
-            )
+        database.getPlayCountInRange(weekStart, now).map { weekly ->
+            WrappedStats(weeklyPlayCount = weekly)
         }.stateIn(viewModelScope, SharingStarted.Lazily, WrappedStats())
     }()
 

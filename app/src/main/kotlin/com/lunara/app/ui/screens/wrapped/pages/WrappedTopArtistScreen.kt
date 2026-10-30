@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.lunara.app.R
@@ -53,7 +54,7 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -63,13 +64,14 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
         ) {
             Text(
                 text = stringResource(id = R.string.wrapped_top_artist_title),
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp),
                 color = Color.White,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         AnimatedVisibility(
             visible = visible,
@@ -81,7 +83,7 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
                     .build(),
                 contentDescription = stringResource(id = R.string.wrapped_top_artist_image_content_description),
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(180.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
@@ -95,10 +97,11 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
         ) {
             Text(
                 text = topArtist?.artist?.name ?: stringResource(id = R.string.wrapped_no_data),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineMedium.copy(fontSize = 22.sp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
 
@@ -110,7 +113,7 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
                 text = stringResource(id = R.string.wrapped_top_artist_listening_time, topArtist?.timeListened?.div(60000) ?: 0),
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
