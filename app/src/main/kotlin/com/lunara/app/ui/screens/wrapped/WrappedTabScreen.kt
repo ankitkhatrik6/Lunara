@@ -14,7 +14,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.Color as AndroidColor
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.net.Uri
@@ -48,7 +48,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +69,12 @@ private const val STORY_HEIGHT = 1920
 object WrappedTabShare {
     fun share(host: Activity, weekly: Int, monthly: Int, yearly: Int) {
         val file = java.io.File(host.cacheDir, "lunara_wrapped_tab_story.png")
-        val bitmap = renderStoryToBitmap(host, weekly, monthly, yearly)
+        val title = host.getString(R.string.lunara_wrapped_title)
+        val subtitle = host.getString(R.string.wrapped_story_subtitle).format("year")
+        val weeklyLabel = host.getString(R.string.wrapped_period_weekly)
+        val monthlyLabel = host.getString(R.string.wrapped_period_monthly)
+        val yearlyLabel = host.getString(R.string.wrapped_period_yearly)
+        val bitmap = renderStoryToBitmap(host, weekly, monthly, yearly, title, subtitle, weeklyLabel, monthlyLabel, yearlyLabel)
         java.io.FileOutputStream(file).use { out ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 92, out)
         }
@@ -91,31 +95,41 @@ object WrappedTabShare {
         host.startActivity(Intent.createChooser(intent, host.getString(R.string.wrapped_story_share)))
     }
 
-    private fun renderStoryToBitmap(context: Context, weekly: Int, monthly: Int, yearly: Int): Bitmap {
+    private fun renderStoryToBitmap(
+        context: Context,
+        weekly: Int,
+        monthly: Int,
+        yearly: Int,
+        title: String,
+        subtitle: String,
+        weeklyLabel: String,
+        monthlyLabel: String,
+        yearlyLabel: String,
+    ): Bitmap {
         val bitmap = Bitmap.createBitmap(STORY_WIDTH, STORY_HEIGHT, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
         // Background
-        val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#121212") }
+        val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = AndroidColor.parseColor("#121212") }
         canvas.drawRect(0f, 0f, STORY_WIDTH.toFloat(), STORY_HEIGHT.toFloat(), bgPaint)
 
         // Header
         val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
+            color = AndroidColor.WHITE
             textSize = 64f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             textAlign = Paint.Align.CENTER
         }
-        canvas.drawText(stringResource(R.string.lunara_wrapped_title), STORY_WIDTH / 2f, 200f, headerPaint)
+        canvas.drawText(title, STORY_WIDTH / 2f, 200f, headerPaint)
 
         // Subtitle
         val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.parseColor("#B3B3B3")
+            color = AndroidColor.parseColor("#B3B3B3")
             textSize = 32f
             typeface = Typeface.DEFAULT
             textAlign = Paint.Align.CENTER
         }
-        canvas.drawText(stringResource(R.string.wrapped_story_subtitle).format("year"), STORY_WIDTH / 2f, 280f, subPaint)
+        canvas.drawText(subtitle, STORY_WIDTH / 2f, 280f, subPaint)
 
         // Stat cards
         val cardWidth = 280f
@@ -124,30 +138,31 @@ object WrappedTabShare {
         val startX = (STORY_WIDTH - (cardWidth * 3 + spacing * 2)) / 2f
 
         val stats = listOf(
-            Pair(stringResource(R.string.wrapped_period_weekly), weekly),
-            Pair(stringResource(R.string.wrapped_period_monthly), monthly),
-            Pair(stringResource(R.string.wrapped_period_yearly), yearly),
+            Pair(weeklyLabel, weekly),
+            Pair(monthlyLabel, monthly),
+            Pair(yearlyLabel, yearly),
         )
 
         val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.parseColor("#1E1E1E")
+            color = AndroidColor.parseColor("#1E1E1E")
         }
 
         val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.parseColor("#B3B3B3")
+            color = AndroidColor.parseColor("#B3B3B3")
             textSize = 36f
             typeface = Typeface.DEFAULT
             textAlign = Paint.Align.CENTER
         }
 
         val countPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
+            color = AndroidColor.WHITE
             textSize = 64f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             textAlign = Paint.Align.CENTER
         }
 
-        for ((i, (label, count)) in stats.withIndex()) {
+        for (i in stats.indices) {
+            val (label, count) = stats[i]
             val cx = startX + i * (cardWidth + spacing) + cardWidth / 2f
             val cy = 500f
 
