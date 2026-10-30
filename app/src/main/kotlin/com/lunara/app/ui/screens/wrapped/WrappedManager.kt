@@ -151,8 +151,8 @@ class WrappedManager(
             trackMap["WrappedScreenType.Playlist"] = topSongs.firstOrNull()?.id
         }
         if (topArtists.isNotEmpty()) {
-            trackMap["WrappedScreenType.TopArtistReveal"] = topArtists.first().artist.id
-            trackMap["WrappedScreenType.Top5Artists"] = topArtists.first().artist.id
+            trackMap["WrappedScreenType.TopArtistReveal"] = topArtists.first()?.artist?.id?.toString()
+            trackMap["WrappedScreenType.Top5Artists"] = topArtists.first()?.artist?.id?.toString()
         }
         trackMap["WrappedScreenType.Conclusion"] = "2-p9DM2Xvsc"
 
