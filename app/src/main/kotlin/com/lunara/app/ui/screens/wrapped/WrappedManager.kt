@@ -146,15 +146,15 @@ class WrappedManager(
         val trackMap = mutableMapOf<WrappedScreenType, String?>()
 
         if (topSongs.isNotEmpty()) {
-            trackMap["WrappedScreenType.TopSongReveal"] = topSongs.first().id
-            trackMap["WrappedScreenType.Top5Songs"] = topSongs.firstOrNull()?.id
-            trackMap["WrappedScreenType.Playlist"] = topSongs.firstOrNull()?.id
+            trackMap[WrappedScreenType.TopSongReveal] = topSongs.first().id.toString()
+            trackMap[WrappedScreenType.Top5Songs] = topSongs.firstOrNull()?.id?.toString()
+            trackMap[WrappedScreenType.Playlist] = topSongs.firstOrNull()?.id?.toString()
         }
         if (topArtists.isNotEmpty()) {
-            trackMap["WrappedScreenType.TopArtistReveal"] = topArtists.first()?.artist?.id?.toString()
-            trackMap["WrappedScreenType.Top5Artists"] = topArtists.first()?.artist?.id?.toString()
+            trackMap[WrappedScreenType.TopArtistReveal] = topArtists.first()?.artist?.id?.toString()
+            trackMap[WrappedScreenType.Top5Artists] = topArtists.first()?.artist?.id?.toString()
         }
-        trackMap["WrappedScreenType.Conclusion"] = "2-p9DM2Xvsc"
+        trackMap[WrappedScreenType.Conclusion] = "2-p9DM2Xvsc"
 
         _state.update { it.copy(trackMap = trackMap) }
     }
