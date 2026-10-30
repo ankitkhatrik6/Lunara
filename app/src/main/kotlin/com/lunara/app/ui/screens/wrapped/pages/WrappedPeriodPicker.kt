@@ -44,7 +44,7 @@ import com.lunara.app.ui.theme.bbh_bartle
 fun WrappedPeriodPicker(onPeriodSelected: (WrappedPeriod) -> Unit) {
     val state = LocalWrappedManager.current.state
 
-    var selectedPeriod by remember { mutableStateOf(WrappedPeriod.Yearly) }
+    var selectedPeriod by remember { mutableStateOf(WrappedPeriod.Weekly) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(

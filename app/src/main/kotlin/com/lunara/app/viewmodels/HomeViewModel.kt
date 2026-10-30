@@ -346,7 +346,7 @@ class HomeViewModel @Inject constructor(
     val showWrappedCard: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
         val showWrappedPref = prefs[ShowWrappedCardKey] ?: false
         val seen = prefs[WrappedSeenYearKey] == WrappedConstants.year()
-        WrappedConstants.isSeason() && (!seen || showWrappedPref)
+        (!seen || showWrappedPref)
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val wrappedSeen: StateFlow<Boolean> = context.dataStore.data.map { prefs ->

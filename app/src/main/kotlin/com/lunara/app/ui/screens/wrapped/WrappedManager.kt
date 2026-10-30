@@ -143,7 +143,7 @@ class WrappedManager(
         // Weekly playlist map generation
         val topSongs = _state.value.topSongs
         val topArtists = _state.value.topArtists
-        val trackMap = mutableMapOf<String, String>()
+        val trackMap = mutableMapOf<WrappedScreenType, String?>()
 
         if (topSongs.isNotEmpty()) {
             trackMap["WrappedScreenType.TopSongReveal"] = topSongs.first().id
