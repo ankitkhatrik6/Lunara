@@ -628,21 +628,21 @@
     <string name="wrapped_album_listening_time">You\'ve listened to this album for %d minutes!</string>
     <string name="wrapped_album_listening_time_minutes">%d minutes</string>
     <string name="wrapped_no_data">No data available</string>
-    <string name="wrapped_top_5_artists_title">Your top artists of the year</string>
+    <string name="wrapped_top_5_artists_title">Your top artists of the week</string>
     <string name="wrapped_artist_listening_time">%d minutes</string>
     <string name="wrapped_top_5_songs_title">Your top songs of the year</string>
     <string name="wrapped_top_song_album_art_content_description">Album art</string>
-    <string name="wrapped_top_artist_title">Your top artist of the year is</string>
+    <string name="wrapped_top_artist_title">Your top artist of the week is</string>
     <string name="wrapped_top_artist_image_content_description">Top artist image</string>
     <string name="wrapped_top_artist_listening_time">You\'ve listened to them for %d minutes!</string>
-    <string name="wrapped_top_song_title">Your most played song is</string>
+    <string name="wrapped_top_song_title">Your top song of the week</string>
     <string name="wrapped_top_song_listening_time">You\'ve listened for %d minutes!</string>
     <string name="wrapped_total_artists_title">You\'ve listened to</string>
     <string name="wrapped_total_artists_subtitle">unique artists!</string>
     <string name="wrapped_total_songs_title">You\'ve listened to</string>
     <string name="wrapped_total_songs_subtitle">unique songs!</string>
     <string name="wrapped_intro_title">LUNARA</string>
-    <string name="wrapped_intro_subtitle">it\'s time to see what you\'ve been listening to all this year…</string>
+    <string name="wrapped_intro_subtitle">it\'s time to see what you\'ve been listening to this week…</string>
     <string name="wrapped_intro_button">let\'s go!</string>
     <string name="wrapped_logo_content_description">Lunara Logo</string>
     <string name="wrapped_year">%d</string>
@@ -673,7 +673,8 @@
     <string name="wrapped_story_listened_to">%d unique artists</string>
     <string name="wrapped_story_close">Close</string>
     <string name="wrapped_story_share">Share</string>
-    <string name="wrapped_share_story">Share your story</string>
+    <string name="wrapped_share_song">Share your top song</string>
+<string name="wrapped_share_artist">Share your top artist</string>
 
     <!-- Equalizer UI -->
     <plurals name="profiles_count">

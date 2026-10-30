@@ -3,10 +3,14 @@
     "tagName": "v2.1.0",
     "versionName": "2.1.0",
     "releaseDate": "2026-10-30T00:00:00Z",
-    "description": "## What's new\n\n- **Weekly Wrapped only.** Removed monthly and yearly recaps - Weekly Wrapped is now the sole focus.\n- **Dynamic year.** Playlist titles now show the actual week (e.g., \"Lunara Weekly 29 Oct\") instead of hardcoded 2025.\n- **Fixed UI overlaps.** Resolved text overlapping in top song, top artist, and playlist screens.\n- **Fixed share button overlap.** Increased spacing between close and share buttons.\n- **Lunara playlist cover.** Personal Wrapped playlist now uses the Lunara logo instead of the Metrolist cover.\n- **Share crash fix.** Share now works reliably without ANR (Canvas-based rendering instead of ComposeView).\n\nEnjoy your weekly music recap!\n"
+    "description": "## What's new\n\n- **Weekly Wrapped only.** Removed monthly and yearly recaps - Weekly Wrapped is now the sole focus.\n- **Dynamic year.** Playlist titles now show the actual week instead of hardcoded 2025.\n- **Fixed UI overlaps.** Resolved text overlapping in top song, top artist, and playlist screens.\n- **Fixed share button overlap.** Increased spacing between buttons.\n- **Added share buttons.** Share your top song and top artist as Instagram-style story images.\n- **Lunara playlist cover.** Personal Wrapped playlist now uses the Lunara logo instead of the Metrolist cover.\n- **Share crash fix.** Share now works reliably without ANR (Canvas-based rendering).\n- **Smoother animations.** Reduced animation delays for better responsiveness.\n- **Changed top bar.** Updated title to \"Lunara Wrapped\".\n- **Fixed changelogs.** Changelogs are now properly displayed.\n\nEnjoy your weekly music recap!\n"
   },
   {
     "tagName": "v2.0.0",
+    "versionName": "2.0.0",
+    "releaseDate": "2026-10-29T00:00:00Z",
+    "description": "## What's new\n\n- **Wrapped 2.0.** Completely redesigned Wrapped tab with weekly, monthly and yearly recaps showing actual period names and current year (not hardcoded 2025).\n- **Share everywhere.** Share your Wrapped recap - top songs, top artists, top albums, unique songs, unique artists - as Instagram-style story images to any app.\n- **Crash fix.** Fixed share crash (ComposeView window attachment error).\n- **Clean UI.** Removed \"Made with love\" text. Fixed text overlaps in Wrapped screens.\n- **Dynamic titles.** Wrapped playlist titles now show actual month names and current year.\n\nEnjoy your music recap!\n"
+  },
   {
     "tagName": "v1.1.1",
     "versionName": "1.1.1",

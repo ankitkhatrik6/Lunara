@@ -1,6 +1,5 @@
 /**
  * Ankit Khatri KC (C) 2026
- * Metrolist Project (C) 2026
  * Licensed under GPL-3.0
  */
 
@@ -49,13 +48,11 @@ import com.lunara.app.ui.screens.wrapped.WrappedPeriod
 import com.lunara.app.ui.screens.wrapped.pages.WrappedPeriodPicker
 import com.lunara.app.ui.screens.wrapped.WrappedScreenType
 import com.lunara.app.ui.screens.wrapped.WrappedState
-import com.lunara.app.ui.screens.wrapped.WrappedStoryShare
 import com.lunara.app.ui.screens.wrapped.pages.ConclusionPage
 import com.lunara.app.ui.screens.wrapped.pages.PlaylistPage
 import com.lunara.app.ui.screens.wrapped.pages.WrappedIntro
 import com.lunara.app.ui.screens.wrapped.pages.WrappedMinutesScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedMinutesTease
-import com.lunara.app.ui.screens.wrapped.pages.WrappedStoryScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5ArtistsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTop5SongsScreen
 import com.lunara.app.ui.screens.wrapped.pages.WrappedTopArtistScreen
@@ -179,8 +176,6 @@ fun WrappedScreenContent() {
             WrappedRepository.getMessage(state.totalMinutes)
         }
 
-    var showStory: Boolean by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit, state.period) {
         manager.prepare(state.period)
     }
@@ -197,7 +192,16 @@ fun WrappedScreenContent() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = {
+                    Text(
+                        text = stringResource(R.string.lunara_wrapped_title),
+                        style = androidx.compose.material3.TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            color = Color.White,
+                        ),
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(painterResource(R.drawable.arrow_back), stringResource(R.string.back_button_desc), tint = Color.White)
@@ -252,6 +256,10 @@ fun WrappedScreenContent() {
                 is WrappedScreenType.TopSongReveal -> {
                     WrappedTopSongScreen(
                         topSong = state.topSongs.firstOrNull(),
+                        onShareSong = {
+                            val activity = (view.context as android.app.Activity)
+                            WrappedStoryShare.share(activity, state)
+                        },
                         isVisible = pagerState.currentPage == screens.indexOf(WrappedScreenType.TopSongReveal),
                     )
                 }
@@ -273,6 +281,10 @@ fun WrappedScreenContent() {
                 is WrappedScreenType.TopArtistReveal -> {
                     WrappedTopArtistScreen(
                         topArtist = state.topArtists.firstOrNull(),
+                        onShareArtist = {
+                            val activity = (view.context as android.app.Activity)
+                            WrappedStoryShare.share(activity, state)
+                        },
                         isVisible = pagerState.currentPage == screens.indexOf(WrappedScreenType.TopArtistReveal),
                     )
                 }
@@ -291,22 +303,9 @@ fun WrappedScreenContent() {
                 is WrappedScreenType.Conclusion -> {
                     ConclusionPage(
                         onClose = onClose,
-                        onShareStory = { showStory = true }
                     )
                 }
             }
         }
-    }
-
-    // Premium story sharing overlay
-    if (showStory) {
-        WrappedStoryScreen(
-            state = state,
-            onShare = {
-                val activity = (view.context as android.app.Activity)
-                WrappedStoryShare.share(activity, state)
-            },
-            onClose = { showStory = false }
-        )
     }
 }

@@ -186,9 +186,9 @@ fun WrappedIntro(onNext: () -> Unit) {
                         letterSpacing = 2.sp,
                         fontSize = 50.sp
                     )
-                    AutoResizingText(text = stringResource(id = R.string.wrapped_intro_title), style = baseStyle.copy(color = Color.DarkGray), modifier = Modifier.offset(x = 2.dp, y = 2.dp))
-                    AutoResizingText(text = stringResource(id = R.string.wrapped_intro_title), style = baseStyle.copy(color = Color.Gray), modifier = Modifier.offset(x = 1.dp, y = 1.dp))
-                    AutoResizingText(text = stringResource(id = R.string.wrapped_intro_title), style = baseStyle.copy(color = Color.White))
+                    AutoResizingText(text = stringResource(id = R.string.lunara_wrapped_title), style = baseStyle.copy(color = Color.DarkGray), modifier = Modifier.offset(x = 2.dp, y = 2.dp))
+                    AutoResizingText(text = stringResource(id = R.string.lunara_wrapped_title), style = baseStyle.copy(color = Color.Gray), modifier = Modifier.offset(x = 1.dp, y = 1.dp))
+                    AutoResizingText(text = stringResource(id = R.string.lunara_wrapped_title), style = baseStyle.copy(color = Color.White))
                 }
             }
 

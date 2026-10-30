@@ -31,7 +31,6 @@ import com.lunara.app.ui.screens.wrapped.components.ShapeType
 @Composable
 fun ConclusionPage(
     onClose: () -> Unit,
-    onShareStory: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(elementCount = 30, shapeTypes = listOf(ShapeType.Circle, ShapeType.Line))
@@ -65,21 +64,6 @@ fun ConclusionPage(
                     text = stringResource(R.string.wrapped_close),
                     style = TextStyle(
                         color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                onClick = onShareStory,
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f)),
-                modifier = Modifier.padding(horizontal = 32.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.wrapped_share_story),
-                    style = TextStyle(
-                        color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                 )

@@ -12,12 +12,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,9 +45,15 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.lunara.app.R
 import com.lunara.app.db.entities.Artist
+import com.lunara.app.ui.screens.wrapped.WrappedStoryShare
+import kotlin.random.Random
 
 @Composable
-fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
+fun WrappedTopArtistScreen(
+    topArtist: Artist?,
+    onShareArtist: () -> Unit,
+    isVisible: Boolean
+) {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(isVisible) {
         if (isVisible) {
@@ -64,14 +74,14 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
         ) {
             Text(
                 text = stringResource(id = R.string.wrapped_top_artist_title),
-                style = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp),
+                style = MaterialTheme.typography.headlineSmall.copy(fontSize = 22.sp),
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
+                modifier = Modifier.padding(top = 20.dp, bottom = 12.dp),
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         AnimatedVisibility(
             visible = visible,
@@ -83,13 +93,13 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
                     .build(),
                 contentDescription = stringResource(id = R.string.wrapped_top_artist_image_content_description),
                 modifier = Modifier
-                    .size(180.dp)
+                    .size(160.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         AnimatedVisibility(
             visible = visible,
@@ -97,13 +107,15 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
         ) {
             Text(
                 text = topArtist?.artist?.name ?: stringResource(id = R.string.wrapped_no_data),
-                style = MaterialTheme.typography.headlineMedium.copy(fontSize = 22.sp),
+                style = MaterialTheme.typography.headlineMedium.copy(fontSize = 20.sp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         AnimatedVisibility(
             visible = visible,
@@ -115,6 +127,30 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
                 color = Color.White.copy(alpha = 0.8f),
                 textAlign = TextAlign.Center,
             )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(animationSpec = tween(1000, delayMillis = 1200)) + slideInVertically(animationSpec = tween(1000, delayMillis = 1200))
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 24.dp),
+            ) {
+                IconButton(
+                    onClick = onShareArtist,
+                    modifier = Modifier.size(44.dp),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.share),
+                        contentDescription = stringResource(R.string.wrapped_share_artist),
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
         }
     }
 }
