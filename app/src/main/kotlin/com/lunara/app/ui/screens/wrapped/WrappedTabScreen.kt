@@ -14,9 +14,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.net.Uri
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -91,110 +92,80 @@ object WrappedTabShare {
     }
 
     private fun renderStoryToBitmap(context: Context, weekly: Int, monthly: Int, yearly: Int): Bitmap {
-        val composeView = androidx.compose.ui.platform.ComposeView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(STORY_WIDTH, STORY_HEIGHT)
-            setContent {
-                WrappedTabStoryImage(weekly = weekly, monthly = monthly, yearly = yearly)
-            }
-        }
-        val spec = android.view.View.MeasureSpec.makeMeasureSpec(STORY_WIDTH, android.view.View.MeasureSpec.EXACTLY)
-        composeView.measure(spec, spec)
-        composeView.layout(0, 0, STORY_WIDTH, STORY_HEIGHT)
         val bitmap = Bitmap.createBitmap(STORY_WIDTH, STORY_HEIGHT, Bitmap.Config.ARGB_8888)
-        composeView.draw(Canvas(bitmap))
+        val canvas = Canvas(bitmap)
+
+        // Background
+        val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#121212") }
+        canvas.drawRect(0f, 0f, STORY_WIDTH.toFloat(), STORY_HEIGHT.toFloat(), bgPaint)
+
+        // Header
+        val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = 64f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText(stringResource(R.string.lunara_wrapped_title), STORY_WIDTH / 2f, 200f, headerPaint)
+
+        // Subtitle
+        val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#B3B3B3")
+            textSize = 32f
+            typeface = Typeface.DEFAULT
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText(stringResource(R.string.wrapped_story_subtitle).format("year"), STORY_WIDTH / 2f, 280f, subPaint)
+
+        // Stat cards
+        val cardWidth = 280f
+        val cardHeight = 300f
+        val spacing = 40f
+        val startX = (STORY_WIDTH - (cardWidth * 3 + spacing * 2)) / 2f
+
+        val stats = listOf(
+            Pair(stringResource(R.string.wrapped_period_weekly), weekly),
+            Pair(stringResource(R.string.wrapped_period_monthly), monthly),
+            Pair(stringResource(R.string.wrapped_period_yearly), yearly),
+        )
+
+        val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#1E1E1E")
+        }
+
+        val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#B3B3B3")
+            textSize = 36f
+            typeface = Typeface.DEFAULT
+            textAlign = Paint.Align.CENTER
+        }
+
+        val countPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = 64f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+
+        for ((i, (label, count)) in stats.withIndex()) {
+            val cx = startX + i * (cardWidth + spacing) + cardWidth / 2f
+            val cy = 500f
+
+            // Card background
+            canvas.drawRoundRect(
+                cx - cardWidth / 2f, cy - cardHeight / 2f,
+                cx + cardWidth / 2f, cy + cardHeight / 2f,
+                32f, 32f, cardPaint
+            )
+
+            // Label
+            canvas.drawText(label, cx, cy - 60f, labelPaint)
+
+            // Count
+            canvas.drawText(count.toString(), cx, cy + 20f, countPaint)
+        }
+
         return bitmap
-    }
-}
-
-@Composable
-private fun WrappedTabStoryImage(weekly: Int, monthly: Int, yearly: Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.crown),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(64.dp),
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text = stringResource(R.string.lunara_wrapped_title),
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.wrapped_story_subtitle).format("year"),
-            fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            WrappedStatCard(
-                label = stringResource(R.string.wrapped_period_weekly),
-                count = weekly,
-                icon = R.drawable.trending_up,
-            )
-            WrappedStatCard(
-                label = stringResource(R.string.wrapped_period_monthly),
-                count = monthly,
-                icon = R.drawable.trending_up,
-            )
-            WrappedStatCard(
-                label = stringResource(R.string.wrapped_period_yearly),
-                count = yearly,
-                icon = R.drawable.trending_up,
-            )
-        }
-    }
-}
-
-@Composable
-private fun WrappedStatCard(label: String, count: Int, @androidx.annotation.DrawableRes icon: Int) {
-    Card(
-        modifier = Modifier
-            .size(192.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = androidx.compose.material3.CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-        ) {
-            Icon(
-                painter = painterResource(icon),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(36.dp),
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = count.toString(),
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = label,
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 }
 

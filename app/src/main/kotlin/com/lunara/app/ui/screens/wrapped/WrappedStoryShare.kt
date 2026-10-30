@@ -11,13 +11,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.net.Uri
-import android.view.View
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.FileProvider
 import com.lunara.app.R
-import com.lunara.app.ui.screens.wrapped.pages.WrappedStoryScreen
+import com.lunara.app.ui.screens.wrapped.WrappedConstants
+import com.lunara.app.ui.screens.wrapped.WrappedState
 import java.io.File
 import java.io.FileOutputStream
 
@@ -60,23 +61,71 @@ object WrappedStoryShare {
         val width = 1080
         val height = 1920
 
-        val composeView = ComposeView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(width, height)
-            setContent {
-                WrappedStoryScreen(
-                    state = state,
-                    onShare = {},
-                    onClose = {}
-                )
-            }
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Background - deep dark
+        val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#121212")
+        }
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), bgPaint)
+
+        // Period label
+        val periodPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#1ED760")
+            textSize = 48f
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText(WrappedConstants.periodLabel(state.period).uppercase(), width / 2f, 240f, periodPaint)
+
+        // Header
+        val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = 120f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText("Lunara Wrapped", width / 2f, 380f, headerPaint)
+
+        // Stats section
+        val topSong = state.topSongs.firstOrNull()
+        val topArtist = state.topArtists.firstOrNull()
+
+        val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#B3B3B3")
+            textSize = 44f
+            typeface = Typeface.DEFAULT
         }
 
-        val spec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
-        composeView.measure(spec, spec)
-        composeView.layout(0, 0, width, height)
+        val valuePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = 64f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
 
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        composeView.draw(Canvas(bitmap))
+        val stats = listOf(
+            Pair("Top Song", topSong?.title ?: "—"),
+            Pair("Top Artist", topArtist?.artist?.name ?: "—"),
+            Pair("Unique Songs", state.uniqueSongCount.toString()),
+            Pair("Unique Artists", state.uniqueArtistCount.toString()),
+        )
+
+        var y = 520f
+        for ((label, value) in stats) {
+            canvas.drawText(label, width / 2f - 260f, y, labelPaint)
+            canvas.drawText(value, width / 2f + 260f, y, valuePaint)
+            y += 110f
+        }
+
+        // Footer
+        val footerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#B3B3B3")
+            textSize = 40f
+            typeface = Typeface.DEFAULT
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText("Share your Lunara Wrapped", width / 2f, height - 120f, footerPaint)
+
         return bitmap
     }
 }
