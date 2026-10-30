@@ -209,7 +209,7 @@ fun WrappedTabScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.share),
-                    contentDescription = stringResource(R.string.wrapped_share_story),
+                    contentDescription = stringResource(R.string.wrapped_share_song),
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }

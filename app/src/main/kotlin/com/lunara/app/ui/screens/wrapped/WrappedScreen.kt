@@ -1,6 +1,4 @@
 /**
-import androidx.compose.ui.text.Text
-import androidx.compose.ui.text.font.FontWeight
  * Ankit Khatri KC (C) 2026
  * Licensed under GPL-3.0
  */
@@ -34,6 +32,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.TextStyle
+import androidx.compose.ui.text.Text
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
