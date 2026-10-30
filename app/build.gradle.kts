@@ -103,7 +103,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 6
-        versionName = "2.1.0"
+        versionName = "2.1.1"
         resValue("string", "app_name", appNameOverride ?: "Lunara")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
