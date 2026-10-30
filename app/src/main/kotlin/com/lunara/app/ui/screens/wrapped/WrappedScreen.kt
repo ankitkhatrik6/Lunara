@@ -1,4 +1,6 @@
 /**
+import androidx.compose.ui.text.Text
+import androidx.compose.ui.text.font.FontWeight
  * Ankit Khatri KC (C) 2026
  * Licensed under GPL-3.0
  */
