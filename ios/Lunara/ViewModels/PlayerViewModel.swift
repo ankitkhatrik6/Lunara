@@ -1,7 +1,6 @@
 import SwiftUI
 import Observation
 
-@MainActor
 @Observable
 public final class PlayerViewModel {
     public var currentTrack: Track?
@@ -14,14 +13,13 @@ public final class PlayerViewModel {
     public var lyrics: [LyricLine] = []
     public var currentLyricIndex: Int?
     
-    private let audioService = AudioPlayerService.shared
+    private lazy var audioService = AudioPlayerService.shared
     private let storageService = StorageService.shared
     
     public init() {
         bindAudioService()
     }
     
-    @MainActor
     private func bindAudioService() {
         audioService.onTrackChange = { [weak self] track in
             guard let self = self else { return }
@@ -44,29 +42,24 @@ public final class PlayerViewModel {
         }
     }
     
-    @MainActor
     public func play(track: Track, queue: [Track] = []) {
         var trackToPlay = track
         trackToPlay.isLiked = storageService.isTrackLiked(id: track.id)
         audioService.play(track: trackToPlay, inQueue: queue)
     }
     
-    @MainActor
     public func togglePlayPause() {
         audioService.togglePlayPause()
     }
     
-    @MainActor
     public func skipNext() {
         audioService.skipNext()
     }
     
-    @MainActor
     public func skipPrevious() {
         audioService.skipPrevious()
     }
     
-    @MainActor
     public func seek(to progress: Double) {
         guard duration > 0 else { return }
         let targetTime = progress * duration
