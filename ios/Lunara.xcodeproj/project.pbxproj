@@ -354,6 +354,16 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin PBXScheme section */
+		44A100A029B0000100000001 /* Lunara */ = {
+			isa = PBXScheme;
+			lastKnownFileType = xcodeproj.xcscheme;
+			name = Lunara;
+			path = xcschemes/Lunara.xcscheme;
+			sourceTree = xcshareddata;
+		};
+/* End PBXScheme section */
+
 	};
 	rootObject = 44A1008029B0000100000001 /* Project object */;
 }
