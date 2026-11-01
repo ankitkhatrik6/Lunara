@@ -1,6 +1,7 @@
 import SwiftUI
 import Observation
 
+@MainActor
 @Observable
 public final class PlayerViewModel {
     public var currentTrack: Track?
