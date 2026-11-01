@@ -20,32 +20,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Android SDK command-line tools
+      - name: Check Gradle wrapper works
         run: |
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          cd $HOME/android-sdk/cmdline-tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-          unzip -q cmdline-tools.zip
-          mv cmdline-tools latest
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-
-      - name: Accept Android SDK licenses
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-      - name: Install Android platform and build tools
-        run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          ./gradlew --version
 
       - name: Create local.properties
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "ndk.dir=$ANDROID_HOME/ndk-bundle" >> local.properties || true
           cat local.properties
 
       - name: Build Android APK (Debug)
         run: |
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew :app:assembleDebug
 
       - name: Upload Android APK as Artifact
         uses: actions/upload-artifact@v4
@@ -76,28 +63,36 @@ jobs:
           cd ios/Lunara
           find . -name "*.swift" -type f | sort
 
-      - name: Build iOS App (unsigned)
+      - name: Build iOS App (unsigned, no code signing)
         run: |
           cd ios
           xcodebuild build \
             -project Lunara.xcodeproj \
             -scheme Lunara \
             -configuration Release \
-            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            -allowProvisioningUpdates
+            CODE_SIGNING_REQUIRED=NO
 
-      - name: Create .ipa from built .app
+      - name: Find and create .ipa
         run: |
           cd ios
-          BUILD_PATH=$(find build/Release-iphoneos -name "Lunara.app" -type d | head -1)
-          echo "Found app at: $BUILD_PATH"
-          mkdir -p Payload
-          cp -r "$BUILD_PATH" Payload/
-          zip -r Lunara.ipa Payload
-          ls -la Lunara.ipa
+          APP_PATH=$(find build -name "Lunara.app" -type d 2>/dev/null | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app found, searching in DerivedData..."
+            APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Lunara.app" -type d 2>/dev/null | head -1)
+          fi
+          echo "Found app at: $APP_PATH"
+          if [ -n "$APP_PATH" ]; then
+            mkdir -p Payload
+            cp -r "$APP_PATH" Payload/
+            zip -r Lunara.ipa Payload
+            ls -la Lunara.ipa
+          else
+            echo "ERROR: No Lunara.app found"
+            exit 1
+          fi
 
       - name: Upload iOS IPA as Artifact
         uses: actions/upload-artifact@v4
