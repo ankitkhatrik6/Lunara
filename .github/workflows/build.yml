@@ -43,10 +43,10 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           xcodebuild -version
 
-      - name: Build iOS App (simplest)
+      - name: Build iOS App for Simulator (no code signing needed)
         run: |
           cd ios
-          xcodebuild -scheme Lunara -configuration Release -sdk iphoneos CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          xcodebuild -scheme Lunara -configuration Release -sdk iphonesimulator CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
       - name: Find and create .ipa
         run: |
