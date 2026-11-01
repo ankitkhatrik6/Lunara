@@ -24,7 +24,6 @@ import com.lunara.app.di.PlayerCache
 import com.lunara.app.db.entities.Artist
 import com.lunara.app.db.entities.Playlist
 import com.lunara.app.db.entities.Song
-import com.lunara.app.ui.screens.wrapped.WrappedStats
 import com.lunara.app.utils.dataStore
 import com.lunara.app.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -94,19 +93,6 @@ class YoursViewModel @Inject constructor(
     val trendingArtists = database
         .mostPlayedArtists(fromTimeStamp = java.time.LocalDateTime.of(1970, 1, 1, 0, 0), limit = 12)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    // Wrapped play counts for the Library "Wrapped" popup, computed from local playback data:
-    // plays since last Sunday (weekly).
-    val wrappedStats: StateFlow<WrappedStats> = {
-        val now = java.time.LocalDateTime.now()
-        val today = now.toLocalDate()
-        val daysSinceSunday =
-            if (today.dayOfWeek == java.time.DayOfWeek.SUNDAY) 0 else today.dayOfWeek.value
-        val weekStart = today.minusDays(daysSinceSunday.toLong()).atStartOfDay()
-        database.getPlayCountInRange(weekStart, now).map { weekly ->
-            WrappedStats(weeklyPlayCount = weekly)
-        }.stateIn(viewModelScope, SharingStarted.Lazily, WrappedStats())
-    }()
 
     // Local playlists, most-recently-updated first.
     val playlists: kotlinx.coroutines.flow.StateFlow<List<Playlist>> =

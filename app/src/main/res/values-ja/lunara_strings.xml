@@ -197,7 +197,6 @@
     <string name="auto_scroll">同期</string>
     <string name="shuffle_playlist_first_desc">シャッフル再生時、プレイリストやアルバム内の曲をすべて再生したあとに似た曲を再生します</string>
     <string name="shuffle_playlist_first">プレイリスト/アルバムを優先してシャッフル再生</string>
-    <string name="show_wrapped_card">Wrappedカードを表示</string>
     <string name="skip_silence_instant">無音の部分をスキップ</string>
     <string name="skip_silence_instant_desc">無音の部分は早送りせずに自動でスキップします</string>
     <string name="lyrics_romanize_chinese">中国語の歌詞にローマ字を追加</string>
@@ -232,7 +231,6 @@
     <string name="enable_dynamic_icon">動的アイコン</string>
     <string name="pure_black_mini_player">ピュアブラックのミニプレーヤー</string>
     <string name="play_pause">再生/停止</string>
-    <string name="wrapped_intro_title">LUNARA</string>
     <string name="apple_music_style">Apple Music</string>
     <string name="karaoke">カラオケ</string>
     <string name="none">なし</string>
@@ -240,8 +238,6 @@
     <string name="fade">フェード</string>
     <string name="glow">発光</string>
     <string name="slide">スライド</string>
-    <string name="wrapped_top_song_album_art_content_description">アルバムアート</string>
-    <string name="wrapped_playlist_saved">プレイリストを保存しました</string>
     <string name="system_equalizer">システムイコライザー</string>
     <string name="eq_disabled">無効</string>
     <string name="error_title">エラー</string>
@@ -311,8 +307,6 @@
     <string name="lyrics_animation_style">単語ごとのアニメーションスタイル</string>
     <string name="lyrics_text_size">歌詞のテキストサイズ</string>
     <string name="lyrics_line_spacing">歌詞の行間隔</string>
-    <string name="wrapped_no_data">データがありません</string>
-    <string name="wrapped_create_playlist">プレイリストを作成</string>
     <string name="no_profiles">イコライザープロファイルがありません</string>
     <string name="import_profile">プロファイルをインポート</string>
     <string name="delete_profile_desc">プロファイルを削除</string>
@@ -326,34 +320,6 @@
     <string name="cache_size_warning_title">ちょっと待って！</string>
     <string name="cache_size_warning_message">選択した上限（%1$s）は、現在アプリが使用している容量よりも小さくなっています。このまま続行すると、一部のキャッシュされた%2$sが削除される場合があります。続行しますか？</string>
     <string name="album_art_for">%sのアルバムアート</string>
-    <string name="wrapped_total_albums_title">これまでに再生した</string>
-    <string name="wrapped_total_albums_subtitle">ユニークなアルバムたち！</string>
-    <string name="wrapped_top_album_title">あなたのトップアルバムは</string>
-    <string name="wrapped_playlist_ready">あなた専用のプレイリストが完成しました！</string>
-    <string name="wrapped_top_5_albums_title">あなたのトップ5アルバム</string>
-    <string name="wrapped_album_listening_time">このアルバムを合計%d分再生しました！</string>
-    <string name="wrapped_album_listening_time_minutes">%d分</string>
-    <string name="wrapped_top_5_artists_title">今年のトップアーティスト</string>
-    <string name="wrapped_artist_listening_time">%d分</string>
-    <string name="wrapped_top_5_songs_title">今年のトップソング</string>
-    <string name="wrapped_top_artist_title">今年のトップアーティストは</string>
-    <string name="wrapped_top_artist_image_content_description">トップアーティスト画像</string>
-    <string name="wrapped_top_artist_listening_time">合計%d分再生しました！</string>
-    <string name="wrapped_top_song_title">最も再生した曲は</string>
-    <string name="wrapped_top_song_listening_time">合計%d分再生しました！</string>
-    <string name="wrapped_total_artists_title">再生した</string>
-    <string name="wrapped_total_artists_subtitle">ユニークなアーティストたち！</string>
-    <string name="wrapped_total_songs_title">再生しました</string>
-    <string name="wrapped_total_songs_subtitle">ユニークな曲たち！</string>
-    <string name="wrapped_intro_subtitle">今年聴いてきた曲を振り返る時が来ました…</string>
-    <string name="wrapped_intro_button">さあ、始めよう！</string>
-    <string name="wrapped_logo_content_description">Lunaraロゴ</string>
-    <string name="wrapped_ready_title">あなたのWrappedが完成しました！</string>
-    <string name="wrapped_ready_subtitle">今年あなたが夢中になった音楽を見てみましょう…</string>
-    <string name="wrapped_thank_you">聴いてくれてありがとう！</string>
-    <string name="wrapped_special_thanks">Lunaraを制作したMO Agamyに特別な感謝を</string>
-    <string name="wrapped_close">Wrappedを閉じる</string>
-    <string name="wrapped_playlist_title">あなたの%sWrapped</string>
     <plurals name="profiles_count">
         <item quantity="other">%dプロファイル</item>
     </plurals>
@@ -456,7 +422,6 @@
     <string name="ai_provider_help">APIキーを入手</string>
     <string name="ai_provider_openrouter_help">https://openrouter.ai</string>
     <string name="ai_provider_openai_help">https://platform.openai.com/api-keys</string>
-    <string name="wrapped_year">2025</string>
     <string name="ai_provider_claude_help">https://console.anthropic.com/settings/keys</string>
     <string name="ai_provider_gemini_help">https://aistudio.google.com/apikey</string>
     <string name="ai_provider_perplexity_help">https://perplexity.ai/settings/api</string>
@@ -954,8 +919,6 @@
     <string name="show_artist_subscriber_desc">アーティストページに登録者数を表示</string>
     <string name="show_monthly_listeners_desc">アーティストページに月間リスナー数を表示</string>
     <string name="proxy_enabled_desc">アプリの通信を自分のプロキシサーバー経由にする</string>
-    <string name="show_wrapped_card_desc">ホーム画面に Wrapped カードを表示</string>
-    <string name="wrapped_group_title">Wrapped</string>
     <string name="language_group_title">言語</string>
     <string name="app_language_desc">システム設定でアプリの表示言語を選択</string>
     <string name="romanize_select_all">すべて選択</string>

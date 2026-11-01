@@ -84,7 +84,6 @@ import com.lunara.app.constants.ShowArtistDescriptionKey
 import com.lunara.app.constants.ShowMostStatsPlaylistsKey
 import com.lunara.app.constants.ShowArtistSubscriberCountKey
 import com.lunara.app.constants.ShowMonthlyListenersKey
-import com.lunara.app.constants.ShowWrappedCardKey
 import com.lunara.app.constants.TopSize
 import com.lunara.app.ui.component.EnumDialog
 import com.lunara.app.ui.component.IconButton
@@ -123,7 +122,6 @@ fun ContentSettings(
     val (proxyPassword, onProxyPasswordChange) = rememberPreference(key = ProxyPasswordKey, defaultValue = "password")
     val (lengthTop, onLengthTopChange) = rememberPreference(key = TopSize, defaultValue = "50")
     val (quickPicks, onQuickPicksChange) = rememberEnumPreference(key = QuickPicksKey, defaultValue = QuickPicks.QUICK_PICKS)
-    val (showWrappedCard, onShowWrappedCardChange) = rememberPreference(key = ShowWrappedCardKey, defaultValue = false)
     val (addToPlaylistAtTop, onAddToPlaylistAtTopChange) = rememberPreference(key = AddToPlaylistAtTopKey, defaultValue = true)
     val (showMostStatsPlaylists, onShowMostStatsPlaylistsChange) =
         rememberPreference(key = ShowMostStatsPlaylistsKey, defaultValue = true)
@@ -674,57 +672,6 @@ fun ContentSettings(
         )
 
 
-        Spacer(modifier = Modifier.height(27.dp))
-
-        Material3SettingsGroup(
-            title = stringResource(R.string.wrapped_group_title),
-            items = listOf(
-                Material3SettingsItem(
-                    icon = painterResource(R.drawable.stats),
-                    title = { Text(stringResource(R.string.show_most_stats_playlists)) },
-                    description = { Text(stringResource(R.string.show_most_stats_playlists_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showMostStatsPlaylists,
-                            onCheckedChange = onShowMostStatsPlaylistsChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showMostStatsPlaylists) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowMostStatsPlaylistsChange(!showMostStatsPlaylists) }
-                ),
-                Material3SettingsItem(
-                    icon = painterResource(R.drawable.trending_up),
-                    title = { Text(stringResource(R.string.show_wrapped_card)) },
-                    description = { Text(stringResource(R.string.show_wrapped_card_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showWrappedCard,
-                            onCheckedChange = onShowWrappedCardChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showWrappedCard) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowWrappedCardChange(!showWrappedCard) }
-                )
-            )
-        )
-
-        Spacer(modifier = Modifier.height(27.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.misc),

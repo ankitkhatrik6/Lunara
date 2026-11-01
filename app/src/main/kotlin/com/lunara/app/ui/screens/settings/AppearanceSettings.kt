@@ -974,7 +974,6 @@ enum class DarkMode {
 enum class NavigationTab {
     HOME,
     SEARCH,
-    WRAPPED,
     LIBRARY,
 }
 
@@ -982,7 +981,6 @@ enum class NavigationTab {
 private fun NavigationTab.label(): String = when (this) {
     NavigationTab.HOME -> stringResource(R.string.home)
     NavigationTab.SEARCH -> stringResource(R.string.search)
-    NavigationTab.WRAPPED -> stringResource(R.string.wrapped_group_title)
     NavigationTab.LIBRARY -> stringResource(R.string.filter_library)
 }
 

@@ -16,7 +16,6 @@ import com.lunara.innertube.models.ArtistItem
 import com.lunara.innertube.models.PlaylistItem
 import com.lunara.innertube.models.SongItem
 import com.lunara.app.models.toMediaMetadata
-import com.lunara.app.ui.screens.wrapped.WrappedConstants
 import com.lunara.app.utils.mixQuickPicks
 import kotlinx.coroutines.flow.combine
 import com.lunara.innertube.models.WatchEndpoint
@@ -36,8 +35,6 @@ import com.lunara.app.constants.HideYoutubeShortsKey
 import com.lunara.app.constants.InnerTubeCookieKey
 import com.lunara.app.constants.QuickPicks
 import com.lunara.app.constants.QuickPicksKey
-import com.lunara.app.constants.ShowWrappedCardKey
-import com.lunara.app.constants.WrappedSeenYearKey
 import com.lunara.app.db.MusicDatabase
 import com.lunara.app.db.entities.Album
 import com.lunara.app.db.entities.LocalItem
@@ -47,8 +44,6 @@ import com.lunara.app.extensions.filterVideoSongs
 import com.lunara.app.extensions.filterBlockedArtists
 import com.lunara.app.extensions.toEnum
 import com.lunara.app.models.SimilarRecommendation
-import com.lunara.app.ui.screens.wrapped.WrappedAudioService
-import com.lunara.app.ui.screens.wrapped.WrappedManager
 import com.lunara.app.utils.SyncUtils
 import com.lunara.app.utils.dataStore
 import com.lunara.app.utils.BlockedArtists
@@ -124,8 +119,6 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     val database: MusicDatabase,
     val syncUtils: SyncUtils,
-    val wrappedManager: WrappedManager,
-    private val wrappedAudioService: WrappedAudioService,
 ) : ViewModel() {
     val isRefreshing = MutableStateFlow(false)
     val isLoading = MutableStateFlow(false)
@@ -341,18 +334,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // Offered in December and January for the year Wrapped looks back on. Seen is kept per
-    // year, so having opened last year's Wrapped doesn't hide this year's.
-    val showWrappedCard: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
-        val showWrappedPref = prefs[ShowWrappedCardKey] ?: false
-        val seen = prefs[WrappedSeenYearKey] == WrappedConstants.year()
-        (!seen || showWrappedPref)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    val wrappedSeen: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[WrappedSeenYearKey] == WrappedConstants.year()
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
     fun togglePin(item: YTItem) {
         viewModelScope.launch(Dispatchers.IO) {
             val speedDialItem = SpeedDialItem.fromYTItem(item)
@@ -365,13 +346,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun markWrappedAsSeen() {
-        viewModelScope.launch(Dispatchers.IO) {
-            context.safeDataStoreEdit {
-                it[WrappedSeenYearKey] = WrappedConstants.year()
-            }
-        }
-    }
     // Track last processed cookie to avoid unnecessary updates
     private var lastProcessedCookie: String? = null
     // Track if we're currently processing account data
@@ -836,7 +810,6 @@ class HomeViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        wrappedManager.dispose()
     }
 
     init {
@@ -861,27 +834,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             syncUtils.tryAutoSync()
         }
-
-        // Prepare wrapped data in background
-        viewModelScope.launch(Dispatchers.IO) {
-            showWrappedCard.collect { shouldShow ->
-                if (shouldShow && !wrappedManager.state.value.isDataReady) {
-                    try {
-                        wrappedManager.prepare()
-                        val state = wrappedManager.state.first { it.isDataReady }
-                        val trackMap = state.trackMap
-                        if (trackMap.isNotEmpty()) {
-                            val firstTrackId = trackMap.entries.first().value
-                            wrappedAudioService.prepareTrack(firstTrackId)
-                        }
-                    } catch (e: Exception) {
-                        reportException(e)
-                    }
-                }
-            }
-        }
-
-        // Listen for cookie changes and reload account data
         viewModelScope.launch(Dispatchers.IO) {
             context.dataStore.data
                 .map { it[InnerTubeCookieKey] }

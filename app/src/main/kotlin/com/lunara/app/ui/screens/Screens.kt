@@ -39,14 +39,7 @@ sealed class Screens(
         route = "library"
     )
 
-    object Wrapped : Screens(
-        titleId = R.string.wrapped_group_title,
-        iconIdInactive = R.drawable.crown,
-        iconIdActive = R.drawable.crown,
-        route = "wrapped"
-    )
-
     companion object {
-        val MainScreens = listOf(Home, Search, Wrapped, Library)
+        val MainScreens = listOf(Home, Search, Library)
     }
 }
