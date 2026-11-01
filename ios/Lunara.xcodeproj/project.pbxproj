@@ -1,0 +1,361 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		44A1000129B0000100000001 /* LunaraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000229B0000100000001 /* LunaraApp.swift */; };
+		44A1000329B0000100000001 /* SpotifyColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000429B0000100000001 /* SpotifyColors.swift */; };
+		44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000629B0000100000001 /* SpotifyTypography.swift */; };
+		44A1000729B0000100000001 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000829B0000100000001 /* Track.swift */; };
+		44A1000929B0000100000001 /* MusicModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000A29B0000100000001 /* MusicModels.swift */; };
+		44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000C29B0000100000001 /* AudioPlayerService.swift */; };
+		44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000E29B0000100000001 /* YouTubeMusicService.swift */; };
+		44A1000F29B0000100000001 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001029B0000100000001 /* StorageService.swift */; };
+		44A1001129B0000100000001 /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001229B0000100000001 /* PlayerViewModel.swift */; };
+		44A1001329B0000100000001 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001429B0000100000001 /* HomeViewModel.swift */; };
+		44A1001529B0000100000001 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001629B0000100000001 /* SearchViewModel.swift */; };
+		44A1001729B0000100000001 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001829B0000100000001 /* LibraryViewModel.swift */; };
+		44A1001929B0000100000001 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001A29B0000100000001 /* MainTabView.swift */; };
+		44A1001B29B0000100000001 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001C29B0000100000001 /* HomeView.swift */; };
+		44A1001D29B0000100000001 /* HomeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001E29B0000100000001 /* HomeComponents.swift */; };
+		44A1001F29B0000100000001 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002029B0000100000001 /* SearchView.swift */; };
+		44A1002129B0000100000001 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002229B0000100000001 /* LibraryView.swift */; };
+		44A1002329B0000100000001 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002429B0000100000001 /* MiniPlayerView.swift */; };
+		44A1002529B0000100000001 /* FullScreenPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002629B0000100000001 /* FullScreenPlayerView.swift */; };
+		44A1002729B0000100000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002829B0000100000001 /* SettingsView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		44A1000029B0000100000001 /* Lunara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lunara.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44A1000229B0000100000001 /* LunaraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LunaraApp.swift; sourceTree = "<group>"; };
+		44A1000429B0000100000001 /* SpotifyColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyColors.swift; sourceTree = "<group>"; };
+		44A1000629B0000100000001 /* SpotifyTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyTypography.swift; sourceTree = "<group>"; };
+		44A1000829B0000100000001 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
+		44A1000A29B0000100000001 /* MusicModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicModels.swift; sourceTree = "<group>"; };
+		44A1000C29B0000100000001 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
+		44A1000E29B0000100000001 /* YouTubeMusicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeMusicService.swift; sourceTree = "<group>"; };
+		44A1001029B0000100000001 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
+		44A1001229B0000100000001 /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
+		44A1001429B0000100000001 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		44A1001629B0000100000001 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		44A1001829B0000100000001 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		44A1001A29B0000100000001 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		44A1001C29B0000100000001 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		44A1001E29B0000100000001 /* HomeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeComponents.swift; sourceTree = "<group>"; };
+		44A1002029B0000100000001 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		44A1002229B0000100000001 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		44A1002429B0000100000001 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
+		44A1002629B0000100000001 /* FullScreenPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenPlayerView.swift; sourceTree = "<group>"; };
+		44A1002829B0000100000001 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		44A1002A29B0000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		44A1003029B0000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		44A1004029B0000100000001 = {
+			isa = PBXGroup;
+			children = (
+				44A1004129B0000100000001 /* Lunara */,
+				44A1004229B0000100000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		44A1004129B0000100000001 /* Lunara */ = {
+			isa = PBXGroup;
+			children = (
+				44A1004329B0000100000001 /* App */,
+				44A1004429B0000100000001 /* Theme */,
+				44A1004529B0000100000001 /* Models */,
+				44A1004629B0000100000001 /* Services */,
+				44A1004729B0000100000001 /* ViewModels */,
+				44A1004829B0000100000001 /* Views */,
+			);
+			path = Lunara;
+			sourceTree = "<group>";
+		};
+		44A1004329B0000100000001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				44A1000229B0000100000001 /* LunaraApp.swift */,
+				44A1002A29B0000100000001 /* Info.plist */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		44A1004429B0000100000001 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				44A1000429B0000100000001 /* SpotifyColors.swift */,
+				44A1000629B0000100000001 /* SpotifyTypography.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		44A1004529B0000100000001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				44A1000829B0000100000001 /* Track.swift */,
+				44A1000A29B0000100000001 /* MusicModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		44A1004629B0000100000001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				44A1000C29B0000100000001 /* AudioPlayerService.swift */,
+				44A1000E29B0000100000001 /* YouTubeMusicService.swift */,
+				44A1001029B0000100000001 /* StorageService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		44A1004729B0000100000001 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				44A1001229B0000100000001 /* PlayerViewModel.swift */,
+				44A1001429B0000100000001 /* HomeViewModel.swift */,
+				44A1001629B0000100000001 /* SearchViewModel.swift */,
+				44A1001829B0000100000001 /* LibraryViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		44A1004829B0000100000001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				44A1001A29B0000100000001 /* MainTabView.swift */,
+				44A1001C29B0000100000001 /* HomeView.swift */,
+				44A1001E29B0000100000001 /* HomeComponents.swift */,
+				44A1002029B0000100000001 /* SearchView.swift */,
+				44A1002229B0000100000001 /* LibraryView.swift */,
+				44A1002429B0000100000001 /* MiniPlayerView.swift */,
+				44A1002629B0000100000001 /* FullScreenPlayerView.swift */,
+				44A1002829B0000100000001 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		44A1004229B0000100000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				44A1000029B0000100000001 /* Lunara.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		44A1005029B0000100000001 /* Lunara */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44A1006029B0000100000001 /* Build configuration list for PBXNativeTarget "Lunara" */;
+			buildPhases = (
+				44A1007029B0000100000001 /* Sources */,
+				44A1003029B0000100000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Lunara;
+			productName = Lunara;
+			productReference = 44A1000029B0000100000001 /* Lunara.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		44A1008029B0000100000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					44A1005029B0000100000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 44A1009029B0000100000001 /* Build configuration list for PBXProject "Lunara" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 44A1004029B0000100000001;
+			productRefGroup = 44A1004229B0000100000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				44A1005029B0000100000001 /* Lunara */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		44A1007029B0000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				44A1000129B0000100000001 /* LunaraApp.swift in Sources */,
+				44A1000329B0000100000001 /* SpotifyColors.swift in Sources */,
+				44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */,
+				44A1000729B0000100000001 /* Track.swift in Sources */,
+				44A1000929B0000100000001 /* MusicModels.swift in Sources */,
+				44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */,
+				44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */,
+				44A1000F29B0000100000001 /* StorageService.swift in Sources */,
+				44A1001129B0000100000001 /* PlayerViewModel.swift in Sources */,
+				44A1001329B0000100000001 /* HomeViewModel.swift in Sources */,
+				44A1001529B0000100000001 /* SearchViewModel.swift in Sources */,
+				44A1001729B0000100000001 /* LibraryViewModel.swift in Sources */,
+				44A1001929B0000100000001 /* MainTabView.swift in Sources */,
+				44A1001B29B0000100000001 /* HomeView.swift in Sources */,
+				44A1001D29B0000100000001 /* HomeComponents.swift in Sources */,
+				44A1001F29B0000100000001 /* SearchView.swift in Sources */,
+				44A1002129B0000100000001 /* LibraryView.swift in Sources */,
+				44A1002329B0000100000001 /* MiniPlayerView.swift in Sources */,
+				44A1002529B0000100000001 /* FullScreenPlayerView.swift in Sources */,
+				44A1002729B0000100000001 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		44A1006129B0000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lunara/App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Lunara;
+				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lunara.app.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = Debug;
+		};
+		44A1006229B0000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lunara/App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Lunara;
+				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lunara.app.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = Release;
+		};
+		44A1009129B0000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		44A1009229B0000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		44A1006029B0000100000001 /* Build configuration list for PBXNativeTarget "Lunara" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44A1006129B0000100000001 /* Debug */,
+				44A1006229B0000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		44A1009029B0000100000001 /* Build configuration list for PBXProject "Lunara" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44A1009129B0000100000001 /* Debug */,
+				44A1009229B0000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 44A1008029B0000100000001 /* Project object */;
+}
