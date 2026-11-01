@@ -20,6 +20,7 @@ public final class PlayerViewModel {
         bindAudioService()
     }
     
+    @MainActor
     private func bindAudioService() {
         audioService.onTrackChange = { [weak self] track in
             guard let self = self else { return }
@@ -42,24 +43,29 @@ public final class PlayerViewModel {
         }
     }
     
+    @MainActor
     public func play(track: Track, queue: [Track] = []) {
         var trackToPlay = track
         trackToPlay.isLiked = storageService.isTrackLiked(id: track.id)
         audioService.play(track: trackToPlay, inQueue: queue)
     }
     
+    @MainActor
     public func togglePlayPause() {
         audioService.togglePlayPause()
     }
     
+    @MainActor
     public func skipNext() {
         audioService.skipNext()
     }
     
+    @MainActor
     public func skipPrevious() {
         audioService.skipPrevious()
     }
     
+    @MainActor
     public func seek(to progress: Double) {
         guard duration > 0 else { return }
         let targetTime = progress * duration

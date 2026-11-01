@@ -200,13 +200,15 @@ public final class AudioPlayerService: NSObject {
     private func observeTime() {
         let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
         timeObserverToken = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
-            guard let self = self else { return }
-            self.currentTime = time.seconds
-            if let currentItem = self.player?.currentItem {
-                let durationSecs = currentItem.duration.seconds
-                self.duration = durationSecs.isNaN ? (self.currentTrack?.durationSeconds ?? 0) : durationSecs
+            Task { @MainActor in
+                guard let self = self else { return }
+                self.currentTime = time.seconds
+                if let currentItem = self.player?.currentItem {
+                    let durationSecs = currentItem.duration.seconds
+                    self.duration = durationSecs.isNaN ? (self.currentTrack?.durationSeconds ?? 0) : durationSecs
+                }
+                self.onProgressUpdate?(self.currentTime, self.duration)
             }
-            self.onProgressUpdate?(self.currentTime, self.duration)
         }
     }
     

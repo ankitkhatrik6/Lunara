@@ -59,10 +59,6 @@ public struct MainTabView: View {
             let appearance = UITabBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = UIColor(Color.spotifyElevatedSurface)
-            appearance.stackedItemAppearance.normal.iconColor = UIColor(Color.spotifyTextSecondary)
-            appearance.stackedItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.spotifyTextSecondary)]
-            appearance.stackedItemAppearance.selected.iconColor = UIColor(Color.spotifyGreen)
-            appearance.stackedItemAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.spotifyGreen)]
             UITabBar.appearance().standardAppearance = appearance
             UITabBar.appearance().scrollEdgeAppearance = appearance
         }
