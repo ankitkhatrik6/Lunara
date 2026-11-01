@@ -20,9 +20,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Accept Android SDK licenses
+      - name: Create local.properties
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "ndk.dir=$ANDROID_HOME/ndk-bundle" >> local.properties || true
+          cat local.properties
 
       - name: Build Android APK (Debug)
         run: |
@@ -57,7 +59,19 @@ jobs:
           cd ios/Lunara
           find . -name "*.swift" -type f | sort
 
-      - name: Build and Archive iOS App
+      - name: Build iOS App (compile check)
+        run: |
+          cd ios
+          xcodebuild build \
+            -project Lunara.xcodeproj \
+            -scheme Lunara \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Archive iOS App
         run: |
           cd ios
           xcodebuild archive \
@@ -68,8 +82,7 @@ jobs:
             -archivePath build/Lunara.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            -verbose
+            CODE_SIGNING_ALLOWED=NO
 
       - name: Package into .IPA
         run: |
