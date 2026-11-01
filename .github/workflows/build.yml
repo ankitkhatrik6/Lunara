@@ -22,7 +22,7 @@ jobs:
 
       - name: Build Android APK (Debug)
         run: |
-          ./gradlew :app:assembleDebug
+          ./gradlew assembleDebug
 
       - name: Upload Android APK as Artifact
         uses: actions/upload-artifact@v4
@@ -43,10 +43,10 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           xcodebuild -version
 
-      - name: Build iOS App for Simulator
+      - name: Build iOS App (basic)
         run: |
           cd ios
-          xcodebuild -scheme Lunara -configuration Release -sdk iphonesimulator CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO -skipPackageProductDependencies -skipPackagePluginValidation
+          xcodebuild -project Lunara.xcodeproj -configuration Release -sdk iphonesimulator
 
       - name: Find and create .ipa
         run: |
