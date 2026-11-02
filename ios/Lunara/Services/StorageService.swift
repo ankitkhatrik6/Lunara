@@ -97,7 +97,6 @@ public final class StorageService {
         playlists[idx].trackCount = playlists[idx].tracks.count
         savePlaylists(playlists)
     }
-    }
 
     // MARK: - Play History
 
