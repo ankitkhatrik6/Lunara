@@ -58,6 +58,7 @@ jobs:
       - name: Build iOS App for Physical Device (Release)
         run: |
           cd ios
+          set +e
           BUILD_OUTPUT=$(xcodebuild -project Lunara.xcodeproj \
             -scheme Lunara \
             -configuration Release \
@@ -68,6 +69,7 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             -derivedDataPath build/DerivedData 2>&1)
           BUILD_STATUS=$?
+          set -e
           printf '%s\n' "$BUILD_OUTPUT" | tee build.log
           if [ $BUILD_STATUS -ne 0 ]; then
             echo "::error ::iOS Release build for iphoneos failed (exit $BUILD_STATUS)"
