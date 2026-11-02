@@ -7,6 +7,7 @@ public enum HomeFilterCategory: String, CaseIterable {
 }
 
 @Observable
+@MainActor
 public final class HomeViewModel {
     public var selectedCategory: HomeFilterCategory = .all
     public var quickAccessTracks: [Track] = []

@@ -9,6 +9,7 @@ public struct BrowseCategory: Identifiable, Hashable {
 }
 
 @Observable
+@MainActor
 public final class SearchViewModel {
     public var query: String = "" {
         didSet {

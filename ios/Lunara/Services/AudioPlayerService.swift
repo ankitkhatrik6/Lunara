@@ -9,9 +9,9 @@ public final class AudioPlayerService: NSObject {
     private var player: AVQueuePlayer?
     private var timeObserverToken: Any?
     
-    nonisolated public var onTrackChange: ((Track?) -> Void)?
-    nonisolated public var onProgressUpdate: ((Double, Double) -> Void)?
-    nonisolated public var onPlaybackStateChange: ((Bool) -> Void)?
+    public var onTrackChange: ((Track?) -> Void)?
+    public var onProgressUpdate: ((Double, Double) -> Void)?
+    public var onPlaybackStateChange: ((Bool) -> Void)?
     
     public private(set) var currentTrack: Track?
     public private(set) var queue: [Track] = []
@@ -31,7 +31,9 @@ public final class AudioPlayerService: NSObject {
     deinit {
         if let token = timeObserverToken {
             player?.removeTimeObserver(token)
+            timeObserverToken = nil
         }
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
     }
     
     private func setupAudioSession() {

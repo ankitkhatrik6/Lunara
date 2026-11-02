@@ -2,6 +2,7 @@ import SwiftUI
 import Observation
 
 @Observable
+@MainActor
 public final class PlayerViewModel {
     public var currentTrack: Track?
     public var isPlaying: Bool = false
@@ -21,7 +22,7 @@ public final class PlayerViewModel {
     }
     
     private func bindAudioService() {
-        audioService.onTrackChange = { [weak self] track in
+        audioService.onTrackChange = { @MainActor [weak self] track in
             guard let self = self else { return }
             self.currentTrack = track
             self.isMiniPlayerVisible = track != nil
@@ -30,11 +31,11 @@ public final class PlayerViewModel {
             }
         }
         
-        audioService.onPlaybackStateChange = { [weak self] playing in
+        audioService.onPlaybackStateChange = { @MainActor [weak self] playing in
             self?.isPlaying = playing
         }
         
-        audioService.onProgressUpdate = { [weak self] time, total in
+        audioService.onProgressUpdate = { @MainActor [weak self] time, total in
             guard let self = self else { return }
             self.currentTime = time
             self.duration = total

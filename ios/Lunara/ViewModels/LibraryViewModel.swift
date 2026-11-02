@@ -9,6 +9,7 @@ public enum LibraryFilter: String, CaseIterable {
 }
 
 @Observable
+@MainActor
 public final class LibraryViewModel {
     public var selectedFilter: LibraryFilter = .playlists
     public var likedTracks: [Track] = []
