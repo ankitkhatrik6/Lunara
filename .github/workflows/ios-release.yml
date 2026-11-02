@@ -45,12 +45,14 @@ jobs:
           echo "Listing available destinations for scheme 'Lunara':"
           DEST_OUTPUT=$(xcodebuild -project Lunara.xcodeproj -scheme Lunara -showsdestinations 2>&1) || {
             echo "::error ::xcodebuild -showsdestinations failed for scheme 'Lunara'"
-            printf '%s\n' "$DEST_OUTPUT"
+            echo "::error ::$(printf '%s' "$DEST_OUTPUT" | head -c 4000)"
             exit 1
           }
-          printf '%s\n' "$DEST_OUTPUT"
-          if ! printf '%s\n' "$DEST_OUTPUT" | grep -qiE "generic/platform|iOS"; then
-            echo "::error ::No iOS destination found for scheme 'Lunara'"
+          echo "::notice ::Destinations listed for scheme 'Lunara'"
+          echo "$DEST_OUTPUT" | grep -E "generic/platform|platform:iOS|platform=iOS|iOS Simulator|Generic" | head -20 || true
+          if ! printf '%s\n' "$DEST_OUTPUT" | grep -qiE "generic/platform|platform=iOS|iphoneos"; then
+            echo "::error ::No iOS device destination found for scheme 'Lunara'"
+            echo "::error ::$(printf '%s\n' "$DEST_OUTPUT" | head -c 3000)"
             exit 1
           fi
           echo "Xcode project and scheme 'Lunara' validated"
