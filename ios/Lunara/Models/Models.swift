@@ -37,7 +37,7 @@ public struct Playlist: Identifiable, Codable, Hashable, Sendable {
     public let title: String
     public let authorName: String
     public let artworkUrl: String?
-    public let trackCount: Int
+    public var trackCount: Int
     public var tracks: [Track]
 
     public init(id: String, title: String, authorName: String = "Lunara", artworkUrl: String? = nil, trackCount: Int = 0, tracks: [Track] = []) {
