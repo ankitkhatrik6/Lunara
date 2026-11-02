@@ -11,7 +11,6 @@
 		44A1000329B0000100000001 /* SpotifyColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000429B0000100000001 /* SpotifyColors.swift */; };
 		44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000629B0000100000001 /* SpotifyTypography.swift */; };
 		44A1000729B0000100000001 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000829B0000100000001 /* Track.swift */; };
-		44A1002D29B0000100000001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002E29B0000100000001 /* Models.swift */; };
 		44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000C29B0000100000001 /* AudioPlayerService.swift */; };
 		44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000E29B0000100000001 /* YouTubeMusicService.swift */; };
 		44A1000F29B0000100000001 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001029B0000100000001 /* StorageService.swift */; };
@@ -27,17 +26,18 @@
 		44A1002329B0000100000001 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002429B0000100000001 /* MiniPlayerView.swift */; };
 		44A1002529B0000100000001 /* FullScreenPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002629B0000100000001 /* FullScreenPlayerView.swift */; };
 		44A1002729B0000100000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002829B0000100000001 /* SettingsView.swift */; };
-		44A1002B29B0000100000001 /* AppearanceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002C29B0000100000001 /* AppearanceSettingsView.swift */; };
-		44A1002F29B0000100000001 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003029B0000100000001 /* Auth.swift */; };
-		44A1003129B0000100000001 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003229B0000100000001 /* Keychain.swift */; };
-		44A1003329B0000100000001 /* LastFM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003429B0000100000001 /* LastFM.swift */; };
-		44A1003529B0000100000001 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003629B0000100000001 /* LoginView.swift */; };
-		44A1003729B0000100000001 /* EqualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003829B0000100000001 /* EqualizerView.swift */; };
-		44A1003929B0000100000001 /* BlockedArtistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003A29B0000100000001 /* BlockedArtistsView.swift */; };
-		44A1003B29B0000100000001 /* SpeedDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003C29B0000100000001 /* SpeedDialView.swift */; };
-		44A1003D29B0000100000001 /* DownloadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1003E29B0000100000001 /* DownloadsView.swift */; };
-		44A1003F29B0000100000001 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1004029B0000100000001 /* HistoryView.swift */; };
-		44A1004129B0000100000001 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1004229B0000100000001 /* StatsView.swift */; };
+		44A1010129B0000100000001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1010D29B0000100000001 /* Models.swift */; };
+		44A1010229B0000100000001 /* AppearanceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1010E29B0000100000001 /* AppearanceSettingsView.swift */; };
+		44A1010329B0000100000001 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1010F29B0000100000001 /* Auth.swift */; };
+		44A1010429B0000100000001 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011029B0000100000001 /* Keychain.swift */; };
+		44A1010529B0000100000001 /* LastFM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011129B0000100000001 /* LastFM.swift */; };
+		44A1010629B0000100000001 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011229B0000100000001 /* LoginView.swift */; };
+		44A1010729B0000100000001 /* EqualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011329B0000100000001 /* EqualizerView.swift */; };
+		44A1010829B0000100000001 /* BlockedArtistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011429B0000100000001 /* BlockedArtistsView.swift */; };
+		44A1010929B0000100000001 /* SpeedDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011529B0000100000001 /* SpeedDialView.swift */; };
+		44A1010A29B0000100000001 /* DownloadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011629B0000100000001 /* DownloadsView.swift */; };
+		44A1010B29B0000100000001 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011729B0000100000001 /* HistoryView.swift */; };
+		44A1010C29B0000100000001 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1011829B0000100000001 /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,7 +46,6 @@
 		44A1000429B0000100000001 /* SpotifyColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyColors.swift; sourceTree = "<group>"; };
 		44A1000629B0000100000001 /* SpotifyTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyTypography.swift; sourceTree = "<group>"; };
 		44A1000829B0000100000001 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
-		44A1002E29B0000100000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		44A1000C29B0000100000001 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
 		44A1000E29B0000100000001 /* YouTubeMusicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeMusicService.swift; sourceTree = "<group>"; };
 		44A1001029B0000100000001 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
@@ -63,18 +62,19 @@
 		44A1002629B0000100000001 /* FullScreenPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenPlayerView.swift; sourceTree = "<group>"; };
 		44A1002829B0000100000001 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		44A1002A29B0000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		44A1003029B0000100000001 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
-		44A1003229B0000100000001 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
-		44A1003429B0000100000001 /* LastFM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastFM.swift; sourceTree = "<group>"; };
-		44A1003629B0000100000001 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		44A1003829B0000100000001 /* EqualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EqualizerView.swift; sourceTree = "<group>"; };
-		44A1003A29B0000100000001 /* BlockedArtistsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedArtistsView.swift; sourceTree = "<group>"; };
-		44A1003C29B0000100000001 /* SpeedDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedDialView.swift; sourceTree = "<group>"; };
-		44A1003E29B0000100000001 /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
-		44A1004029B0000100000001 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
-		44A1004229B0000100000001 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		44A1010D29B0000100000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		44A1010E29B0000100000001 /* AppearanceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsView.swift; sourceTree = "<group>"; };
+		44A1010F29B0000100000001 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
+		44A1011029B0000100000001 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		44A1011129B0000100000001 /* LastFM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastFM.swift; sourceTree = "<group>"; };
+		44A1011229B0000100000001 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		44A1011329B0000100000001 /* EqualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EqualizerView.swift; sourceTree = "<group>"; };
+		44A1011429B0000100000001 /* BlockedArtistsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedArtistsView.swift; sourceTree = "<group>"; };
+		44A1011529B0000100000001 /* SpeedDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedDialView.swift; sourceTree = "<group>"; };
+		44A1011629B0000100000001 /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
+		44A1011729B0000100000001 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		44A1011829B0000100000001 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 
-		44A1002C29B0000100000001 /* AppearanceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,7 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				44A1000829B0000100000001 /* Track.swift */,
-				44A1002E29B0000100000001 /* Models.swift */,
+				44A1010D29B0000100000001 /* Models.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -142,9 +142,6 @@
 				44A1000C29B0000100000001 /* AudioPlayerService.swift */,
 				44A1000E29B0000100000001 /* YouTubeMusicService.swift */,
 				44A1001029B0000100000001 /* StorageService.swift */,
-				44A1002F29B0000100000001 /* Auth.swift */,
-				44A1003129B0000100000001 /* Keychain.swift */,
-				44A1003329B0000100000001 /* LastFM.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -171,14 +168,17 @@
 				44A1002429B0000100000001 /* MiniPlayerView.swift */,
 				44A1002629B0000100000001 /* FullScreenPlayerView.swift */,
 				44A1002829B0000100000001 /* SettingsView.swift */,
-				44A1002C29B0000100000001 /* AppearanceSettingsView.swift */,
-				44A1003529B0000100000001 /* LoginView.swift */,
-				44A1003729B0000100000001 /* EqualizerView.swift */,
-				44A1003929B0000100000001 /* BlockedArtistsView.swift */,
-				44A1003B29B0000100000001 /* SpeedDialView.swift */,
-				44A1003D29B0000100000001 /* DownloadsView.swift */,
-				44A1003F29B0000100000001 /* HistoryView.swift */,
-				44A1004129B0000100000001 /* StatsView.swift */,
+				44A1010E29B0000100000001 /* AppearanceSettingsView.swift */,
+				44A1010F29B0000100000001 /* Auth.swift */,
+				44A1011029B0000100000001 /* Keychain.swift */,
+				44A1011129B0000100000001 /* LastFM.swift */,
+				44A1011229B0000100000001 /* LoginView.swift */,
+				44A1011329B0000100000001 /* EqualizerView.swift */,
+				44A1011429B0000100000001 /* BlockedArtistsView.swift */,
+				44A1011529B0000100000001 /* SpeedDialView.swift */,
+				44A1011629B0000100000001 /* DownloadsView.swift */,
+				44A1011729B0000100000001 /* HistoryView.swift */,
+				44A1011829B0000100000001 /* StatsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -252,7 +252,6 @@
 				44A1000329B0000100000001 /* SpotifyColors.swift in Sources */,
 				44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */,
 				44A1000729B0000100000001 /* Track.swift in Sources */,
-				44A1002D29B0000100000001 /* Models.swift in Sources */,
 				44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */,
 				44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */,
 				44A1000F29B0000100000001 /* StorageService.swift in Sources */,
@@ -268,17 +267,6 @@
 				44A1002329B0000100000001 /* MiniPlayerView.swift in Sources */,
 				44A1002529B0000100000001 /* FullScreenPlayerView.swift in Sources */,
 				44A1002729B0000100000001 /* SettingsView.swift in Sources */,
-				44A1002B29B0000100000001 /* AppearanceSettingsView.swift in Sources */,
-				44A1002F29B0000100000001 /* Auth.swift in Sources */,
-				44A1003129B0000100000001 /* Keychain.swift in Sources */,
-				44A1003329B0000100000001 /* LastFM.swift in Sources */,
-				44A1003529B0000100000001 /* LoginView.swift in Sources */,
-				44A1003729B0000100000001 /* EqualizerView.swift in Sources */,
-				44A1003929B0000100000001 /* BlockedArtistsView.swift in Sources */,
-				44A1003B29B0000100000001 /* SpeedDialView.swift in Sources */,
-				44A1003D29B0000100000001 /* DownloadsView.swift in Sources */,
-				44A1003F29B0000100000001 /* HistoryView.swift in Sources */,
-				44A1004129B0000100000001 /* StatsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
