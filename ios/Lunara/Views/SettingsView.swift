@@ -164,7 +164,6 @@ public struct SettingsView: View {
             }
         }
     }
-}
 
 public struct LastFMSettingsView: View {
     @Environment(\.dismiss) private var dismiss
