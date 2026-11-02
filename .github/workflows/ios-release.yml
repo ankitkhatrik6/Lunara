@@ -58,7 +58,7 @@ jobs:
       - name: Build iOS App for Physical Device (Release)
         run: |
           cd ios
-          xcodebuild -project Lunara.xcodeproj \
+          BUILD_OUTPUT=$(xcodebuild -project Lunara.xcodeproj \
             -scheme Lunara \
             -configuration Release \
             -sdk iphoneos \
@@ -66,11 +66,14 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            -derivedDataPath build/DerivedData \
-            2>&1 | tee build.log
-          if [ ${PIPESTATUS[0]} -ne 0 ]; then
-            echo "::error ::iOS Release build for iphoneos failed"
-            cat build.log
+            -derivedDataPath build/DerivedData 2>&1)
+          BUILD_STATUS=$?
+          printf '%s\n' "$BUILD_OUTPUT" | tee build.log
+          if [ $BUILD_STATUS -ne 0 ]; then
+            echo "::error ::iOS Release build for iphoneos failed (exit $BUILD_STATUS)"
+            printf '%s\n' "$BUILD_OUTPUT" | grep -E ": error:" | head -25 | while IFS= read -r line; do
+              echo "::error ::$line"
+            done
             exit 1
           fi
           echo "iOS Release build succeeded (iphoneos, unsigned, device architecture)"
