@@ -267,6 +267,18 @@
 				44A1002329B0000100000001 /* MiniPlayerView.swift in Sources */,
 				44A1002529B0000100000001 /* FullScreenPlayerView.swift in Sources */,
 				44A1002729B0000100000001 /* SettingsView.swift in Sources */,
+				44A1010129B0000100000001 /* Models.swift in Sources */,
+				44A1010229B0000100000001 /* AppearanceSettingsView.swift in Sources */,
+				44A1010329B0000100000001 /* Auth.swift in Sources */,
+				44A1010429B0000100000001 /* Keychain.swift in Sources */,
+				44A1010529B0000100000001 /* LastFM.swift in Sources */,
+				44A1010629B0000100000001 /* LoginView.swift in Sources */,
+				44A1010729B0000100000001 /* EqualizerView.swift in Sources */,
+				44A1010829B0000100000001 /* BlockedArtistsView.swift in Sources */,
+				44A1010929B0000100000001 /* SpeedDialView.swift in Sources */,
+				44A1010A29B0000100000001 /* DownloadsView.swift in Sources */,
+				44A1010B29B0000100000001 /* HistoryView.swift in Sources */,
+				44A1010C29B0000100000001 /* StatsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
