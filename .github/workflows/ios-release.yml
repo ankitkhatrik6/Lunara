@@ -3,6 +3,7 @@ name: iOS Release IPA
 on:
   push:
     branches: [ master, main ]
+    tags: [ 'ios-*' ]
   pull_request:
     branches: [ master, main ]
   workflow_dispatch:
