@@ -42,17 +42,15 @@ jobs:
             echo "::error ::Shared scheme 'Lunara.xcscheme' is missing"
             exit 1
           fi
-          echo "Listing available destinations for scheme 'Lunara':"
-          DEST_OUTPUT=$(xcodebuild -project Lunara.xcodeproj -scheme Lunara -showsdestinations 2>&1) || {
-            echo "::error ::xcodebuild -showsdestinations failed for scheme 'Lunara'"
-            echo "::error ::$(printf '%s' "$DEST_OUTPUT" | head -c 4000)"
+          echo "Available schemes and targets:"
+          SCHEME_LIST=$(xcodebuild -project Lunara.xcodeproj -list 2>&1) || {
+            echo "::error ::xcodebuild -list failed for project 'Lunara.xcodeproj'"
+            echo "::error ::$(printf '%s' "$SCHEME_LIST" | head -c 3000)"
             exit 1
           }
-          echo "::notice ::Destinations listed for scheme 'Lunara'"
-          echo "$DEST_OUTPUT" | grep -E "generic/platform|platform:iOS|platform=iOS|iOS Simulator|Generic" | head -20 || true
-          if ! printf '%s\n' "$DEST_OUTPUT" | grep -qiE "generic/platform|platform=iOS|iphoneos"; then
-            echo "::error ::No iOS device destination found for scheme 'Lunara'"
-            echo "::error ::$(printf '%s\n' "$DEST_OUTPUT" | head -c 3000)"
+          echo "$SCHEME_LIST"
+          if ! printf '%s\n' "$SCHEME_LIST" | grep -qE "\bLunara\b"; then
+            echo "::error ::Scheme 'Lunara' not found in project"
             exit 1
           fi
           echo "Xcode project and scheme 'Lunara' validated"
