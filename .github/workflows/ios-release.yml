@@ -71,7 +71,15 @@ jobs:
           printf '%s\n' "$BUILD_OUTPUT" | tee build.log
           if [ $BUILD_STATUS -ne 0 ]; then
             echo "::error ::iOS Release build for iphoneos failed (exit $BUILD_STATUS)"
-            echo "::error ::$(printf '%s' "$BUILD_OUTPUT" | tail -c 4000)"
+            ERR_LINES=$(printf '%s\n' "$BUILD_OUTPUT" | grep -Ei "error|fail" | tail -15)
+            if [ -n "$ERR_LINES" ]; then
+              while IFS= read -r line; do
+                [ -z "$line" ] && continue
+                echo "::error ::${line:0:200}"
+              done <<< "$ERR_LINES"
+            else
+              echo "::error ::No 'error'/'fail' lines in build output; see build.log"
+            fi
             exit 1
           fi
           echo "iOS Release build succeeded (iphoneos, unsigned, device architecture)"
