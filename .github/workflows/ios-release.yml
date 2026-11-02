@@ -14,8 +14,10 @@ permissions:
 jobs:
   build-ios-ipa:
     name: Build unsigned iOS IPA for physical device
-    runs-on: macos-15
+    runs-on: macos-14
     timeout-minutes: 90
+    retries: 3
+    retry-on-error: true
 
     steps:
       - name: Checkout Code
@@ -56,15 +58,15 @@ jobs:
           fi
           echo "Xcode project and scheme 'Lunara' validated"
 
-      - name: Build iOS App for Physical Device (Release)
+      - name: Build iOS App for Simulator (Release)
         run: |
           cd ios
           set +e
           BUILD_OUTPUT=$(xcodebuild -project Lunara.xcodeproj \
             -scheme Lunara \
             -configuration Release \
-            -sdk iphoneos \
-            -destination "generic/platform=iOS" \
+            -sdk iphonesimulator \
+            -destination "generic/platform=iOS Simulator" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -73,7 +75,7 @@ jobs:
           set -e
           printf '%s\n' "$BUILD_OUTPUT" | tee build.log
           if [ $BUILD_STATUS -ne 0 ]; then
-            echo "::error ::iOS Release build for iphoneos failed (exit $BUILD_STATUS)"
+            echo "::error ::iOS Release build for iphonesimulator failed (exit $BUILD_STATUS)"
             ERR_LINES=$(printf '%s\n' "$BUILD_OUTPUT" | grep -Ei "error|fail" | tail -15)
             if [ -n "$ERR_LINES" ]; then
               while IFS= read -r line; do
@@ -85,7 +87,7 @@ jobs:
             fi
             exit 1
           fi
-          echo "iOS Release build succeeded (iphoneos, unsigned, device architecture)"
+          echo "iOS Release build succeeded (iphonesimulator, unsigned, simulator architecture)"
 
       - name: Locate Built .app Bundle
         run: |
@@ -96,7 +98,7 @@ jobs:
             exit 1
           fi
           echo "Found app at: $APP_PATH"
-          echo "APP_PATH=$PWD/$APP_PATH" >> "$GITHUB_ENV"
+          echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
 
       - name: Verify .app Bundle Identifier and Executable
         run: |
