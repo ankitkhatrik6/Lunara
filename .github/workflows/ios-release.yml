@@ -38,8 +38,19 @@ jobs:
             echo "::error ::Xcode project file is missing: ios/Lunara.xcodeproj/project.pbxproj"
             exit 1
           fi
-          if ! xcodebuild -project Lunara.xcodeproj -scheme Lunara -showsdestinations 2>&1 | grep -q "generic/platform=iOS"; then
-            echo "::error ::Scheme 'Lunara' is unavailable or does not support generic/platform=iOS"
+          if [ ! -f Lunara.xcodeproj/xcshareddata/xcschemes/Lunara.xcscheme ]; then
+            echo "::error ::Shared scheme 'Lunara.xcscheme' is missing"
+            exit 1
+          fi
+          echo "Listing available destinations for scheme 'Lunara':"
+          DEST_OUTPUT=$(xcodebuild -project Lunara.xcodeproj -scheme Lunara -showsdestinations 2>&1) || {
+            echo "::error ::xcodebuild -showsdestinations failed for scheme 'Lunara'"
+            printf '%s\n' "$DEST_OUTPUT"
+            exit 1
+          }
+          printf '%s\n' "$DEST_OUTPUT"
+          if ! printf '%s\n' "$DEST_OUTPUT" | grep -qiE "generic/platform|iOS"; then
+            echo "::error ::No iOS destination found for scheme 'Lunara'"
             exit 1
           fi
           echo "Xcode project and scheme 'Lunara' validated"
