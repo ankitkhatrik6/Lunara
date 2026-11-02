@@ -14,7 +14,7 @@ public final class PlayerViewModel {
     public var lyrics: [LyricLine] = []
     public var currentLyricIndex: Int?
     
-    private lazy var audioService = AudioPlayerService.shared
+    private let audioService = AudioPlayerService.shared
     private let storageService = StorageService.shared
     
     public init() {
