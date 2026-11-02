@@ -98,6 +98,28 @@ public final class YouTubeMusicService: Sendable {
         ]
     }
     
+    public func accountInfo() async -> (name: String, email: String, photo: String)? {
+        guard let headers = Auth.shared.headers(), !headers.isEmpty else { return nil }
+        var request = URLRequest(url: URL(string: "https://music.youtube.com/youtubei/v1/account/get_account_menu?key=AIzaSyAO_FJ2SlqU8Q4STE1GCilwV9_1sYVSCUQ")!)
+        request.httpMethod = "POST"
+        request.httpBody = "{}".data(using: .utf8)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        for (key, value) in headers { request.setValue(value, forHTTPHeaderField: key) }
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let header = json["headerResponse"] as? [String: Any],
+               let userProfile = header["userProfile"] as? [String: Any] {
+                let name = userProfile["displayName"] as? String ?? ""
+                let email = userProfile["gaiaId"] as? String ?? ""
+                let photo = (userProfile["avatar"] as? [String: Any])?["thumbnail"] as? [String: Any] ?? [:]
+                let photoUrl = photo["url"] as? String ?? ""
+                return (name, email, photoUrl)
+            }
+        } catch {}
+        return nil
+    }
+
     public var sampleTracks: [Track] {
         [
             Track(

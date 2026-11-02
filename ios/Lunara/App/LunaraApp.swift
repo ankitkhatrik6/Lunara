@@ -9,9 +9,13 @@ public struct LunaraApp: App {
 
     public var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(\.colorScheme, darkMode ? .dark : .light)
-                .preferredColorScheme(darkMode ? .dark : .light)
+            if Auth.shared.isLoggedIn {
+                MainTabView()
+                    .environment(\.colorScheme, darkMode ? .dark : .light)
+                    .preferredColorScheme(darkMode ? .dark : .light)
+            } else {
+                LoginView()
+            }
         }
     }
 }

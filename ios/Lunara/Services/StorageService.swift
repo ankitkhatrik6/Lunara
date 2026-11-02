@@ -5,7 +5,10 @@ public final class StorageService: @unchecked Sendable {
     
     private let likedKey = "lunara_liked_tracks_v1"
     private let playlistsKey = "lunara_user_playlists_v1"
-    private let highQualityAudioKey = "lunara_high_quality_audio"
+    private let historyKey = "lunara_play_history_v1"
+    private let speedDialKey = "lunara_speed_dial_v1"
+    private let blockedArtistsKey = "lunara_blocked_artists_v1"
+    private let downloadsKey = "lunara_downloads_v1"
     
     private let defaults = UserDefaults.standard
     
@@ -64,4 +67,149 @@ public final class StorageService: @unchecked Sendable {
     public func setHighQualityAudio(enabled: Bool) {
         defaults.set(enabled, forKey: highQualityAudioKey)
     }
+
+    // MARK: - Playlists
+
+    public func savePlaylists(_ playlists: [Playlist]) {
+        if let data = try? JSONEncoder().encode(playlists) {
+            defaults.set(data, forKey: playlistsKey)
+        }
+    }
+
+    public func createPlaylist(title: String, artworkUrl: String? = nil) {
+        var playlists = getPlaylists()
+        let newPlaylist = Playlist(
+            id: UUID().uuidString,
+            title: title,
+            authorName: "You",
+            artworkUrl: artworkUrl ?? "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80",
+            trackCount: 0
+        )
+        playlists.insert(newPlaylist, at: 0)
+        savePlaylists(playlists)
+    }
+
+    public func addTrackToPlaylist(track: Track, playlistId: String) {
+        var playlists = getPlaylists()
+        guard let idx = playlists.firstIndex(where: { $0.id == playlistId }) else { return }
+        playlists[idx].tracks.append(track)
+        playlists[idx].trackCount = playlists[idx].tracks.count
+        savePlaylists(playlists)
+    }
+    }
+
+    // MARK: - Play History
+
+    public func getPlayHistory() -> [PlayHistoryItem] {
+        guard let data = defaults.data(forKey: historyKey),
+              let history = try? JSONDecoder().decode([PlayHistoryItem].self, from: data) else {
+            return []
+        }
+        return history.sorted { $0.playedAt > $1.playedAt }
+    }
+
+    public func addToPlayHistory(track: Track) {
+        var history = getPlayHistory()
+        history.removeAll { $0.track.id == track.id }
+        history.insert(PlayHistoryItem(track: track), at: 0)
+        if history.count > 500 { history = Array(history.prefix(500)) }
+        if let data = try? JSONEncoder().encode(history) {
+            defaults.set(data, forKey: historyKey)
+        }
+    }
+
+    public func clearPlayHistory() {
+        defaults.removeObject(forKey: historyKey)
+    }
+
+    // MARK: - Speed Dial
+
+    public func getSpeedDial() -> [SpeedDialItem] {
+        guard let data = defaults.data(forKey: speedDialKey),
+              let items = try? JSONDecoder().decode([SpeedDialItem].self, from: data) else {
+            return []
+        }
+        return items
+    }
+
+    public func addSpeedDial(item: SpeedDialItem) {
+        var items = getSpeedDial()
+        items.append(item)
+        if let data = try? JSONEncoder().encode(items) {
+            defaults.set(data, forKey: speedDialKey)
+        }
+    }
+
+    public func removeSpeedDial(id: UUID) {
+        var items = getSpeedDial()
+        items.removeAll { $0.id == id }
+        if let data = try? JSONEncoder().encode(items) {
+            defaults.set(data, forKey: speedDialKey)
+        }
+    }
+
+    // MARK: - Blocked Artists
+
+    public func getBlockedArtists() -> [BlockedArtist] {
+        guard let data = defaults.data(forKey: blockedArtistsKey),
+              let artists = try? JSONDecoder().decode([BlockedArtist].self, from: data) else {
+            return []
+        }
+        return artists
+    }
+
+    public func blockArtist(_ artist: BlockedArtist) {
+        var artists = getBlockedArtists()
+        if !artists.contains(where: { $0.id == artist.id }) {
+            artists.append(artist)
+            if let data = try? JSONEncoder().encode(artists) {
+                defaults.set(data, forKey: blockedArtistsKey)
+            }
+        }
+    }
+
+    public func unblockArtist(id: String) {
+        var artists = getBlockedArtists()
+        artists.removeAll { $0.id == id }
+        if let data = try? JSONEncoder().encode(artists) {
+            defaults.set(data, forKey: blockedArtistsKey)
+        }
+    }
+
+    public func isArtistBlocked(id: String) -> Bool {
+        getBlockedArtists().contains { $0.id == id }
+    }
+
+    // MARK: - Downloads
+
+    public func getDownloads() -> [DownloadItem] {
+        guard let data = defaults.data(forKey: downloadsKey),
+              let downloads = try? JSONDecoder().decode([DownloadItem].self, from: data) else {
+            return []
+        }
+        return downloads
+    }
+
+    public func addDownload(track: Track) {
+        var downloads = getDownloads()
+        if !downloads.contains(where: { $0.track.id == track.id }) {
+            downloads.append(DownloadItem(track: track))
+            if let data = try? JSONEncoder().encode(downloads) {
+                defaults.set(data, forKey: downloadsKey)
+            }
+        }
+    }
+
+    public func removeDownload(trackId: String) {
+        var downloads = getDownloads()
+        downloads.removeAll { $0.track.id == trackId }
+        if let data = try? JSONEncoder().encode(downloads) {
+            defaults.set(data, forKey: downloadsKey)
+        }
+    }
+
+    public func isDownloaded(trackId: String) -> Bool {
+        getDownloads().contains { $0.track.id == trackId }
+    }
 }
+
