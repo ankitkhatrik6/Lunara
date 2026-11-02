@@ -13,6 +13,7 @@ public struct MainTabView: View {
     @State private var searchVM = SearchViewModel()
     @State private var libraryVM = LibraryViewModel()
     @State private var isSettingsPresented: Bool = false
+    @State private var isFullScreenPresented: Bool = false
 
     public init() {}
 
@@ -49,8 +50,16 @@ public struct MainTabView: View {
             }
         }
         .background(Color.spotifyBackground.ignoresSafeArea())
-        .fullScreenCover(isPresented: $playerVM.isFullScreenPresented) {
+        .fullScreenCover(isPresented: $isFullScreenPresented) {
             FullScreenPlayerView(playerVM: playerVM)
+        }
+        .onChange(of: playerVM.isFullScreenPresented) { _, isPresented in
+            isFullScreenPresented = isPresented
+        }
+        .onChange(of: isFullScreenPresented) { _, isPresented in
+            if !isPresented {
+                playerVM.isFullScreenPresented = false
+            }
         }
         .sheet(isPresented: $isSettingsPresented) {
             SettingsView()
