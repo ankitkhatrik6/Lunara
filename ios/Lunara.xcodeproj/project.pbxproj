@@ -142,6 +142,9 @@
 				44A1000C29B0000100000001 /* AudioPlayerService.swift */,
 				44A1000E29B0000100000001 /* YouTubeMusicService.swift */,
 				44A1001029B0000100000001 /* StorageService.swift */,
+				44A1010F29B0000100000001 /* Auth.swift */,
+				44A1011029B0000100000001 /* Keychain.swift */,
+				44A1011129B0000100000001 /* LastFM.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -169,9 +172,6 @@
 				44A1002629B0000100000001 /* FullScreenPlayerView.swift */,
 				44A1002829B0000100000001 /* SettingsView.swift */,
 				44A1010E29B0000100000001 /* AppearanceSettingsView.swift */,
-				44A1010F29B0000100000001 /* Auth.swift */,
-				44A1011029B0000100000001 /* Keychain.swift */,
-				44A1011129B0000100000001 /* LastFM.swift */,
 				44A1011229B0000100000001 /* LoginView.swift */,
 				44A1011329B0000100000001 /* EqualizerView.swift */,
 				44A1011429B0000100000001 /* BlockedArtistsView.swift */,
