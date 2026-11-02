@@ -11,7 +11,6 @@
 		44A1000329B0000100000001 /* SpotifyColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000429B0000100000001 /* SpotifyColors.swift */; };
 		44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000629B0000100000001 /* SpotifyTypography.swift */; };
 		44A1000729B0000100000001 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000829B0000100000001 /* Track.swift */; };
-		44A1000929B0000100000001 /* MusicModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000A29B0000100000001 /* MusicModels.swift */; };
 		44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000C29B0000100000001 /* AudioPlayerService.swift */; };
 		44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000E29B0000100000001 /* YouTubeMusicService.swift */; };
 		44A1000F29B0000100000001 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001029B0000100000001 /* StorageService.swift */; };
@@ -27,6 +26,7 @@
 		44A1002329B0000100000001 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002429B0000100000001 /* MiniPlayerView.swift */; };
 		44A1002529B0000100000001 /* FullScreenPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002629B0000100000001 /* FullScreenPlayerView.swift */; };
 		44A1002729B0000100000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002829B0000100000001 /* SettingsView.swift */; };
+		44A1002B29B0000100000001 /* AppearanceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1002C29B0000100000001 /* AppearanceSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,7 +35,6 @@
 		44A1000429B0000100000001 /* SpotifyColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyColors.swift; sourceTree = "<group>"; };
 		44A1000629B0000100000001 /* SpotifyTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyTypography.swift; sourceTree = "<group>"; };
 		44A1000829B0000100000001 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
-		44A1000A29B0000100000001 /* MusicModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicModels.swift; sourceTree = "<group>"; };
 		44A1000C29B0000100000001 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
 		44A1000E29B0000100000001 /* YouTubeMusicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeMusicService.swift; sourceTree = "<group>"; };
 		44A1001029B0000100000001 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
@@ -52,6 +51,7 @@
 		44A1002629B0000100000001 /* FullScreenPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenPlayerView.swift; sourceTree = "<group>"; };
 		44A1002829B0000100000001 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		44A1002A29B0000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		44A1002C29B0000100000001 /* AppearanceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +108,6 @@
 			isa = PBXGroup;
 			children = (
 				44A1000829B0000100000001 /* Track.swift */,
-				44A1000A29B0000100000001 /* MusicModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -145,6 +144,7 @@
 				44A1002429B0000100000001 /* MiniPlayerView.swift */,
 				44A1002629B0000100000001 /* FullScreenPlayerView.swift */,
 				44A1002829B0000100000001 /* SettingsView.swift */,
+				44A1002C29B0000100000001 /* AppearanceSettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -218,7 +218,6 @@
 				44A1000329B0000100000001 /* SpotifyColors.swift in Sources */,
 				44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */,
 				44A1000729B0000100000001 /* Track.swift in Sources */,
-				44A1000929B0000100000001 /* MusicModels.swift in Sources */,
 				44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */,
 				44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */,
 				44A1000F29B0000100000001 /* StorageService.swift in Sources */,
@@ -234,6 +233,7 @@
 				44A1002329B0000100000001 /* MiniPlayerView.swift in Sources */,
 				44A1002529B0000100000001 /* FullScreenPlayerView.swift in Sources */,
 				44A1002729B0000100000001 /* SettingsView.swift in Sources */,
+				44A1002B29B0000100000001 /* AppearanceSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
