@@ -1,8 +1,8 @@
 import SwiftUI
 
 public struct HomeView: View {
-    @ObservedObject var homeVM: HomeViewModel
-    @ObservedObject var playerVM: PlayerViewModel
+    var homeVM: HomeViewModel
+    var playerVM: PlayerViewModel
     public let onOpenSettings: () -> Void
 
     public init(homeVM: HomeViewModel, playerVM: PlayerViewModel, onOpenSettings: @escaping () -> Void) {
@@ -133,5 +133,50 @@ public struct HomeView: View {
             }
         }
         .background(Color.spotifyBackground.ignoresSafeArea())
+    }
+}
+
+// MARK: - Quick Access Card (matches Android QuickAccessCard)
+
+public struct QuickAccessCard: View {
+    let title: String
+    let iconName: String
+    let iconColor: Color
+    let badgeColor: Color
+    let onPlay: () -> Void
+
+    public init(title: String, iconName: String, iconColor: Color, badgeColor: Color, onPlay: @escaping () -> Void) {
+        self.title = title
+        self.iconName = iconName
+        self.iconColor = iconColor
+        self.badgeColor = badgeColor
+        self.onPlay = onPlay
+    }
+
+    public var body: some View {
+        Button(action: onPlay) {
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(badgeColor)
+                        .frame(width: 56, height: 56)
+                    Image(systemName: iconName)
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundColor(iconColor)
+                }
+
+                Text(title)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(Color.spotifyTextPrimary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+
+                Spacer(minLength: 0)
+            }
+            .frame(height: 56)
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .background(Color.spotifyElevatedSurface)
+        }
+        .buttonStyle(.plain)
     }
 }
