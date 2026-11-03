@@ -161,7 +161,8 @@ jobs:
             exit 1
           fi
           APP_NAME="Lunara"
-          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_PATH/Info.plist")
+          TAG_NAME="${GITHUB_REF_NAME}"
+          VERSION="${TAG_NAME#ios-}"
           BUILD=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$APP_PATH/Info.plist")
           BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP_PATH/Info.plist")
           COMMIT_SHA=$(git rev-parse --short HEAD)
@@ -204,8 +205,8 @@ jobs:
       - name: Validate IPA Structure
         run: |
           cd ios
-          APP_VERSION=$(cd .. && git describe --tags --abbrev=0 2>/dev/null | sed 's/^ios-//' || echo "1.0.0")
-          IPA_FILENAME="Lunara-iOS-${APP_VERSION}.ipa"
+          IPA_VERSION="${APP_VERSION}"
+          IPA_FILENAME="Lunara-iOS-${IPA_VERSION}.ipa"
           IPA_FILE="dist/${IPA_FILENAME}"
           if [ ! -f "$IPA_FILE" ]; then
             echo "::error ::IPA file was not created: $IPA_FILE"
