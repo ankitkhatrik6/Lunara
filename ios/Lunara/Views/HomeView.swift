@@ -1,14 +1,9 @@
 import SwiftUI
 
 public struct HomeView: View {
-    public let homeVM: HomeViewModel
-    public let playerVM: PlayerViewModel
+    @ObservedObject var homeVM: HomeViewModel
+    @ObservedObject var playerVM: PlayerViewModel
     public let onOpenSettings: () -> Void
-
-    private let columns = [
-        GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8)
-    ]
 
     public init(homeVM: HomeViewModel, playerVM: PlayerViewModel, onOpenSettings: @escaping () -> Void) {
         self.homeVM = homeVM
@@ -18,17 +13,22 @@ public struct HomeView: View {
 
     public var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 24) {
-                // Header: Logo & Title on Left, Settings on Right
-                HStack(alignment: .center) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "waveform.circle.fill")
-                            .font(.system(size: 26, weight: .bold))
-                            .foregroundColor(.spotifyGreen)
+            VStack(alignment: .leading, spacing: 0) {
+                // MARK: - Top Bar: Logo + Title | Settings
+                HStack {
+                    HStack(spacing: 10) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.spotifyCardSurface)
+                                .frame(width: 36, height: 36)
+                            Image(systemName: "waveform.circle.fill")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(Color.spotifyGreen)
+                        }
 
                         Text("Lunara")
-                            .font(.system(size: 24, weight: .heavy))
-                            .foregroundColor(.spotifyTextPrimary)
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(Color.spotifyTextPrimary)
                     }
 
                     Spacer()
@@ -36,19 +36,20 @@ public struct HomeView: View {
                     Button(action: onOpenSettings) {
                         Image(systemName: "gearshape")
                             .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(.spotifyTextPrimary)
+                            .foregroundColor(Color.spotifyTextPrimary)
                             .frame(width: 44, height: 44)
                             .contentShape(Rectangle())
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.top, 12)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
 
-                // Greeting and Filter Chips
+                // MARK: - Greeting + Filter Pills
                 VStack(alignment: .leading, spacing: 14) {
                     Text(homeVM.greeting)
                         .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.spotifyTextPrimary)
+                        .foregroundColor(Color.spotifyTextPrimary)
                         .padding(.horizontal, 16)
 
                     HStack(spacing: 8) {
@@ -67,8 +68,8 @@ public struct HomeView: View {
                                     )
                                     .foregroundColor(
                                         homeVM.selectedCategory == category
-                                            ? .black
-                                            : .spotifyTextPrimary
+                                            ? Color.black
+                                            : Color.spotifyTextPrimary
                                     )
                                     .clipShape(Capsule())
                             }
@@ -77,17 +78,49 @@ public struct HomeView: View {
                     .padding(.horizontal, 16)
                 }
 
-                // 2-Column Quick Access Grid
+                // MARK: - 2-Column Quick Access Grid
+                let columns = [
+                    GridItem(.flexible(), spacing: 8),
+                    GridItem(.flexible(), spacing: 8)
+                ]
+
                 LazyVGrid(columns: columns, spacing: 8) {
-                    ForEach(homeVM.quickAccessTracks) { track in
-                        QuickAccessCard(track: track) {
-                            playerVM.play(track: track, queue: homeVM.quickAccessTracks)
+                    QuickAccessCard(
+                        title: "Liked Songs",
+                        iconName: "heart.fill",
+                        iconColor: Color.white,
+                        badgeColor: Color.spotifyLikedPurple,
+                        onPlay: {
+                            if let first = homeVM.likedTracks.first {
+                                playerVM.play(track: first, queue: homeVM.likedTracks)
+                            }
                         }
-                    }
+                    )
+                    QuickAccessCard(
+                        title: "For You",
+                        iconName: "music.note",
+                        iconColor: Color.black,
+                        badgeColor: Color.spotifyGreen,
+                        onPlay: {}
+                    )
+                    QuickAccessCard(
+                        title: "Speed Dial",
+                        iconName: "radio",
+                        iconColor: Color.white,
+                        badgeColor: Color.spotifyCardSurface,
+                        onPlay: {}
+                    )
+                    QuickAccessCard(
+                        title: "History",
+                        iconName: "clock.arrow.circlepath",
+                        iconColor: Color.white,
+                        badgeColor: Color(red: 30/255, green: 50/255, blue: 100/255),
+                        onPlay: {}
+                    )
                 }
                 .padding(.horizontal, 16)
 
-                // Shelves
+                // MARK: - Shelves
                 SectionShelfView(title: "Jump back in", tracks: homeVM.recentlyPlayed) { track in
                     playerVM.play(track: track, queue: homeVM.recentlyPlayed)
                 }
@@ -96,7 +129,6 @@ public struct HomeView: View {
                     playerVM.play(track: track, queue: homeVM.trendingHits)
                 }
 
-                // Bottom spacing for miniplayer clearance
                 Spacer(minLength: 80)
             }
         }

@@ -14,6 +14,7 @@ public final class HomeViewModel {
     public var recentlyPlayed: [Track] = []
     public var recommendedAlbums: [Album] = []
     public var trendingHits: [Track] = []
+    public var likedTracks: [Track] = []
     public var isLoading: Bool = false
     
     public init() {
@@ -34,7 +35,8 @@ public final class HomeViewModel {
         self.quickAccessTracks = Array(allSamples.prefix(6))
         self.recentlyPlayed = allSamples
         self.trendingHits = allSamples.reversed()
-        
+        self.likedTracks = allSamples.filter { $0.isLiked }
+
         self.recommendedAlbums = [
             Album(id: "meteora", title: "Meteora", artistName: "Linkin Park", artworkUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80", year: "2003"),
             Album(id: "opera", title: "A Night at the Opera", artistName: "Queen", artworkUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&q=80", year: "1975"),

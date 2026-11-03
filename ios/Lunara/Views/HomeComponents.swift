@@ -1,49 +1,6 @@
 import SwiftUI
 
-public struct QuickAccessCard: View {
-    public let track: Track
-    public let onPlay: () -> Void
-
-    public init(track: Track, onPlay: @escaping () -> Void) {
-        self.track = track
-        self.onPlay = onPlay
-    }
-
-    public var body: some View {
-        Button(action: onPlay) {
-            HStack(spacing: 8) {
-                AsyncImage(url: URL(string: track.artworkUrl ?? "")) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } else {
-                        Rectangle()
-                            .fill(Color.spotifyCardSurface)
-                            .overlay(
-                                Image(systemName: "music.note")
-                                    .foregroundColor(.spotifyTextMuted)
-                            )
-                    }
-                }
-                .frame(width: 52, height: 52)
-                .clipped()
-
-                Text(track.title)
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(.spotifyTextPrimary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.trailing, 8)
-            }
-            .frame(height: 52)
-            .background(Color.spotifyElevatedSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        }
-        .buttonStyle(.plain)
-    }
-}
+// MARK: - Section Shelf View (matches Android shelf design)
 
 public struct SectionShelfView: View {
     public let title: String
@@ -60,7 +17,7 @@ public struct SectionShelfView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text(title)
                 .font(.system(size: 20, weight: .bold))
-                .foregroundColor(.spotifyTextPrimary)
+                .foregroundColor(Color.spotifyTextPrimary)
                 .padding(.horizontal, 16)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -80,7 +37,7 @@ public struct SectionShelfView: View {
                                             .fill(Color.spotifyCardSurface)
                                             .overlay(
                                                 Image(systemName: "music.quarternote.3")
-                                                    .foregroundColor(.spotifyTextMuted)
+                                                    .foregroundColor(Color.spotifyTextMuted)
                                             )
                                     }
                                 }
@@ -89,12 +46,12 @@ public struct SectionShelfView: View {
 
                                 Text(track.title)
                                     .font(.system(size: 13, weight: .semibold))
-                                    .foregroundColor(.spotifyTextPrimary)
+                                    .foregroundColor(Color.spotifyTextPrimary)
                                     .lineLimit(1)
 
                                 Text(track.artistName)
                                     .font(.system(size: 12))
-                                    .foregroundColor(.spotifyTextMuted)
+                                    .foregroundColor(Color.spotifyTextMuted)
                                     .lineLimit(1)
                             }
                             .frame(width: 140)

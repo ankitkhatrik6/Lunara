@@ -36,11 +36,11 @@ public struct MainTabView: View {
 
                 LibraryView(libraryVM: libraryVM, playerVM: playerVM)
                     .tabItem {
-                        Label("Your Library", systemImage: selectedTab == .library ? "books.vertical.fill" : "books.vertical")
+                        Label("Library", systemImage: selectedTab == .library ? "books.vertical.fill" : "books.vertical")
                     }
                     .tag(NavigationTab.library)
             }
-            .tint(.white)
+            .tint(Color.spotifyGreen)
 
             // Floating MiniPlayer docked directly above system TabBar
             if playerVM.isMiniPlayerVisible {
