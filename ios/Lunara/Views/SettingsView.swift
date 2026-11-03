@@ -164,44 +164,6 @@ public struct SettingsView: View {
             }
         }
     }
-}
-public struct AppearanceSettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var darkMode: Bool = false
-    @State private var pureBlack: Bool = true
-
-    public init() {}
-
-    public var body: some View {
-        NavigationStack {
-            List {
-                Section(header: Text("THEME").foregroundColor(.spotifyTextMuted)) {
-                    Picker("Theme", selection: $darkMode) {
-                        Text("Light").tag(false)
-                        Text("Dark").tag(true)
-                    }
-                    .pickerStyle(.segmented)
-                    .foregroundColor(.spotifyTextPrimary)
-
-                    Toggle("Pure Black", isOn: $pureBlack)
-                        .foregroundColor(.spotifyTextPrimary)
-                        .tint(.spotifyGreen)
-                }
-                .listRowBackground(Color.spotifyCardSurface)
-            }
-            .scrollContentBackground(.hidden)
-            .background(Color.spotifyBackground.ignoresSafeArea())
-            .navigationTitle("Appearance")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                        .foregroundColor(.spotifyGreen)
-                }
-            }
-        }
-    }
-}
 
 public struct LastFMSettingsView: View {
     @Environment(\.dismiss) private var dismiss

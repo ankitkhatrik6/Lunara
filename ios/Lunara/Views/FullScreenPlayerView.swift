@@ -1,8 +1,9 @@
 import SwiftUI
 
 public struct FullScreenPlayerView: View {
-    @Bindable public var playerVM: PlayerViewModel
+    public let playerVM: PlayerViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var isLyricsPresented: Bool = false
 
     @State private var isDraggingScrubber: Bool = false
     @State private var dragProgress: Double = 0
@@ -212,14 +213,22 @@ public struct FullScreenPlayerView: View {
                 .padding(.bottom, 16)
             }
         }
-        .sheet(isPresented: $playerVM.isLyricsPresented) {
+        .sheet(isPresented: $isLyricsPresented) {
             LyricsSheetView(playerVM: playerVM)
+        }
+        .onChange(of: playerVM.isLyricsPresented) { _, isPresented in
+            isLyricsPresented = isPresented
+        }
+        .onChange(of: isLyricsPresented) { _, isPresented in
+            if !isPresented {
+                playerVM.isLyricsPresented = false
+            }
         }
     }
 }
 
 public struct LyricsSheetView: View {
-    @Bindable public var playerVM: PlayerViewModel
+    public let playerVM: PlayerViewModel
     @Environment(\.dismiss) private var dismiss
 
     public var body: some View {
@@ -236,7 +245,6 @@ public struct LyricsSheetView: View {
                                         : .white.opacity(0.35)
                                 )
                                 .id(index)
-                                .animation(.spring(response: 0.35, dampingFraction: 0.7), value: playerVM.currentLyricIndex)
                         }
                         Spacer(minLength: 60)
                     }

@@ -1,8 +1,9 @@
 import SwiftUI
 
 public struct LibraryView: View {
-    @Bindable public var libraryVM: LibraryViewModel
-    @Bindable public var playerVM: PlayerViewModel
+    public let libraryVM: LibraryViewModel
+    public let playerVM: PlayerViewModel
+    @State private var isCreatePlaylistPresented: Bool = false
 
     public init(libraryVM: LibraryViewModel, playerVM: PlayerViewModel) {
         self.libraryVM = libraryVM
@@ -148,14 +149,23 @@ public struct LibraryView: View {
             }
         }
         .background(Color.spotifyBackground.ignoresSafeArea())
-        .sheet(isPresented: $libraryVM.isCreatePlaylistPresented) {
+        .sheet(isPresented: $isCreatePlaylistPresented) {
             CreatePlaylistSheet(libraryVM: libraryVM)
+        }
+        .onChange(of: libraryVM.isCreatePlaylistPresented) { _, isPresented in
+            isCreatePlaylistPresented = isPresented
+        }
+        .onChange(of: isCreatePlaylistPresented) { _, isPresented in
+            if !isPresented {
+                libraryVM.isCreatePlaylistPresented = false
+            }
         }
     }
 }
 
 public struct CreatePlaylistSheet: View {
-    @Bindable public var libraryVM: LibraryViewModel
+    public let libraryVM: LibraryViewModel
+    @State private var newPlaylistTitle: String = ""
     @Environment(\.dismiss) private var dismiss
 
     public var body: some View {
@@ -166,11 +176,17 @@ public struct CreatePlaylistSheet: View {
                     .foregroundColor(.spotifyTextPrimary)
                     .padding(.top, 32)
 
-                TextField("My Playlist", text: $libraryVM.newPlaylistTitle)
+                TextField("My Playlist", text: $newPlaylistTitle)
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.spotifyTextPrimary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
+                    .onAppear {
+                        newPlaylistTitle = libraryVM.newPlaylistTitle
+                    }
+                    .onChange(of: newPlaylistTitle) { _, newValue in
+                        libraryVM.newPlaylistTitle = newValue
+                    }
 
                 Divider()
                     .background(Color.spotifyDivider)

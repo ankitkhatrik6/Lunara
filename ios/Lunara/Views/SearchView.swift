@@ -93,8 +93,8 @@ public struct SearchResultRow: View {
 }
 
 public struct SearchView: View {
-    @Bindable public var searchVM: SearchViewModel
-    @Bindable public var playerVM: PlayerViewModel
+    public let searchVM: SearchViewModel
+    public let playerVM: PlayerViewModel
 
     private let genreColumns = [
         GridItem(.flexible(), spacing: 12),
@@ -119,7 +119,10 @@ public struct SearchView: View {
             .padding(.top, 16)
 
             // Search Input
-            SearchBarView(text: $searchVM.query) {
+            SearchBarView(text: Binding(
+                get: { searchVM.query },
+                set: { searchVM.query = $0 }
+            )) {
                 searchVM.clearQuery()
             }
             .padding(.horizontal, 16)

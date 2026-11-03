@@ -1,6 +1,6 @@
 import Foundation
 
-public final class StorageService: @unchecked Sendable {
+public final class StorageService {
     public static let shared = StorageService()
     
     private let likedKey = "lunara_liked_tracks_v1"
@@ -9,6 +9,7 @@ public final class StorageService: @unchecked Sendable {
     private let speedDialKey = "lunara_speed_dial_v1"
     private let blockedArtistsKey = "lunara_blocked_artists_v1"
     private let downloadsKey = "lunara_downloads_v1"
+    private let highQualityAudioKey = "lunara_high_quality_audio"
     
     private let defaults = UserDefaults.standard
     
@@ -95,7 +96,6 @@ public final class StorageService: @unchecked Sendable {
         playlists[idx].tracks.append(track)
         playlists[idx].trackCount = playlists[idx].tracks.count
         savePlaylists(playlists)
-    }
     }
 
     // MARK: - Play History

@@ -1,8 +1,8 @@
 import SwiftUI
 
 public struct HomeView: View {
-    @Bindable public var homeVM: HomeViewModel
-    @Bindable public var playerVM: PlayerViewModel
+    public let homeVM: HomeViewModel
+    public let playerVM: PlayerViewModel
     public let onOpenSettings: () -> Void
 
     private let columns = [

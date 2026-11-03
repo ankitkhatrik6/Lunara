@@ -99,7 +99,8 @@ public final class YouTubeMusicService: Sendable {
     }
     
     public func accountInfo() async -> (name: String, email: String, photo: String)? {
-        guard let headers = Auth.shared.headers(), !headers.isEmpty else { return nil }
+        let headers = Auth.shared.headers()
+        guard !headers.isEmpty else { return nil }
         var request = URLRequest(url: URL(string: "https://music.youtube.com/youtubei/v1/account/get_account_menu?key=AIzaSyAO_FJ2SlqU8Q4STE1GCilwV9_1sYVSCUQ")!)
         request.httpMethod = "POST"
         request.httpBody = "{}".data(using: .utf8)

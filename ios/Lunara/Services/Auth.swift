@@ -68,7 +68,7 @@ final class Auth: ObservableObject {
     func refreshAccountNameIfMissing() {
         guard isLoggedIn, (accountName ?? "").isEmpty || (accountPhoto ?? "").isEmpty else { return }
         Task { @MainActor in
-            guard let info = await YouTube.accountInfo() else { return }
+            guard let info = await YouTubeMusicService.shared.accountInfo() else { return }
             self.accountName = info.name
             self.accountEmail = info.email
             self.accountPhoto = info.photo
@@ -83,7 +83,7 @@ final class Auth: ObservableObject {
         if let visitorData, !visitorData.isEmpty { self.visitorData = visitorData }
         self.dataSyncId = dataSyncId
 
-        guard let info = await YouTube.accountInfo() else {
+        guard let info = await YouTubeMusicService.shared.accountInfo() else {
             self.cookie = nil
             return false
         }

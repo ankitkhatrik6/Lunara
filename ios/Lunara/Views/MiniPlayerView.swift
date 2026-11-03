@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct MiniPlayerView: View {
-    @Bindable public var playerVM: PlayerViewModel
+    public let playerVM: PlayerViewModel
 
     public var body: some View {
         if let track = playerVM.currentTrack {
