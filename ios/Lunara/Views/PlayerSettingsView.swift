@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct PlayerSettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    @State var playerVM: PlayerViewModel
+    let playerVM: PlayerViewModel
     @State private var crossfadeEnabled: Bool = false
     @State private var crossfadeSeconds: Int = 3
     @State private var gaplessPlayback: Bool = true
@@ -108,7 +108,10 @@ public struct PlayerSettingsView: View {
                         .foregroundColor(.spotifyGreen)
                 }
             }
-            .sheet(isPresented: $playerVM.isSleepTimerPresented) {
+            .sheet(isPresented: Binding(
+                get: { playerVM.isSleepTimerPresented },
+                set: { playerVM.isSleepTimerPresented = $0 }
+            )) {
                 SleepTimerView(playerVM: playerVM)
             }
         }
