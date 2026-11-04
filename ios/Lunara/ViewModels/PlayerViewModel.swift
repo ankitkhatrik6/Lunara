@@ -17,6 +17,7 @@ public final class PlayerViewModel {
     public var queueIndex: Int = 0
     public var sleepTimerRemaining: Int? = nil
     public var sleepTimerActive: Bool = false
+    public var isSleepTimerPresented: Bool = false
     public var repeatMode: RepeatMode = .off
     public var shuffleEnabled: Bool = false
     
