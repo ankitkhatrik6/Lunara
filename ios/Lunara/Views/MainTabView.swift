@@ -42,7 +42,6 @@ public struct MainTabView: View {
             }
             .tint(Color.spotifyGreen)
 
-            // Floating MiniPlayer docked directly above system TabBar
             if playerVM.isMiniPlayerVisible {
                 MiniPlayerView(playerVM: playerVM)
                     .padding(.bottom, 54)
