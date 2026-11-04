@@ -13,9 +13,22 @@ public final class PlayerViewModel {
     public var isLyricsPresented: Bool = false
     public var lyrics: [LyricLine] = []
     public var currentLyricIndex: Int?
+    public var queue: [Track] = []
+    public var queueIndex: Int = 0
+    public var sleepTimerRemaining: Int? = nil
+    public var sleepTimerActive: Bool = false
+    public var repeatMode: RepeatMode = .off
+    public var shuffleEnabled: Bool = false
     
+    public enum RepeatMode: String, CaseIterable {
+        case off = "off"
+        case all = "all"
+        case one = "one"
+    }
+
     private let audioService = AudioPlayerService.shared
     private let storageService = StorageService.shared
+    private var sleepTimerTask: Task<Void, Never>?
     
     public init() {
         bindAudioService()
@@ -46,7 +59,50 @@ public final class PlayerViewModel {
     public func play(track: Track, queue: [Track] = []) {
         var trackToPlay = track
         trackToPlay.isLiked = storageService.isTrackLiked(id: track.id)
+        if !queue.isEmpty {
+            self.queue = queue
+            if let idx = self.queue.firstIndex(where: { $0.id == track.id }) {
+                self.queueIndex = idx
+            } else {
+                self.queue.append(trackToPlay)
+                self.queueIndex = self.queue.count - 1
+            }
+        }
         audioService.play(track: trackToPlay, inQueue: queue)
+    }
+
+    public func playQueueItem(at index: Int) {
+        guard index >= 0, index < queue.count else { return }
+        queueIndex = index
+        let track = queue[index]
+        var trackToPlay = track
+        trackToPlay.isLiked = storageService.isTrackLiked(id: track.id)
+        audioService.play(track: trackToPlay, inQueue: queue)
+    }
+
+    public func removeFromQueue(at index: Int) {
+        guard index >= 0, index < queue.count else { return }
+        queue.remove(at: index)
+        if queueIndex >= queue.count {
+            queueIndex = max(0, queue.count - 1)
+        }
+        if queueIndex >= 0, queueIndex < queue.count {
+            let track = queue[queueIndex]
+            var trackToPlay = track
+            trackToPlay.isLiked = storageService.isTrackLiked(id: track.id)
+            audioService.play(track: trackToPlay, inQueue: queue)
+        } else {
+            currentTrack = nil
+            isPlaying = false
+        }
+    }
+
+    public func clearQueue() {
+        queue.removeAll()
+        queueIndex = 0
+        currentTrack = nil
+        isPlaying = false
+        audioService.pause()
     }
     
     public func togglePlayPause() {
@@ -71,6 +127,63 @@ public final class PlayerViewModel {
         guard let track = currentTrack else { return }
         let isLiked = storageService.toggleLike(track: track)
         currentTrack?.isLiked = isLiked
+        if let idx = queue.firstIndex(where: { $0.id == track.id }) {
+            queue[idx].isLiked = isLiked
+        }
+    }
+
+    public func toggleRepeat() {
+        switch repeatMode {
+        case .off: repeatMode = .all
+        case .all: repeatMode = .one
+        case .one: repeatMode = .off
+        }
+    }
+
+    public func toggleShuffle() {
+        shuffleEnabled.toggle()
+        if shuffleEnabled && queue.count > 1 {
+            queue.shuffle()
+            if let current = currentTrack, let idx = queue.firstIndex(where: { $0.id == current.id }) {
+                queueIndex = idx
+            }
+        }
+    }
+
+    public func startSleepTimer(minutes: Int) {
+        sleepTimerRemaining = minutes * 60
+        sleepTimerActive = true
+        sleepTimerTask?.cancel()
+        sleepTimerTask = Task {
+            while sleepTimerRemaining ?? 0 > 0 {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                await MainActor.run {
+                    sleepTimerRemaining = (sleepTimerRemaining ?? 0) - 1
+                }
+            }
+            await MainActor.run {
+                sleepTimerActive = false
+                sleepTimerRemaining = nil
+                pause()
+            }
+        }
+    }
+
+    public func stopSleepTimer() {
+        sleepTimerTask?.cancel()
+        sleepTimerTask = nil
+        sleepTimerActive = false
+        sleepTimerRemaining = nil
+    }
+
+    private func checkSleepTimer() {
+        if sleepTimerActive, let remaining = sleepTimerRemaining, remaining <= 0 {
+            pause()
+        }
+    }
+
+    public func pause() {
+        audioService.pause()
     }
     
     public var progress: Double {
@@ -87,6 +200,13 @@ public final class PlayerViewModel {
     public var formattedDuration: String {
         let mins = Int(duration) / 60
         let secs = Int(duration) % 60
+        return String(format: "%d:%02d", mins, secs)
+    }
+
+    public var sleepTimeRemainingFormatted: String {
+        guard let remaining = sleepTimerRemaining else { return "Off" }
+        let mins = remaining / 60
+        let secs = remaining % 60
         return String(format: "%d:%02d", mins, secs)
     }
     
