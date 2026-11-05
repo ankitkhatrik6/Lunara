@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import AVFoundation
 
 @Observable
 @MainActor
@@ -11,16 +12,17 @@ public final class PlayerViewModel {
     public var isMiniPlayerVisible: Bool = false
     public var isFullScreenPresented: Bool = false
     public var isLyricsPresented: Bool = false
+    public var isQueuePresented: Bool = false
+    public var isSleepTimerPresented: Bool = false
     public var lyrics: [LyricLine] = []
     public var currentLyricIndex: Int?
     public var queue: [Track] = []
     public var queueIndex: Int = 0
     public var sleepTimerRemaining: Int? = nil
     public var sleepTimerActive: Bool = false
-    public var isSleepTimerPresented: Bool = false
     public var repeatMode: RepeatMode = .off
     public var shuffleEnabled: Bool = false
-    
+
     public enum RepeatMode: String, CaseIterable {
         case off = "off"
         case all = "all"
@@ -30,38 +32,47 @@ public final class PlayerViewModel {
     private let audioService = AudioPlayerService.shared
     private let storageService = StorageService.shared
     private var sleepTimerTask: Task<Void, Never>?
-    
+
     public init() {
         bindAudioService()
     }
-    
+
     private func bindAudioService() {
-        audioService.onTrackChange = { @MainActor [weak self] track in
-            guard let self = self else { return }
-            self.currentTrack = track
-            self.isMiniPlayerVisible = track != nil
-            if let track = track {
-                self.loadLyrics(for: track)
+        audioService.onTrackChange = { [weak self] track in
+            Task { @MainActor in
+                self?.currentTrack = track
+                self?.isMiniPlayerVisible = track != nil
+                self?.updateQueueFromTrack(track)
+                if let track = track {
+                    self?.loadLyrics(for: track)
+                }
             }
         }
-        
-        audioService.onPlaybackStateChange = { @MainActor [weak self] playing in
-            self?.isPlaying = playing
+
+        audioService.onPlaybackStateChange = { [weak self] playing in
+            Task { @MainActor in
+                self?.isPlaying = playing
+            }
         }
-        
-        audioService.onProgressUpdate = { @MainActor [weak self] time, total in
-            guard let self = self else { return }
-            self.currentTime = time
-            self.duration = total
-            self.updateCurrentLyric(time: time)
+
+        audioService.onProgressUpdate = { [weak self] time, total in
+            Task { @MainActor in
+                self?.currentTime = time
+                self?.duration = total
+                self?.updateCurrentLyric(time: time)
+                self?.checkSleepTimer()
+            }
         }
     }
-    
-    public func play(track: Track, queue: [Track] = []) {
+
+    // MARK: - Playback
+
+    public func play(track: Track, inQueue newQueue: [Track] = []) {
         var trackToPlay = track
         trackToPlay.isLiked = storageService.isTrackLiked(id: track.id)
-        if !queue.isEmpty {
-            self.queue = queue
+
+        if !newQueue.isEmpty {
+            self.queue = newQueue
             if let idx = self.queue.firstIndex(where: { $0.id == track.id }) {
                 self.queueIndex = idx
             } else {
@@ -69,7 +80,8 @@ public final class PlayerViewModel {
                 self.queueIndex = self.queue.count - 1
             }
         }
-        audioService.play(track: trackToPlay, inQueue: queue)
+
+        audioService.play(track: trackToPlay, inQueue: newQueue)
     }
 
     public func playQueueItem(at index: Int) {
@@ -105,25 +117,27 @@ public final class PlayerViewModel {
         isPlaying = false
         audioService.pause()
     }
-    
+
     public func togglePlayPause() {
         audioService.togglePlayPause()
     }
-    
+
     public func skipNext() {
         audioService.skipNext()
     }
-    
+
     public func skipPrevious() {
         audioService.skipPrevious()
     }
-    
+
     public func seek(to progress: Double) {
-        guard duration > 0 else { return }
-        let targetTime = progress * duration
-        audioService.seek(to: targetTime)
+        audioService.seek(to: progress)
     }
-    
+
+    public func seekToTime(_ time: Double) {
+        audioService.seek(to: time)
+    }
+
     public func toggleLike() {
         guard let track = currentTrack else { return }
         let isLiked = storageService.toggleLike(track: track)
@@ -186,18 +200,20 @@ public final class PlayerViewModel {
     public func pause() {
         audioService.pause()
     }
-    
+
+    // MARK: - Computed
+
     public var progress: Double {
         guard duration > 0 else { return 0 }
         return min(max(currentTime / duration, 0), 1)
     }
-    
+
     public var formattedCurrentTime: String {
         let mins = Int(currentTime) / 60
         let secs = Int(currentTime) % 60
         return String(format: "%d:%02d", mins, secs)
     }
-    
+
     public var formattedDuration: String {
         let mins = Int(duration) / 60
         let secs = Int(duration) % 60
@@ -210,26 +226,41 @@ public final class PlayerViewModel {
         let secs = remaining % 60
         return String(format: "%d:%02d", mins, secs)
     }
-    
+
+    // MARK: - Lyrics
+
     private func loadLyrics(for track: Track) {
         Task { @MainActor in
-            self.lyrics = await YouTubeMusicService.shared.fetchLyrics(
-                for: track.id,
-                title: track.title,
-                artist: track.artistName
-            )
+            do {
+                let lyricsResult = try await YouTubeMusicService.shared.fetchLyrics(
+                    for: track.id,
+                    title: track.title,
+                    artist: track.artist
+                )
+                self.lyrics = lyricsResult.lines
+            } catch {
+                self.lyrics = []
+            }
         }
     }
-    
+
     private func updateCurrentLyric(time: Double) {
         guard !lyrics.isEmpty else {
             currentLyricIndex = nil
             return
         }
-        
         let foundIndex = lyrics.lastIndex(where: { $0.timestamp <= time })
         if currentLyricIndex != foundIndex {
             currentLyricIndex = foundIndex
+        }
+    }
+
+    private func updateQueueFromTrack(_ track: Track) {
+        if let idx = queue.firstIndex(where: { $0.id == track.id }) {
+            queueIndex = idx
+        } else {
+            queue.append(track)
+            queueIndex = queue.count - 1
         }
     }
 }

@@ -15,12 +15,13 @@ public final class HomeViewModel {
     public var recommendedAlbums: [Album] = []
     public var trendingHits: [Track] = []
     public var likedTracks: [Track] = []
+    public var homeFeed: HomeFeed = .empty
     public var isLoading: Bool = false
-    
+
     public init() {
         loadData()
     }
-    
+
     public var greeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
@@ -29,19 +30,40 @@ public final class HomeViewModel {
         default: return "Good evening"
         }
     }
-    
-    public func loadData() {
-        let allSamples = YouTubeMusicService.shared.sampleTracks
-        self.quickAccessTracks = Array(allSamples.prefix(6))
-        self.recentlyPlayed = allSamples
-        self.trendingHits = allSamples.reversed()
-        self.likedTracks = allSamples.filter { $0.isLiked }
 
-        self.recommendedAlbums = [
-            Album(id: "meteora", title: "Meteora", artistName: "Linkin Park", artworkUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80", year: "2003"),
-            Album(id: "opera", title: "A Night at the Opera", artistName: "Queen", artworkUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&q=80", year: "1975"),
-            Album(id: "native", title: "Native", artistName: "OneRepublic", artworkUrl: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=500&q=80", year: "2013"),
-            Album(id: "hurry_up", title: "Hurry Up, We're Dreaming", artistName: "M83", artworkUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80", year: "2011")
-        ]
+    public func loadData() {
+        isLoading = true
+        Task {
+            await loadHomeFeed()
+            await MainActor.run {
+                self.isLoading = false
+            }
+        }
+    }
+
+    private func loadHomeFeed() async {
+        let feed = await YouTubeMusicService.shared.fetchHome()
+        await MainActor.run {
+            self.homeFeed = feed
+            self.quickAccessTracks = feed.sections
+                .filter { $0.isSongs }
+                .flatMap { $0.items }
+                .prefix(6)
+                .map { $0.asTrack }
+            self.recentlyPlayed = feed.sections
+                .filter { !$0.isSongs }
+                .flatMap { $0.items }
+                .prefix(10)
+                .map { $0.asTrack }
+            self.trendingHits = feed.sections
+                .flatMap { $0.items }
+                .prefix(10)
+                .map { $0.asTrack }
+            self.likedTracks = StorageService.shared.getLikedTracks()
+        }
+    }
+
+    public func refresh() {
+        loadData()
     }
 }
