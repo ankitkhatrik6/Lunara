@@ -10,7 +10,6 @@
 		44A1000129B0000100000001 /* LunaraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000229B0000100000001 /* LunaraApp.swift */; };
 		44A1000329B0000100000001 /* SpotifyColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000429B0000100000001 /* SpotifyColors.swift */; };
 		44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000629B0000100000001 /* SpotifyTypography.swift */; };
-		44A1000729B0000100000001 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000829B0000100000001 /* Track.swift */; };
 		44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000C29B0000100000001 /* AudioPlayerService.swift */; };
 		44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1000E29B0000100000001 /* YouTubeMusicService.swift */; };
 		44A1000F29B0000100000001 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A1001029B0000100000001 /* StorageService.swift */; };
@@ -54,7 +53,6 @@
 		44A1000229B0000100000001 /* LunaraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LunaraApp.swift; sourceTree = "<group>"; };
 		44A1000429B0000100000001 /* SpotifyColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyColors.swift; sourceTree = "<group>"; };
 		44A1000629B0000100000001 /* SpotifyTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyTypography.swift; sourceTree = "<group>"; };
-		44A1000829B0000100000001 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		44A1000C29B0000100000001 /* AudioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerService.swift; sourceTree = "<group>"; };
 		44A1000E29B0000100000001 /* YouTubeMusicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeMusicService.swift; sourceTree = "<group>"; };
 		44A1001029B0000100000001 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
@@ -150,7 +148,6 @@
 		44A1004529B0000100000001 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				44A1000829B0000100000001 /* Track.swift */,
 				44A1010D29B0000100000001 /* Models.swift */,
 			);
 			path = Models;
@@ -276,7 +273,6 @@
 				44A1000129B0000100000001 /* LunaraApp.swift in Sources */,
 				44A1000329B0000100000001 /* SpotifyColors.swift in Sources */,
 				44A1000529B0000100000001 /* SpotifyTypography.swift in Sources */,
-				44A1000729B0000100000001 /* Track.swift in Sources */,
 				44A1000B29B0000100000001 /* AudioPlayerService.swift in Sources */,
 				44A1000D29B0000100000001 /* YouTubeMusicService.swift in Sources */,
 				44A1000F29B0000100000001 /* StorageService.swift in Sources */,
