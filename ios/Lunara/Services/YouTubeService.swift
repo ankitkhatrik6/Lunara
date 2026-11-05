@@ -36,8 +36,8 @@ public final class YouTubeService: Sendable {
         var client: [String: Any] = [
             "clientName": "WEB_REMIX",
             "clientVersion": remixVersion,
-            "hl": ContentPrefs.locale.hl,
-            "gl": ContentPrefs.locale.gl
+            "hl": Locale.current.languageCode ?? "en",
+            "gl": Locale.current.regionCode ?? "US"
         ]
         if let visitor { client["visitorData"] = visitor }
 
@@ -90,8 +90,8 @@ public final class YouTubeService: Sendable {
         var client: [String: Any] = [
             "clientName": "WEB_REMIX",
             "clientVersion": remixVersion,
-            "hl": ContentPrefs.locale.hl,
-            "gl": ContentPrefs.locale.gl
+            "hl": Locale.current.languageCode ?? "en",
+            "gl": Locale.current.regionCode ?? "US"
         ]
         if let visitor { client["visitorData"] = visitor }
 
@@ -123,8 +123,8 @@ public final class YouTubeService: Sendable {
         var client: [String: Any] = [
             "clientName": "WEB_REMIX",
             "clientVersion": remixVersion,
-            "hl": ContentPrefs.locale.hl,
-            "gl": ContentPrefs.locale.gl
+            "hl": Locale.current.languageCode ?? "en",
+            "gl": Locale.current.regionCode ?? "US"
         ]
         if let visitor { client["visitorData"] = visitor }
 
@@ -163,8 +163,8 @@ public final class YouTubeService: Sendable {
         var client: [String: Any] = [
             "clientName": "WEB_REMIX",
             "clientVersion": remixVersion,
-            "hl": ContentPrefs.locale.hl,
-            "gl": ContentPrefs.locale.gl
+            "hl": Locale.current.languageCode ?? "en",
+            "gl": Locale.current.regionCode ?? "US"
         ]
         if let visitor { client["visitorData"] = visitor }
 
@@ -204,8 +204,8 @@ public final class YouTubeService: Sendable {
         var client: [String: Any] = [
             "clientName": "WEB_REMIX",
             "clientVersion": remixVersion,
-            "hl": ContentPrefs.locale.hl,
-            "gl": ContentPrefs.locale.gl
+            "hl": Locale.current.languageCode ?? "en",
+            "gl": Locale.current.regionCode ?? "US"
         ]
         if let visitor { client["visitorData"] = visitor }
 
@@ -251,8 +251,8 @@ public final class YouTubeService: Sendable {
         var client: [String: Any] = body["context"] as? [String: Any] ?? [:]
         client["clientName"] = "WEB_REMIX"
         client["clientVersion"] = version
-        client["hl"] = ContentPrefs.locale.hl
-        client["gl"] = ContentPrefs.locale.gl
+        client["hl"] = Locale.current.languageCode ?? "en"
+        client["gl"] = Locale.current.regionCode ?? "US"
         if let visitor { client["visitorData"] = visitor }
         context["client"] = client
         var mutableBody = body
@@ -281,7 +281,6 @@ public final class YouTubeService: Sendable {
     private func parseSearchResults(_ json: [String: Any]) -> [Track] {
         var tracks: [Track] = []
 
-        // Navigate to contents -> musicResponsiveListItemRenderer
         guard let contents = json["contents"] as? [String: Any],
               let tabRenderer = contents["musicSearchResponse"] as? [String: Any],
               let sections = tabRenderer["contents"] as? [[String: Any]] else {
@@ -310,9 +309,6 @@ public final class YouTubeService: Sendable {
     }
 
     private func parseTrack(from dict: [String: Any]) -> Track? {
-        // Navigate the nested structure to find videoId, title, artist, thumbnail, duration
-        // This is complex due to YouTube's nested JSON structure
-        // Simplified version - extracts key fields
         guard let videoId = extractVideoId(from: dict) else { return nil }
 
         let title = extractTitle(from: dict) ?? "Unknown Title"
@@ -330,26 +326,14 @@ public final class YouTubeService: Sendable {
     }
 
     private func extractVideoId(from dict: [String: Any]) -> String? {
-        // Try navigationEndpoint -> browseEndpoint or watchEndpoint -> videoId
         if let nav = dict["navigationEndpoint"] as? [String: Any] {
             if let watchEndpoint = nav["watchEndpoint"] as? [String: Any],
                let videoId = watchEndpoint["videoId"] as? String {
                 return videoId
             }
         }
-        // Try flexColumns -> musicResponsiveListItemFixedColumnRenderer
         if let flexColumns = dict["flexColumns"] as? [[String: Any]] {
             for column in flexColumns {
-                if let musicResponsiveListItemFixedColumnRenderer = column["musicResponsiveListItemFixedColumnRenderer"] as? [String: Any] {
-                    if let text = musicResponsiveListItemFixedColumnRenderer["text"] as? [String: Any],
-                       let runs = text["runs"] as? [[String: Any]],
-                       let first = runs.first,
-                       let browseEndpoint = first["navigationEndpoint"] as? [String: Any],
-                       let videoId = browseEndpoint["browseId"] as? String {
-                        // This might be a browseId, not videoId
-                    }
-                }
-                // Try onTap -> watchEndpoint
                 if let onTap = column["onTap"] as? [String: Any],
                    let watchEndpoint = onTap["watchEndpoint"] as? [String: Any],
                    let videoId = watchEndpoint["videoId"] as? String {
@@ -368,7 +352,6 @@ public final class YouTubeService: Sendable {
     }
 
     private func extractArtist(from dict: [String: Any]) -> String? {
-        // Artist is usually in flexColumns
         if let flexColumns = dict["flexColumns"] as? [[String: Any]] {
             for column in flexColumns {
                 if let musicResponsiveListItemFixedColumnRenderer = column["musicResponsiveListItemFixedColumnRenderer"] as? [String: Any] {
@@ -382,7 +365,6 @@ public final class YouTubeService: Sendable {
     }
 
     private func extractThumbnail(from dict: [String: Any]) -> String? {
-        // Thumbnail is in thumbnailRenderer or similar
         if let thumbnail = dict["thumbnail"] as? [String: Any],
            let musicThumbnailRenderer = thumbnail["musicThumbnailRenderer"] as? [String: Any],
            let thumbnailRenderer = musicThumbnailRenderer["thumbnail"] as? [String: Any],
@@ -395,7 +377,6 @@ public final class YouTubeService: Sendable {
     }
 
     private func extractDuration(from dict: [String: Any]) -> Double? {
-        // Duration is in flexColumns as text
         if let flexColumns = dict["flexColumns"] as? [[String: Any]] {
             for column in flexColumns {
                 if let musicResponsiveListItemFixedColumnRenderer = column["musicResponsiveListItemFixedColumnRenderer"] as? [String: Any] {
@@ -420,7 +401,6 @@ public final class YouTubeService: Sendable {
     }
 
     private func parseDuration(_ text: String) -> Double? {
-        // Parse "4:20" or "1:23:45"
         let parts = text.split(separator: ":").map { Int($0) ?? 0 }
         if parts.count == 2 {
             return Double(parts[0] * 60 + parts[1])
@@ -435,9 +415,7 @@ public final class YouTubeService: Sendable {
         var sections: [HomeSection] = []
         var continuation: String? = nil
 
-        // Extract chips
         if let contents = json["contents"] as? [String: Any] {
-            // This is complex - YouTube's browse response has complex nesting
             // Simplified extraction
         }
 
@@ -446,24 +424,19 @@ public final class YouTubeService: Sendable {
 
     private func parseHomeItems(from dict: [String: Any]) -> [HomeItem] {
         var items: [HomeItem] = []
-        // Simplified - would need full YouTube response parsing
         return items
     }
 
     private func parseRelatedShelves(_ json: [String: Any]) -> [HomeSection] {
         var sections: [HomeSection] = []
-        // Parse related video shelves
         return sections
     }
 
     private func parseStreamURL(_ json: [String: Any], videoId: String) -> StreamURL? {
-        // Parse streaming URLs from player response
-        // Look for streamingData -> adaptiveFormats or progressiveFormats
         guard let streamingData = json["streamingData"] as? [String: Any] else {
             return nil
         }
 
-        // Try adaptive formats first (better quality, separate audio/video)
         if let adaptiveFormats = streamingData["adaptiveFormats"] as? [[String: Any]] {
             for format in adaptiveFormats {
                 if let mimeType = format["mimeType"] as? String,
@@ -474,7 +447,6 @@ public final class YouTubeService: Sendable {
             }
         }
 
-        // Fallback to progressive formats (combined audio+video)
         if let progressiveFormats = streamingData["progressiveFormats"] as? [[String: Any]] {
             for format in progressiveFormats {
                 if let mimeType = format["mimeType"] as? String,
@@ -485,12 +457,15 @@ public final class YouTubeService: Sendable {
             }
         }
 
-        // Try direct URL
         if let url = streamingData["url"] as? String {
             return StreamURL(url: url, type: .audio)
         }
 
         return nil
+    }
+
+    private func visitorData() async -> String? {
+        return Auth.shared.visitorData
     }
 }
 
@@ -552,80 +527,16 @@ public struct StreamURL: Sendable {
     }
 }
 
-// MARK: - Helper extensions
+// MARK: - Helper to convert YouTubeService.StreamURL to stream URL string
+
+public extension YouTubeService.StreamURL {
+    var urlString: String { self.url }
+}
+
+// MARK: - HomeFeed helper
 
 private extension HomeFeed {
     func toArtistPage() -> ArtistPage? {
-        // Simplified conversion from browse response to ArtistPage
         return nil
-    }
-}
-
-// MARK: - ContentPrefs (locale)
-
-public enum ContentPrefs {
-    public static let locale = Locale(identifier: "en_US")
-}
-
-// MARK: - Auth.shared.visitorData (placeholder - uses existing Auth)
-
-extension Auth {
-    public static var visitorData: String? {
-        get { return nil }
-    }
-}
-
-// MARK: - Lyrics
-
-public extension YouTubeService {
-    func fetchLyrics(for videoId: String, title: String, artist: String) async throws -> [LyricLine] {
-        // Try to get lyrics from the player response
-        guard let streamInfo = await streamURL(for: videoId) else {
-            return []
-        }
-
-        // YouTube Music doesn't always provide lyrics via the player API
-        // Try fetching from the video page or use a fallback
-        return await fetchLyricsFromYouTube(videoId: videoId, title: title, artist: artist)
-    }
-
-    private func fetchLyricsFromYouTube(videoId: String, title: String, artist: String) async -> [LyricLine] {
-        // Try YouTube's timedtext API for captions/lyrics
-        let captionURL = "https://www.youtube.com/api/timedtext?v=\(videoId)&type=track&lang=en&kind=asr"
-        guard let url = URL(string: captionURL) else { return [] }
-
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            if let xml = String(data: data, encoding: .utf8) {
-                return parseTimedTextXML(xml)
-            }
-        } catch {}
-
-        // Fallback: try to get lyrics from YouTube Music page
-        return []
-    }
-
-    private func parseTimedTextXML(_ xml: String) -> [LyricLine] {
-        var lines: [LyricLine] = []
-        // Simple XML parser for timedtext
-        let pattern = #"<text start="([\d.]+)" dur="([\d.]+)">([^<]*)</text>"#
-        let regex = try? NSRegularExpression(pattern: pattern)
-        let nsString = xml as NSString
-        let matches = regex?.matches(in: xml, range: NSRange(location: 0, length: nsString.length)) ?? []
-
-        for match in matches {
-            let start = nsString.substring(with: match.range(at: 1))
-            let text = nsString.substring(with: match.range(at: 3))
-            let startTime = Double(start) ?? 0
-            let cleanText = text.replacingOccurrences(of: "&amp;", with: "&")
-                .replacingOccurrences(of: "&lt;", with: "<")
-                .replacingOccurrences(of: "&gt;", with: ">")
-                .replacingOccurrences(of: "&#39;", with: "'")
-                .replacingOccurrences(of: "&quot;", with: "\"")
-            if !cleanText.isEmpty {
-                lines.append(LyricLine(timestamp: startTime, text: cleanText))
-            }
-        }
-        return lines
     }
 }
