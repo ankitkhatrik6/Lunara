@@ -29,7 +29,7 @@ public final class AudioPlayerService: NSObject {
     private var rateObserver: NSKeyValueObservation?
 
     private var currentStreamURL: String?
-    private var isSeeking: Bool = false
+    private var queueIndex: Int = 0
 
     private override init() {
         super.init()
@@ -39,7 +39,9 @@ public final class AudioPlayerService: NSObject {
     }
 
     deinit {
-        pause()
+        Task { @MainActor in
+            self.pause()
+        }
         if let token = timeObserverToken {
             player?.removeTimeObserver(token)
             timeObserverToken = nil
@@ -105,7 +107,6 @@ public final class AudioPlayerService: NSObject {
 
         onTrackChange?(track)
 
-        // Resolve stream URL and play
         Task { @MainActor in
             do {
                 let streamURL = try await YouTubeService.shared.streamURL(for: track.id)
@@ -132,16 +133,12 @@ public final class AudioPlayerService: NSObject {
         player?.play()
         isPlaying = true
 
-        // Start time observer
         startTimeObserver()
 
-        // Add to audio cache in background
         AudioCache.shared.cache(trackId: currentTrack?.id ?? "", url: url)
 
-        // Update now playing info
         updateNowPlayingInfo()
 
-        // Observe item duration
         currentItemObserver = player?.currentItem?.observe(\.duration, options: [.initial, .new]) { [weak self] item, _ in
             let duration = item.duration.seconds
             if duration.isFinite && duration > 0 {
@@ -193,19 +190,6 @@ public final class AudioPlayerService: NSObject {
         if isPlaying { pause() } else { resume() }
     }
 
-    public func seek(to time: Double) {
-        isSeeking = true
-        let cmTime = CMTime(seconds: time, preferredTimescale: 600)
-        player?.seek(to: cmTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
-            Task { @MainActor in
-                self?.isSeeking = false
-            }
-        }
-        currentTime = time
-        onProgressUpdate?(currentTime, duration)
-        updateNowPlayingPlaybackInfo()
-    }
-
     public func skipNext() {
         guard !queue.isEmpty else { return }
         guard let current = currentTrack,
@@ -247,11 +231,102 @@ public final class AudioPlayerService: NSObject {
         play(track: queue[index], inQueue: queue)
     }
 
+    public func removeFromQueue(at index: Int) {
+        guard index >= 0, index < queue.count else { return }
+        queue.remove(at: index)
+        if queueIndex >= queue.count {
+            queueIndex = max(0, queue.count - 1)
+        }
+        if queueIndex >= 0, queueIndex < queue.count {
+            let track = queue[queueIndex]
+            play(track: track, inQueue: queue)
+        } else {
+            currentTrack = nil
+            isPlaying = false
+        }
+    }
+
+    public func clearQueue() {
+        queue.removeAll()
+        queueIndex = 0
+        currentTrack = nil
+        isPlaying = false
+        pause()
+    }
+
     public func toggleLike() {
         guard let track = currentTrack else { return }
-        // Toggle is handled in StorageService; just notify UI
-        onTrackChange?(track)
+        let isLiked = storageService.toggleLike(track: track)
+        currentTrack?.isLiked = isLiked
+        if let idx = queue.firstIndex(where: { $0.id == track.id }) {
+            queue[idx].isLiked = isLiked
+        }
     }
+
+    public func toggleRepeat() {
+        switch repeatMode {
+        case .off: repeatMode = .all
+        case .all: repeatMode = .one
+        case .one: repeatMode = .off
+        }
+    }
+
+    public func toggleShuffle() {
+        shuffleEnabled.toggle()
+        if shuffleEnabled && queue.count > 1 {
+            queue.shuffle()
+            if let current = currentTrack, let idx = queue.firstIndex(where: { $0.id == current.id }) {
+                queueIndex = idx
+            }
+        }
+    }
+
+    public func startSleepTimer(minutes: Int) {
+        sleepTimerRemaining = minutes * 60
+        sleepTimerActive = true
+        sleepTimerTask?.cancel()
+        sleepTimerTask = Task {
+            while sleepTimerRemaining ?? 0 > 0 {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                await MainActor.run {
+                    sleepTimerRemaining = (sleepTimerRemaining ?? 0) - 1
+                }
+            }
+            await MainActor.run {
+                sleepTimerActive = false
+                sleepTimerRemaining = nil
+                pause()
+            }
+        }
+    }
+
+    public func stopSleepTimer() {
+        sleepTimerTask?.cancel()
+        sleepTimerTask = nil
+        sleepTimerActive = false
+        sleepTimerRemaining = nil
+    }
+
+    private func checkSleepTimer() {
+        if sleepTimerActive, let remaining = sleepTimerRemaining, remaining <= 0 {
+            pause()
+        }
+    }
+
+    public func seek(to progress: Double) {
+        guard let player = player, player.currentItem?.duration.isFinite == true else { return }
+        let cmTime = CMTime(seconds: progress * player.currentItem!.duration.seconds, preferredTimescale: 600)
+        player.seek(to: cmTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
+            Task { @MainActor in
+                self?.isSeeking = false
+            }
+        }
+        currentTime = progress * player.currentItem!.duration.seconds
+        onProgressUpdate?(currentTime, duration)
+        updateNowPlayingPlaybackInfo()
+    }
+
+    private var isSeeking: Bool = false
 
     // MARK: - Now Playing (Lock Screen)
 
@@ -269,10 +344,6 @@ public final class AudioPlayerService: NSObject {
             MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? 1.0 : 0.0
         ]
 
-        if let album = track.albumName {  // Track doesn't have albumName, but Models has it
-            info[MPMediaItemPropertyAlbumTitle] = album
-        }
-
         if let url = URL(string: track.thumbnail) {
             info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(url: url)
         }
@@ -286,16 +357,15 @@ public final class AudioPlayerService: NSObject {
         info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
         MPNowPlayingInfoCenter.default().nowPlayingInfo = info
     }
-
-    // MARK: - Helpers
-
-    private func observePlayerRate() {
-        // Already handled in setupPlayerObservers
-    }
 }
 
-// MARK: - AVPlayerItem duration KVO
+// MARK: - Storage (added to AudioPlayerService for backward compatibility)
 
-private extension AVPlayerItem {
-    var duration: CMTime { self.asset.duration }
+extension AudioPlayerService {
+    private var storageService = StorageService.shared
+}
+
+// Keep queueIndex accessible
+extension AudioPlayerService {
+    public var queueIndex: Int = 0
 }

@@ -92,7 +92,7 @@ public struct HomeView: View {
                         badgeColor: Color.spotifyLikedPurple,
                         onPlay: {
                             if let first = homeVM.likedTracks.first {
-                                playerVM.play(track: first, queue: homeVM.likedTracks)
+                                playerVM.play(track: first, inQueue: homeVM.likedTracks)
                             }
                         }
                     )
@@ -122,11 +122,11 @@ public struct HomeView: View {
 
                 // MARK: - Shelves
                 SectionShelfView(title: "Jump back in", tracks: homeVM.recentlyPlayed) { track in
-                    playerVM.play(track: track, queue: homeVM.recentlyPlayed)
+                    playerVM.play(track: track, inQueue: homeVM.recentlyPlayed)
                 }
 
                 SectionShelfView(title: "Trending Right Now", tracks: homeVM.trendingHits) { track in
-                    playerVM.play(track: track, queue: homeVM.trendingHits)
+                    playerVM.play(track: track, inQueue: homeVM.trendingHits)
                 }
 
                 Spacer(minLength: 80)

@@ -79,14 +79,14 @@ final class LastFM: ObservableObject {
     func nowPlaying(_ track: Track) async {
         guard scrobbling, let session else { return }
         _ = await call(["method": "track.updateNowPlaying",
-                        "artist": track.artistName, "track": track.title,
+                        "artist": track.artist, "track": track.title,
                         "sk": session], signed: true, post: true)
     }
 
     func scrobble(_ track: Track, startedAt: Date) async {
         guard scrobbling, let session else { return }
         _ = await call(["method": "track.scrobble",
-                        "artist": track.artistName, "track": track.title,
+                        "artist": track.artist, "track": track.title,
                         "timestamp": String(Int(startedAt.timeIntervalSince1970)),
                         "sk": session], signed: true, post: true)
     }
@@ -94,7 +94,7 @@ final class LastFM: ObservableObject {
     func love(_ track: Track, loved: Bool) async {
         guard loveOnFavorite, let session else { return }
         _ = await call(["method": loved ? "track.love" : "track.unlove",
-                        "artist": track.artistName, "track": track.title,
+                        "artist": track.artist, "track": track.title,
                         "sk": session], signed: true, post: true)
     }
 

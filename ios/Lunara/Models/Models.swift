@@ -21,27 +21,12 @@ public struct Track: Identifiable, Codable, Hashable, Sendable {
 
     public var id: String { videoId }
 
+    // Backward-compatible accessors
+    public var artistName: String { artist }
+    public var artworkUrl: String { thumbnail }
+
     public var thumbnailURL: URL? {
-        // Local music has no catalogue art
-        if StorageService.shared.isLocal(videoId) {
-            return StorageService.shared.localArtURL(for: videoId)
-        }
-        // Downloaded songs use saved artwork
-        if StorageService.shared.isDownloaded(videoId),
-           let saved = StorageService.shared.localArtURL(for: videoId) {
-            return saved
-        }
-        // Cached audio has artwork beside it
-        if let saved = AudioCache.shared.cachedArtURL(for: videoId) {
-            return saved
-        }
-        // file:// thumbnail is stale — fall back
-        if thumbnail.hasPrefix("file:") {
-            return StorageService.fallbackArt(videoId)
-        }
-        guard !thumbnail.isEmpty else {
-            return videoId.isEmpty ? nil : StorageService.fallbackArt(videoId)
-        }
+        guard !thumbnail.isEmpty else { return nil }
         return URL(string: thumbnail)
     }
 
@@ -75,6 +60,10 @@ public struct Track: Identifiable, Codable, Hashable, Sendable {
         let mins = Int(duration) / 60
         let secs = Int(duration) % 60
         return String(format: "%d:%02d", mins, secs)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case videoId, title, artist, thumbnail, duration, artistId, explicit, video, videoType, setVideoId, isLiked
     }
 }
 
@@ -288,22 +277,6 @@ public struct LyricLine: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-// MARK: - LyricsResult
-
-public struct LyricsResult: Sendable {
-    public let lines: [LyricLine]
-    public let plain: String?
-    public let synced: Bool
-    public let raw: String?
-
-    public init(lines: [LyricLine] = [], plain: String? = nil, synced: Bool = false, raw: String? = nil) {
-        self.lines = lines
-        self.plain = plain
-        self.synced = synced
-        self.raw = raw
-    }
-}
-
 // MARK: - PlayHistoryItem
 
 public struct PlayHistoryItem: Identifiable, Codable, Hashable, Sendable {
@@ -386,6 +359,8 @@ public struct Playlist: Identifiable, Codable, Hashable, Sendable {
     public var trackCount: Int
     public var tracks: [Track]
 
+    public var thumbnailURL: URL? { URL(string: artworkUrl ?? "") }
+
     public init(
         id: String,
         title: String,
@@ -450,6 +425,3 @@ public struct Artist: Identifiable, Codable, Hashable, Sendable {
         self.subscribers = subscribers
     }
 }
-
-// MARK: - LyricLine (alias for Models)
-public typealias Lyrics = [LyricLine]
