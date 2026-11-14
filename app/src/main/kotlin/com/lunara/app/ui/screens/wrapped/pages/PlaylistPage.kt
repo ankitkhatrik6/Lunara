@@ -45,7 +45,6 @@ import com.lunara.app.ui.screens.wrapped.components.AutoResizingText
 import com.lunara.app.ui.screens.wrapped.components.ShapeType
 import com.lunara.app.ui.theme.bbh_bartle
 import kotlinx.coroutines.delay
-import kotlin.random.Random
 
 @Composable
 fun PlaylistPage() {
@@ -53,13 +52,8 @@ fun PlaylistPage() {
     val state by manager.state.collectAsStateWithLifecycle()
     val playlistCreationState = state.playlistCreationState
 
-    val (playlistImageRes, playlistImageName) = remember {
-        if (Random.nextBoolean()) {
-            Pair(R.drawable.wrapped_playlistv1, "wrapped_playlistv1")
-        } else {
-            Pair(R.drawable.wrapped_playlistv2, "wrapped_playlistv2")
-        }
-    }
+    val playlistImageRes = R.drawable.lunara_logo
+    val playlistImageName = "lunara_logo"
 
     var startAnimation by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
