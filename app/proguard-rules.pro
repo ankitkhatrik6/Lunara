@@ -204,9 +204,9 @@
 
 ## Wrapped feature — keep all Wrapped classes and composables
 # R8 minify and shrinkResources are enabled for release builds. Wrapped classes are
-# referenced by the UI navigation, Hilt, and dynamic resource lookups (getIdentifier).
-# Without keep rules, R8 may strip classes that are only referenced reflectively or
-# via string-based resource IDs, causing runtime failures in release builds.
+# referenced by UI navigation, Hilt, and dynamic resource lookups (getIdentifier).
+# Without keep rules, R8 may strip classes referenced only reflectively or via
+# string-based resource IDs, causing runtime failures in release builds.
 -keep class com.lunara.app.ui.screens.wrapped.** { *; }
 -keepclassmembers class com.lunara.app.ui.screens.wrapped.** {
     *;
